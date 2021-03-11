@@ -1,8 +1,10 @@
+# Compose file format version 3.8 is for Docker version 19.03.0 and higher, aka it works for our Docker version: 20.10.2
 version: '3.8'
 services:
   db:
     image: mysql:8.0
     container_name: mysql-users-db
+    #always restart when it is stopped by something (not manually stopped)
     restart: always
     environment:
       MYSQL_DATABASE: 'users'
@@ -21,6 +23,19 @@ services:
       # Where our data will be persisted
     volumes:
       - users-db:/var/lib/mysql
+  redis:
+    image: "redis:alpine"
+    command: redis-server --requirepass password
+    container_name: redis-token-db
+    restart: always
+    ports:
+      - '49161:8080'
+    expose:
+      - '8080'
+    volumes:
+      - token-db:/var/lib/redis
 # Names our volume
 volumes:
   users-db:
+  token-db:
+  
