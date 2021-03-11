@@ -39,3 +39,46 @@ volumes:
   users-db:
   token-db:
   
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+      # Open docker exec cmd
+        # "docker exec -it db99f7d01e4a sh"
+            # Then "redis-cli" to open server
+                #auth password
+        
+    #We use redis SET (strings) because it is faster than lpush(list) (add, delete and check is O(1))
+    #https://hashnode.com/post/differences-between-lists-and-sets-in-redis-ciojr30i401g3lh5364dkoqwv
+    
+    # A token needs: userID and userEmail
+    #Each token generated is added to redis via SET "userID" "userEmail"
+    # SET syntax: "SET name "key" EX 3600"
+    # EX 3600 = token expires after 3600 seconds
+    # NX = Only set the key if it don't exist
+    
+    
+    
+    
+    # SET token1 "user1" EX 3600
+    # HMSET token1 userID "ID"
+    # HMSET token1 userEmail "ali.baba@gmail.com"
+    # HMGET token1 userID userEmail
+    # EXPIRE tokenname 60
+    # set token '{"userID: 1", "userEmail: ompa.lompa@gmail.com"}'
