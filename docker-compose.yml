@@ -19,7 +19,7 @@ services:
       - '8080'
       # Where our data will be persisted
     volumes:
-      - my-db:/var/lib/mysql
+      - users-db:/var/lib/mysql
 # Names our volume
 volumes:
-  user-db:
+  users-db:
