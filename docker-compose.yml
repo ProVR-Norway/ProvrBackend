@@ -1,6 +1,8 @@
 # Compose file format version 3.8 is for Docker version 19.03.0 and higher, aka it works for our Docker version: 20.10.2
 version: '3.8'
 services:
+
+
   db:
     image: mysql:8.0
     container_name: mysql-users-db
@@ -23,6 +25,8 @@ services:
       # Where our data will be persisted
     volumes:
       - users-db:/var/lib/mysql
+      
+      
   redis:
     image: "redis:alpine"
     command: redis-server --requirepass password
@@ -34,10 +38,31 @@ services:
       - '8080'
     volumes:
       - token-db:/var/lib/redis
+      
+      
+  auth-microservice:
+    build: ./auth-microservice
+    command: node server.js
+    container_name: auth-microservice
+    ports:
+       - '49162:8080'
+    expose:
+      - '8080'
+    #depends_on:
+    #  db:
+    #    condition: service_healthy
+    #  redis:
+    #    condition: service_healthy
+    volumes:
+      - ./auth-microservice:/app
+      
+      
 # Names our volume
 volumes:
   users-db:
   token-db:
+  #./auth-microservice:
+  
   
   
   
