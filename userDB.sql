@@ -10,7 +10,7 @@ CREATE TABLE `User`
  `userEmail` varchar(45) NOT NULL ,
  `password`  varchar(32) NOT NULL ,
 
-PRIMARY KEY (`userID`, `userEmail`, `password`)
+PRIMARY KEY (`userID`)
 );
 
 -- https://app.sqldbm.com/MySQL/Edit/p156955/
