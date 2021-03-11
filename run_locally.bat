@@ -1,6 +1,6 @@
 @echo off
 
-npm install
+call npm install
 
 echo "Building server-dockerimage"
 docker build -t provr-auth-microservice .
