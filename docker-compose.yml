@@ -1,0 +1,109 @@
+# Compose file format version 3.8 is for Docker version 19.03.0 and higher, aka it works for our Docker version: 20.10.2
+version: '3.8'
+services:
+
+
+  db:
+    image: mysql:8.0
+    container_name: mysql-users-db
+    #always restart when it is stopped by something (not manually stopped)
+    restart: always
+    environment:
+      MYSQL_DATABASE: 'users'
+      # So you don't have to use root, but you can if you like
+      MYSQL_USER: 'user'
+      # You can use whatever password you like
+      MYSQL_PASSWORD: 'password' # ${MYSQL_AUTH_MICROSERVICE_PASSWORD}
+      # Password for root access
+      MYSQL_ROOT_PASSWORD: 'password'
+    ports:
+      # <Port exposed> : < MySQL Port running inside container>
+      - '49160:8080'
+    expose:
+      # Opens port 8080 on the container
+      - '8080'
+      # Where our data will be persisted
+    volumes:
+      - users-db:/var/lib/mysql
+      
+      
+  redis:
+    image: "redis:alpine"
+    command: redis-server --requirepass password
+    container_name: redis-token-db
+    restart: always
+    ports:
+      - '49161:8080'
+    expose:
+      - '8080'
+    volumes:
+      - token-db:/var/lib/redis
+      
+      
+  auth-microservice:
+    build: ./auth-microservice
+    command: node server.js
+    container_name: auth-microservice
+    ports:
+       - '49162:8080'
+    expose:
+      - '8080'
+    #depends_on:
+    #  db:
+    #    condition: service_healthy
+    #  redis:
+    #    condition: service_healthy
+    volumes:
+      - ./auth-microservice:/app
+      
+      
+# Names our volume
+volumes:
+  users-db:
+  token-db:
+  #./auth-microservice:
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+      # Open docker exec cmd
+        # "docker exec -it db99f7d01e4a sh"
+            # Then "redis-cli" to open server
+                #auth password
+        
+    #We use redis SET (strings) because it is faster than lpush(list) (add, delete and check is O(1))
+    #https://hashnode.com/post/differences-between-lists-and-sets-in-redis-ciojr30i401g3lh5364dkoqwv
+    
+    # A token needs: userID and userEmail
+    #Each token generated is added to redis via SET "userID" "userEmail"
+    # SET syntax: "SET name "key" EX 3600"
+    # EX 3600 = token expires after 3600 seconds
+    # NX = Only set the key if it don't exist
+    
+    
+    
+    
+    # SET token1 "user1" EX 3600
+    # HMSET token1 userID "ID"
+    # HMSET token1 userEmail "ali.baba@gmail.com"
+    # HMGET token1 userID userEmail
+    # EXPIRE tokenname 60
+    # set token '{"userID: 1", "userEmail: ompa.lompa@gmail.com"}'
