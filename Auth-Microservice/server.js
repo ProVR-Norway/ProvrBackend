@@ -4,11 +4,19 @@ const express = require('express');
 
 // Constants
 const PORT = 8080;
-const HOST = '0.0.0.0';
+const HOST = 'localhost';
 
 // App
 const app = express();
-app.get('/', (req, res) => {
+app.get('/auth/login', (req, res) => {
+  res.send('Hello World');
+});
+
+app.get('/auth/register', (req, res) => {
+  res.send('Hello World');
+});
+
+app.get('/auth/auth_check', (req, res) => {
   res.send('Hello World');
 });
 
