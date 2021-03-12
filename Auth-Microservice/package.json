@@ -1,0 +1,13 @@
+{
+  "name": "provr-backend",
+  "version": "1.0.0",
+  "description": "Node.js on Docker",
+  "author": "ProVR",
+  "main": "app.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "express": "^4.16.1"
+  }
+}
