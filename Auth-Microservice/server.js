@@ -1,24 +1,23 @@
-'use strict';
-
 const express = require('express');
 
 // Constants
 const PORT = 8080;
-const HOST = 'localhost';
+// const HOST = 'localhost';
 
 // App
 const app = express();
-app.get('/auth/login', (req, res) => {
-  res.send('Hello World');
+
+var login = require('./handlers/login.js');
+var register = require('./handlers/register.js');
+var auth_check = require('./handlers/auth_check.js');
+
+app.use('/login', login);
+app.use('/register', register);
+app.use('/auth_check', auth_check);
+
+app.get('/', (req, res) => {
+  res.send('GET server');
 });
 
-app.get('/auth/register', (req, res) => {
-  res.send('Hello World');
-});
-
-app.get('/auth/auth_check', (req, res) => {
-  res.send('Hello World');
-});
-
-app.listen(PORT, HOST);
-console.log(`Running on http://${HOST}:${PORT}`);
+app.listen(PORT);
+// console.log(`Running on http://${HOST}:${PORT}`);
