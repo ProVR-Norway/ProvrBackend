@@ -7,17 +7,15 @@ const PORT = 8080;
 // App
 const app = express();
 
-var login = require('./handlers/login.js');
-var register = require('./handlers/register.js');
-var auth_check = require('./handlers/auth_check.js');
+const login = require('./handlers/login.js');
+const register = require('./handlers/register.js');
+const auth_check = require('./handlers/auth_check.js');
+const forgotten_password = require('./handlers/forgotten_password.js');
 
-app.use('/login', login);
-app.use('/register', register);
-app.use('/auth_check', auth_check);
-
-app.get('/', (req, res) => {
-  res.send('GET server');
-});
+app.use('/auth/login', login);
+app.use('/auth/register', register);
+app.use('/auth/auth_check', auth_check);
+app.use('/auth/forgotten_password', forgotten_password);
 
 app.listen(PORT);
 // console.log(`Running on http://${HOST}:${PORT}`);
