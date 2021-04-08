@@ -3,7 +3,7 @@ var router = express.Router();
 var crypto = require('crypto');
 //import * as eccryptoJS from 'eccrypto-js';
 
-// redis
+// Open connection to the redis
 const redis = require('redis');
 const client = redis.createClient({
     host: 'localhost',
@@ -11,7 +11,7 @@ const client = redis.createClient({
     password: 'password'
 });
 
-// MySQL
+// Open connection to the MySQL server
 var mysql = require('mysql8.0');
 var connection = mysql.createConnection({
   host     : 'localhost',
@@ -20,6 +20,7 @@ var connection = mysql.createConnection({
   password : 'password',
   database : 'users'
 });
+// Checks for any errors upon connecting to the server
 connection.connect(function(err){
 if(!err) {
     console.log("Database is connected ...");
@@ -36,12 +37,12 @@ router.get('/', function(req, res){
 });
 
 router.post('/', function(req, res){
-
+   // Object with all JSON key values from the request
    var users={
       "username":req.body.username,
       "password":req.body.password
    }
-   
+   // Sending a query to the MySQL server to find the user's password
    connection.query('SELECT password FROM User WHERE username = ?', users.username, function (error, results, fields) {
       if (error) {
          res.send({
@@ -49,6 +50,7 @@ router.post('/', function(req, res){
          "failed":"An error occured with the MySQL database"
          })
       }
+      // If there are a result we generate a token, stores it in redis and sends to the client
       else if (results.length > 0){
   
          if(results[0].password == users.password) {
@@ -68,6 +70,7 @@ router.post('/', function(req, res){
               "token":generated_token
             })
             }
+         // If the password is incorrect
          else {
             res.send({
                "code":400,
@@ -75,6 +78,7 @@ router.post('/', function(req, res){
             })
          }
       }
+      // If the username is invalid
       else {
          res.send({
             "code":400,

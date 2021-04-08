@@ -1,7 +1,7 @@
 var express = require('express');
 var router = express.Router();
 
-// MySQL
+// Open connection to the MySQL server
 var mysql = require('mysql8.0');
 var connection = mysql.createConnection({
   host     : 'localhost',
@@ -10,6 +10,7 @@ var connection = mysql.createConnection({
   password : 'password',
   database : 'users'
 });
+// Checks for any errors upon connecting to the server
 connection.connect(function(err){
 if(!err) {
     console.log("Database is connected ...");
@@ -26,13 +27,13 @@ router.get('/', function(req, res){
 });
 
 router.post('/', function(req, res){
-
+   // Object with all JSON key values from the request
    var users={
       "username":req.body.username,
       "userEmail":req.body.emailAddress,
       "password":req.body.password
    }
-
+   // Sending a query to the database to find all entries with the same username or email
    connection.query('SELECT * FROM User WHERE username = ? OR userEmail = ?', [users.username, users.userEmail], function (error, results, fields) {
       if (error) {
          res.send({
@@ -40,12 +41,14 @@ router.post('/', function(req, res){
             "failed":"An error occured with the MySQL database"
          })
       }
+      // If there are any results then we return status code 409
       else if (results.length > 0) {
          res.send({
             "code":409,
             "failed":"A user already exist with this email address or username"
          })
       } 
+      // If there are no user that already exist we create an account for the user
       else {
       connection.query('INSERT INTO User SET ?', users, function (error, results, fields) {
          if (error) {
