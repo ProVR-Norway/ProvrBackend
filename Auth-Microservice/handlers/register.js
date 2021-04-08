@@ -33,10 +33,10 @@ router.post('/', function(req, res){
       "password":req.body.password
    }
 
-   connection.query('SELECT * FROM User WHERE username = ? OR userEmail = ?', [req.body.username, req.body.emailAddress], function (error, results, fields) {
+   connection.query('SELECT * FROM User WHERE username = ? OR userEmail = ?', [users.username, users.userEmail], function (error, results, fields) {
       if (error) {
          res.send({
-            "code":400,
+            "code":406,
             "failed":"An error occured with the MySQL database"
          })
       }
