@@ -1,11 +1,11 @@
-const express = require('express');
-
+var express = require('express');
 // Constants
-const PORT = 8080;
+const PORT = 8090;
 // const HOST = 'localhost';
 
 // App
 const app = express();
+app.use(express.json({ limit: '50mb' }));
 
 const login = require('./handlers/login.js');
 const register = require('./handlers/register.js');

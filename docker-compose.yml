@@ -1,8 +1,6 @@
 # Compose file format version 3.8 is for Docker version 19.03.0 and higher, aka it works for our Docker version: 20.10.2
 version: '3.8'
 services:
-
-
   db:
     image: mysql:8.0
     container_name: mysql-users-db
@@ -18,10 +16,10 @@ services:
       MYSQL_ROOT_PASSWORD: 'password'
     ports:
       # <Port exposed> : < MySQL Port running inside container>
-      - '49160:8080'
+      - '49160:3306'
     expose:
-      # Opens port 8080 on the container
-      - '8080'
+      # Opens port 3306 on the container
+      - '3306' # MUST BE 3306!!!
       # Where our data will be persisted
     volumes:
       - users-db:/var/lib/mysql
