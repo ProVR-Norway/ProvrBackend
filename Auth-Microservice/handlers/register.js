@@ -14,15 +14,16 @@ connection.connect(function(err){
 if(!err) {
     console.log("Database is connected ...");
 } else {
-    console.log("Error when connecting to the MySQL database.");
+    console.log("Error when connecting to the MySQL database");
 }
 });
 
-/*
 router.get('/', function(req, res){
-   res.json({ message: 'welcome to our upload module apis' });
+   res.send({
+      "code":405,
+      "failed":"Only POST method is accepted"
+   })
 });
-*/
 
 router.post('/', function(req, res){
 
@@ -31,19 +32,35 @@ router.post('/', function(req, res){
       "userEmail":req.body.emailAddress,
       "password":req.body.password
    }
-   
-   connection.query('INSERT INTO User SET ?', users, function (error, results, fields) {
-     if (error) {
-       res.send({
-         "code":400,
-         "failed":"An error occured with the MySQL database"
-       })
-     } else {
-       res.send({
-         "code":200,
-         "success":"User registered sucessfully"
-           });
-       }
+
+   connection.query('SELECT * FROM User WHERE username = ? OR userEmail = ?', [req.body.username, req.body.emailAddress], function (error, results, fields) {
+      if (error) {
+         res.send({
+            "code":400,
+            "failed":"An error occured with the MySQL database"
+         })
+      }
+      else if (results.length > 0) {
+         res.send({
+            "code":409,
+            "failed":"A user already exist with this email address or username"
+         })
+      } 
+      else {
+      connection.query('INSERT INTO User SET ?', users, function (error, results, fields) {
+         if (error) {
+            res.send({
+               "code":400,
+               "failed":"An error occured with the MySQL database"
+            })
+         } else {
+            res.send({
+               "code":200,
+               "success":"Registration successful"
+               });
+            }
+         });
+      }
    });
 });
 /*
