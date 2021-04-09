@@ -24,11 +24,11 @@ jobs:
       
       - name: Build
         run: |
-          docker build -t gcr.io/${{ secrets.GCP_PROJECT_ID }}/Auth-Microservice
+          docker build -t gcr.io/${{ secrets.GCP_PROJECT_ID }}/auth-microservice
 
       - name: Push
         run: |
-          docker push gcr.io/${{ secrets.GCP_PROJECT_ID }}/Auth-Microservice
+          docker push gcr.io/${{ secrets.GCP_PROJECT_ID }}/auth-microservice
       
       #- name: Build
       #  run: |
@@ -36,9 +36,9 @@ jobs:
 
       - name: Deploy
         run: |
-          gcloud run deploy Auth-Microservice \
+          gcloud run deploy auth-microservice \
           --region europe-north1 \
-          --image gcr.io/${{ secrets.GCP_PROJECT_ID }}/Auth-Microservice \
+          --image gcr.io/${{ secrets.GCP_PROJECT_ID }}/auth-microservice \
           --platform managed \
           --allow-unauthenticated \
           --project ${{ secrets.GCP_PROJECT_ID }} \
