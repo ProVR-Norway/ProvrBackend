@@ -26,7 +26,7 @@ jobs:
         #with:
         #  repository: ProvrBackend/auth-microservice
         run: |
-          docker build -t gcr.io/${{ secrets.GCP_PROJECT_ID }}/auth-microservice .
+          docker build -t gcr.io/${{ secrets.GCP_PROJECT_ID }}/auth-microservice -f Auth-Microservice/Dockerfile.
 
       - name: Push
         run: |
