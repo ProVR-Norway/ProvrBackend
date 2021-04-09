@@ -11,6 +11,28 @@ const MYSQL_DATABASE = process.env.MYSQL_DATABASE;
 
 // Open connection to the MySQL server
 var mysql = require('mysql8.0');
+const createTcpPool = async config => {
+   // Establish a connection to the database
+   return await mysql.createPool({
+     user: MYSQL_USER,
+     password: MYSQL_PASSWORD,
+     database: MYSQL_DATABASE,
+     host: MYSQL_HOST,
+     port: MYSQL_PORT
+   });
+ };
+// Checks for any errors upon connecting to the server
+createTcpPool.connect(function(err){
+   if(!err) {
+       console.log("Database is connected ...");
+   } else {
+       console.log("Error when connecting to the MySQL database");
+   }
+});
+
+/*
+// Open connection to the MySQL server
+var mysql = require('mysql8.0');
 var connection = mysql.createConnection({
   host     : MYSQL_HOST, 
   port     : MYSQL_PORT,
@@ -26,6 +48,7 @@ if(!err) {
     console.log("Error when connecting to the MySQL database");
 }
 });
+*/
 
 router.get('/', function(req, res){
    res.send({

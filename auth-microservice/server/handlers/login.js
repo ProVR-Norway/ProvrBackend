@@ -4,9 +4,11 @@ var crypto = require('crypto');
 //import * as eccryptoJS from 'eccrypto-js';
 
 // CREDENTIALS STORED AS GITHUB SECRETS
+
 // Credentials redis
 const REDIS_HOST = process.env.REDIS_HOST; // IP of redis instance on Google Memorystore
 const REDIS_PORT = process.env.REDIS_PORT;
+
 // Credentials mysql8.0
 const MYSQL_HOST = process.env.MYSQL_HOST; // IP of MySQL instance on Google Cloud SQL
 const MYSQL_PORT = process.env.MYSQL_PORT;
@@ -24,6 +26,25 @@ client.on('error', err => console.error('Error when connecting to redis:', err))
 
 // Open connection to the MySQL server
 var mysql = require('mysql8.0');
+const createTcpPool = async config => {
+   // Establish a connection to the database
+   return await mysql.createPool({
+     user: MYSQL_USER,
+     password: MYSQL_PASSWORD,
+     database: MYSQL_DATABASE,
+     host: MYSQL_HOST,
+     port: MYSQL_PORT
+   });
+ };
+// Checks for any errors upon connecting to the server
+createTcpPool.connect(function(err){
+   if(!err) {
+       console.log("Database is connected ...");
+   } else {
+       console.log("Error when connecting to the MySQL database");
+   }
+});
+/*
 var connection = mysql.createConnection({
   host     : MYSQL_HOST, 
   port     : MYSQL_PORT,
@@ -39,7 +60,7 @@ if(!err) {
     console.log("Error when connecting to the MySQL database");
 }
 });
-
+*/
 router.get('/', function(req, res){
    res.send({
       "code":405,
@@ -54,7 +75,7 @@ router.post('/', function(req, res){
       "password":req.body.password
    }
    // Sending a query to the MySQL server to find the user's password
-   connection.query('SELECT password FROM User WHERE username = ?', users.username, function (error, results, fields) {
+   createTcpPool.query('SELECT password FROM User WHERE username = ?', users.username, function (error, results, fields) {
       if (error) {
          res.send({
          "code":406,
