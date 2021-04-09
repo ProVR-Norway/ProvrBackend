@@ -9,8 +9,8 @@ app.use(express.json({ limit: '50mb' }));
 
 const login = require('./handlers/login.js');
 const register = require('./handlers/register.js');
-const auth_check = require('./handlers/auth_check.js.js');
-const forgotten_password = require('./handlers/forgotten_password.js.js');
+const auth_check = require('./handlers/auth_check.js');
+const forgotten_password = require('./handlers/forgotten_password.js');
 
 app.use('/auth/login', login);
 app.use('/auth/register', register);
