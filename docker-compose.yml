@@ -21,10 +21,10 @@ services:
       # Opens port 3306 on the container
       - '3306' # MUST BE 3306!!!
       # Where our data will be persisted
+    command: --init-file /data/application/userDB.sql
     volumes:
-      - users-db:/var/lib/mysql
-      
-      
+      - userDB.sql:/data/application/userDB.sql
+          
   redis:
     image: "redis:alpine"
     command: redis-server --requirepass password
@@ -57,7 +57,7 @@ services:
       
 # Names our volume
 volumes:
-  users-db:
+  userDB.sql:
   token-db:
   #./auth-microservice:
   

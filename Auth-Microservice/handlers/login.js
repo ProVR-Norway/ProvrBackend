@@ -3,29 +3,40 @@ var router = express.Router();
 var crypto = require('crypto');
 //import * as eccryptoJS from 'eccrypto-js';
 
+// CREDENTIALS STORED AS GITHUB SECRETS
+// Credentials redis
+const REDIS_HOST = process.env.REDIS_HOST; // IP of redis instance on Google Memorystore
+const REDIS_PORT = process.env.REDIS_PORT;
+// Credentials mysql8.0
+const MYSQL_HOST = process.env.MYSQL_HOST; // IP of MySQL instance on Google Cloud SQL
+const MYSQL_PORT = process.env.MYSQL_PORT;
+const MYSQL_USER = process.env.MYSQL_USER;
+const MYSQL_PASSWORD = process.env.MYSQL_PASSWORD;
+const MYSQL_DATABASE = process.env.MYSQL_DATABASE;
+
 // Open connection to the redis
 const redis = require('redis');
 const client = redis.createClient({
-    host: 'localhost',
-    port: '49161',
-    password: 'password'
+   host: REDIS_HOST, 
+   port: REDIS_PORT
 });
+client.on('error', err => console.error('Error when connecting to redis:', err));
 
 // Open connection to the MySQL server
 var mysql = require('mysql8.0');
 var connection = mysql.createConnection({
-  host     : 'localhost',
-  port     : '49160',
-  user     : 'user',
-  password : 'password',
-  database : 'users'
+  host     : MYSQL_HOST, 
+  port     : MYSQL_PORT,
+  user     : MYSQL_USER,
+  password : MYSQL_PASSWORD,
+  database : MYSQL_DATABASE
 });
 // Checks for any errors upon connecting to the server
 connection.connect(function(err){
 if(!err) {
     console.log("Database is connected ...");
 } else {
-    console.log("Error when connecting to the MySQL database.");
+    console.log("Error when connecting to the MySQL database");
 }
 });
 
