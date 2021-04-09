@@ -24,6 +24,7 @@ const client = redis.createClient({
 });
 client.on('error', err => console.error('Error when connecting to redis:', err));
 
+/*
 // Open connection to the MySQL server
 const mysql = require('mysql8.0');
 const createTcpPool = mysql.createPool({
@@ -41,6 +42,7 @@ createTcpPool.on('error', function(err) {
    console.log('Error when connecting to the MySQL database' + err.message);
    throw err;
 });
+*/
 /*
 // Checks for any errors upon connecting to the server
 createTcpPool.connect(function(err){
@@ -51,8 +53,9 @@ createTcpPool.connect(function(err){
    }
 });
 */
-/*
-var connection = mysql.createConnection({
+// Open connection to the MySQL server
+const mysql = require('mysql8.0');
+const connection = mysql.createConnection({
   host     : MYSQL_HOST, 
   port     : MYSQL_PORT,
   user     : MYSQL_USER,
@@ -64,10 +67,10 @@ connection.connect(function(err){
 if(!err) {
     console.log("Database is connected ...");
 } else {
-    console.log("Error when connecting to the MySQL database");
+    console.log("Error when connecting to the MySQL database: " + err.message);
 }
 });
-*/
+
 router.get('/', function(req, res){
    res.send({
       "code":405,

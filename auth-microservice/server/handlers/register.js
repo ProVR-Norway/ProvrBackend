@@ -9,6 +9,7 @@ const MYSQL_USER = process.env.MYSQL_USER;
 const MYSQL_PASSWORD = process.env.MYSQL_PASSWORD;
 const MYSQL_DATABASE = process.env.MYSQL_DATABASE;
 
+/*
 // Open connection to the MySQL server
 const mysql = require('mysql8.0');
 const createTcpPool = mysql.createPool({
@@ -35,10 +36,10 @@ createTcpPool.connect(function(err){
    }
 });
 */
-/*
+
 // Open connection to the MySQL server
-var mysql = require('mysql8.0');
-var connection = mysql.createConnection({
+const mysql = require('mysql8.0');
+const connection = mysql.createConnection({
   host     : MYSQL_HOST, 
   port     : MYSQL_PORT,
   user     : MYSQL_USER,
@@ -50,10 +51,9 @@ connection.connect(function(err){
 if(!err) {
     console.log("Database is connected ...");
 } else {
-    console.log("Error when connecting to the MySQL database");
+    console.log("Error when connecting to the MySQL database: " + err.message);
 }
 });
-*/
 
 router.get('/', function(req, res){
    res.send({
