@@ -15,6 +15,6 @@ RUN npm install --production
 # RUN npm ci --only=production
 
 # Bundle app source
-COPY server .
+COPY auth-microservice/server .
 
 CMD [ "node", "server.js" ]
