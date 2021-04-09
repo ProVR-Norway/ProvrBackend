@@ -34,7 +34,7 @@ jobs:
       
       #- name: Build
       #  run: |
-      #    gcloud builds submit --tag gcr.io/${{ secrets.GCP_PROJECT_ID }}/Auth-Microservice
+      #    gcloud builds submit --tag gcr.io/${{ secrets.GCP_PROJECT_ID }}/auth-microservice
 
       - name: Deploy
         run: |
