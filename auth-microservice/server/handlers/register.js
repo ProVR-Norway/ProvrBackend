@@ -1,5 +1,5 @@
-var express = require('express');
-var router = express.Router();
+const express = require('express');
+const router = express.Router();
 
 // CREDENTIALS STORED AS GITHUB SECRETS
 // Credentials mysql8.0
@@ -10,17 +10,21 @@ const MYSQL_PASSWORD = process.env.MYSQL_PASSWORD;
 const MYSQL_DATABASE = process.env.MYSQL_DATABASE;
 
 // Open connection to the MySQL server
-var mysql = require('mysql8.0');
-const createTcpPool = async config => {
-   // Establish a connection to the database
-   return await mysql.createPool({
-     user: MYSQL_USER,
-     password: MYSQL_PASSWORD,
-     database: MYSQL_DATABASE,
-     host: MYSQL_HOST,
-     port: MYSQL_PORT
-   });
- };
+const mysql = require('mysql8.0');
+const createTcpPool = mysql.createPool({
+      user: MYSQL_USER,
+      password: MYSQL_PASSWORD,
+      database: MYSQL_DATABASE,
+      host: MYSQL_HOST,
+      port: MYSQL_PORT
+});
+createTcpPool.on('connection', function(connection) {
+   console.log('Connected to the MySQL database.');
+});
+createTcpPool.on('error', function(err) {
+   console.log('Error when connecting to the MySQL database' + err.message);
+   throw err;
+});
 /*
 // Checks for any errors upon connecting to the server
 createTcpPool.connect(function(err){
@@ -60,7 +64,7 @@ router.get('/', function(req, res){
 
 router.post('/', function(req, res){
    // Object with all JSON key values from the request
-   var users={
+   const users={
       "username":req.body.username,
       "userEmail":req.body.emailAddress,
       "password":req.body.password
