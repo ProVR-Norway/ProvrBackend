@@ -1,0 +1,16 @@
+{
+  "name": "provr-backend",
+  "version": "1.0.0",
+  "description": "Node.js on Docker",
+  "author": "ProVR",
+  "license": "MIT",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "express": "^4.16.1",
+    "mysql8.0": "^1.1.2",
+    "redis": "^3.1.0"
+  }
+}
