@@ -85,7 +85,7 @@ router.post('/', function(req, res){
       "password":req.body.password
    }
    // Sending a query to the MySQL server to find the user's password
-   createTcpPool.query('SELECT password FROM User WHERE username = ?', users.username, function (error, results, fields) {
+   connection.query('SELECT password FROM User WHERE username = ?', users.username, function (error, results, fields) {
       if (error) {
          res.send({
          "code":406,
