@@ -17,14 +17,26 @@ jobs:
           service_account_email: ${{ secrets.GCP_SA_EMAIL }}
           service_account_key: ${{ secrets.GCP_SA_KEY }}
           export_default_credentials: true
+          
+      - name: Configure Docker
+        run: |
+          gcloud auth configure-docker
       
       - name: Build
         run: |
-          gcloud builds submit --tag gcr.io/${{ secrets.GCP_PROJECT_ID }}/Auth-Microservice
+          docker build -t gcr.io/${{ secrets.GCP_PROJECT_ID }}/Auth-Microservice
+
+      - name: Push
+        run: |
+          docker push gcr.io/${{ secrets.GCP_PROJECT_ID }}/Auth-Microservice
+      
+      #- name: Build
+      #  run: |
+      #    gcloud builds submit --tag gcr.io/${{ secrets.GCP_PROJECT_ID }}/Auth-Microservice
 
       - name: Deploy
         run: |
-          gcloud run deploy helloworld \
+          gcloud run deploy Auth-Microservice \
           --region europe-north1 \
           --image gcr.io/${{ secrets.GCP_PROJECT_ID }}/Auth-Microservice \
           --platform managed \
