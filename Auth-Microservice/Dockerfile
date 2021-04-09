@@ -15,6 +15,6 @@ RUN npm install
 # RUN npm ci --only=production
 
 # Bundle app source
-COPY src .
+COPY server .
 
 CMD [ "node", "server.js" ]
