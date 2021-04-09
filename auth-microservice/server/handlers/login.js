@@ -36,6 +36,7 @@ const createTcpPool = async config => {
      port: MYSQL_PORT
    });
  };
+/*
 // Checks for any errors upon connecting to the server
 createTcpPool.connect(function(err){
    if(!err) {
@@ -44,6 +45,7 @@ createTcpPool.connect(function(err){
        console.log("Error when connecting to the MySQL database");
    }
 });
+*/
 /*
 var connection = mysql.createConnection({
   host     : MYSQL_HOST, 
