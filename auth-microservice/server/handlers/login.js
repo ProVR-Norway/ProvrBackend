@@ -1,6 +1,6 @@
-var express = require('express');
-var router = express.Router();
-var crypto = require('crypto');
+const express = require('express');
+const router = express.Router();
+const crypto = require('crypto');
 //import * as eccryptoJS from 'eccrypto-js';
 
 // CREDENTIALS STORED AS GITHUB SECRETS
@@ -25,17 +25,22 @@ const client = redis.createClient({
 client.on('error', err => console.error('Error when connecting to redis:', err));
 
 // Open connection to the MySQL server
-var mysql = require('mysql8.0');
-const createTcpPool = async config => {
-   // Establish a connection to the database
-   return await mysql.createPool({
-     user: MYSQL_USER,
-     password: MYSQL_PASSWORD,
-     database: MYSQL_DATABASE,
-     host: MYSQL_HOST,
-     port: MYSQL_PORT
-   });
- };
+const mysql = require('mysql8.0');
+const createTcpPool = mysql.createPool({
+      user: MYSQL_USER,
+      password: MYSQL_PASSWORD,
+      database: MYSQL_DATABASE,
+      host: MYSQL_HOST,
+      port: MYSQL_PORT
+});
+createTcpPool.on('connection', function(connection) {
+   console.log('Connected to the MySQL database.');
+});
+
+createTcpPool.on('error', function(err) {
+   console.log('Error when connecting to the MySQL database' + err.message);
+   throw err;
+});
 /*
 // Checks for any errors upon connecting to the server
 createTcpPool.connect(function(err){
@@ -72,7 +77,7 @@ router.get('/', function(req, res){
 
 router.post('/', function(req, res){
    // Object with all JSON key values from the request
-   var users={
+   const users={
       "username":req.body.username,
       "password":req.body.password
    }
