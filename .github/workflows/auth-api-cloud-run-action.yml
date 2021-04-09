@@ -24,7 +24,7 @@ jobs:
       
       - name: Build
         run: |
-          docker build -t gcr.io/${{ secrets.GCP_PROJECT_ID }}/auth-microservice
+          docker build -t gcr.io/${{ secrets.GCP_PROJECT_ID }}/auth-microservice .
 
       - name: Push
         run: |
