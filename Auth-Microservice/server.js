@@ -1,23 +1,21 @@
-const express = require('express');
-
+var express = require('express');
 // Constants
-const PORT = 8080;
+const PORT = 8090;
 // const HOST = 'localhost';
 
 // App
 const app = express();
+app.use(express.json({ limit: '50mb' }));
 
-var login = require('./handlers/login.js');
-var register = require('./handlers/register.js');
-var auth_check = require('./handlers/auth_check.js');
+const login = require('./handlers/login.js');
+const register = require('./handlers/register.js');
+const auth_check = require('./handlers/auth_check.js');
+const forgotten_password = require('./handlers/forgotten_password.js');
 
-app.use('/login', login);
-app.use('/register', register);
-app.use('/auth_check', auth_check);
-
-app.get('/', (req, res) => {
-  res.send('GET server');
-});
+app.use('/auth/login', login);
+app.use('/auth/register', register);
+app.use('/auth/auth_check', auth_check);
+app.use('/auth/forgotten_password', forgotten_password);
 
 app.listen(PORT);
 // console.log(`Running on http://${HOST}:${PORT}`);
