@@ -1,0 +1,14 @@
+{
+    "name": "api-gateway",
+    "version": "1.0.0",
+    "description": "Public API Gateway that will forward requests to the private services on GCP.",
+    "author": "ProVR",
+    "license": "MIT",
+    "main": "server.js",
+    "scripts": {
+      "start": "node ./server.js"
+    },
+    "dependencies": {
+      "express": "^4.16.1"
+    }
+  }

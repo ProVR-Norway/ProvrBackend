@@ -89,7 +89,7 @@ router.post('/', function(req, res){
       if (error) {
          res.send({
          "code":406,
-         "failed":"An error occured with the MySQL database"
+         "failed":"An error occured with the MySQL database: " + error.message,
          })
       }
       // If there are a result we generate a token, stores it in redis and sends to the client
@@ -102,7 +102,7 @@ router.post('/', function(req, res){
                if (err){
                   res.send({
                      "code":406,
-                     "failed":"An error occured with redis"
+                     "failed":"An error occured with redis: " + err.message,
                   })
                };
             })
