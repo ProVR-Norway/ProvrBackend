@@ -3,7 +3,7 @@ name: publish
 on:
   push:
     branches:
-      - master
+      - development
 
 jobs:
   build:
@@ -26,26 +26,23 @@ jobs:
           gcloud auth configure-docker
       
       - name: Build
-        #with:
-        #  repository: ProvrBackend/auth-microservice
         run: |
-          docker build -t gcr.io/${{ secrets.GCP_PROJECT_ID }}/auth-microservice -f auth-microservice/Dockerfile .
+          docker build -t gcr.io/${{ secrets.GCP_PROJECT_ID }}/api-gateway -f api-gateway/Dockerfile .
 
       - name: Push
         run: |
-          docker push gcr.io/${{ secrets.GCP_PROJECT_ID }}/auth-microservice
-      
+          docker push gcr.io/${{ secrets.GCP_PROJECT_ID }}/api-gateway
       #- name: Build
       #  run: |
       #    gcloud builds submit --tag gcr.io/${{ secrets.GCP_PROJECT_ID }}/auth-microservice
 
       - name: Deploy
         run: |
-          gcloud run deploy auth-microservice \
+          gcloud run deploy api-gateway \
           --region europe-north1 \
-          --image gcr.io/${{ secrets.GCP_PROJECT_ID }}/auth-microservice \
+          --image gcr.io/${{ secrets.GCP_PROJECT_ID }}/api-gateway \
           --platform managed \
           --allow-unauthenticated \
           --project ${{ secrets.GCP_PROJECT_ID }} \
-          --vpc-connector ${{ secrets.GCP_VCP_CONNECTOR }} \
-          --set-env-vars REDIS_HOST=${{ secrets.REDIS_AUTH_MICROSERVICE_HOST }},REDIS_PORT=${{ secrets.REDIS_AUTH_MICROSERVICE_PORT }},MYSQL_HOST=${{ secrets.MYSQL_AUTH_MICROSERVICE_HOST }},MYSQL_PORT=${{ secrets.MYSQL_AUTH_MICROSERVICE_PORT }},MYSQL_USER=${{ secrets.MYSQL_AUTH_MICROSERVICE_USERNAME }},MYSQL_PASSWORD=${{ secrets.MYSQL_AUTH_MICROSERVICE_PASSWORD }},MYSQL_DATABASE=${{ secrets.MYSQL_AUTH_MICROSERVICE_DATABASE }}
+          --set-env-vars URL_AUTH_MICROSERVICE=${{ secrets.URL_AUTH_MICROSERVICE }}
+
