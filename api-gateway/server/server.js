@@ -23,6 +23,7 @@ app.use('/auth', async (req, res, next) => {
     // Fetch the token, then provide the token in the request to the receiving service
     request(tokenRequestOptions)
     .then((token) => {
+        console.log("Fetched token: " + token);
         auth_token = token;//proxyReq.setHeader('Authorization: ', 'Bearer ' + token);
     })
     .then((response) => {
