@@ -37,6 +37,7 @@ app.use('/auth', async (req, res, next) => {
 app.use('/auth', createProxyMiddleware({
     target: authApiServiceURL,
     onProxyReq: function (proxyReq, req, res) {
+        console.log(auth_token);
         proxyReq.setHeader('Authorization: ', 'Bearer ' + auth_token);
     }
 }));
