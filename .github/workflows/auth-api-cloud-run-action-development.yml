@@ -42,7 +42,7 @@ jobs:
           --region europe-north1 \
           --image gcr.io/${{ secrets.GCP_PROJECT_ID }}/auth-microservice-development \
           --platform managed \
-          --allow-unauthenticated \
+          --no-allow-unauthenticated \
           --project ${{ secrets.GCP_PROJECT_ID }} \
           --vpc-connector ${{ secrets.GCP_VCP_CONNECTOR }} \
           --set-env-vars REDIS_HOST=${{ secrets.REDIS_AUTH_MICROSERVICE_HOST }},REDIS_PORT=${{ secrets.REDIS_AUTH_MICROSERVICE_PORT }},MYSQL_HOST=${{ secrets.MYSQL_AUTH_MICROSERVICE_HOST }},MYSQL_PORT=${{ secrets.MYSQL_AUTH_MICROSERVICE_PORT }},MYSQL_USER=${{ secrets.MYSQL_AUTH_MICROSERVICE_USERNAME }},MYSQL_PASSWORD=${{ secrets.MYSQL_AUTH_MICROSERVICE_PASSWORD }},MYSQL_DATABASE=${{ secrets.MYSQL_AUTH_MICROSERVICE_DATABASE }}
