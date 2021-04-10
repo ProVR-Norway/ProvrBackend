@@ -10,10 +10,10 @@ const authApiServiceURL = process.env.URL_AUTH_MICROSERVICE; //https://auth-micr
 // See https://cloud.google.com/compute/docs/instances/verifying-instance-identity#request_signature
 const metadataServerTokenURL = 'http://metadata/computeMetadata/v1/instance/service-accounts/default/identity?audience=';
 
-var auth_token;
+//var auth_token;
 
 app.use('/auth', async (req, res, next) => {
-
+    console.log("Proxy to fetch token.");
     const tokenRequestOptions = {
         uri: metadataServerTokenURL + authApiServiceURL,
         headers: {
@@ -21,10 +21,10 @@ app.use('/auth', async (req, res, next) => {
         }
     };
     // Fetch the token, then provide the token in the request to the receiving service
-    request(tokenRequestOptions)
+    await request(tokenRequestOptions)
     .then((token) => {
         console.log("Fetched token: " + token);
-        auth_token = token;//proxyReq.setHeader('Authorization: ', 'Bearer ' + token);
+        req.setHeader('Authorization: ', 'Bearer ' + token);
     })
     .then((response) => {
         res.status(200).send(response);
@@ -38,8 +38,9 @@ app.use('/auth', async (req, res, next) => {
 app.use('/auth', createProxyMiddleware({
     target: authApiServiceURL,
     onProxyReq: function (proxyReq, req, res) {
-        console.log(auth_token);
-        proxyReq.setHeader('Authorization: ', 'Bearer ' + auth_token);
+        console.log("onProxyReq.");
+        //console.log(auth_token);
+        //proxyReq.setHeader('Authorization: ', 'Bearer ' + auth_token);
     }
 }));
 
