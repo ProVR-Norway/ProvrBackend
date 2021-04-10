@@ -40,6 +40,7 @@ app.use('/auth', createProxyMiddleware({
     onProxyReq: function (proxyReq, req, res) {
         console.log("onProxyReq.");
         proxyReq.setHeader('Authorization', 'Bearer ' + auth_token);
+        console.log(JSON.stringify(proxyReq.headers));
         //console.log(auth_token);
         //proxyReq.setHeader('Authorization: ', 'Bearer ' + auth_token);
     }
