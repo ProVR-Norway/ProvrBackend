@@ -74,7 +74,7 @@ router.post('/', function(req, res){
       if (error) {
          res.send({
             "code":406,
-            "failed":"An error occured with the MySQL database"
+            "failed":"An error occured with the MySQL database: " + error.message
          })
       }
       // If there are any results then we return status code 409
@@ -90,7 +90,7 @@ router.post('/', function(req, res){
          if (error) {
             res.send({
                "code":400,
-               "failed":"An error occured with the MySQL database"
+               "failed":"An error occured with the MySQL database: " + error.message
             })
          } else {
             res.send({
