@@ -1,5 +1,6 @@
 const express = require('express');
 const request = require('request-promise');
+var session = require('express-session')
 const { createProxyMiddleware } = require('http-proxy-middleware');
 
 const app = express();
@@ -10,10 +11,12 @@ const authApiServiceURL = process.env.URL_AUTH_MICROSERVICE; //https://auth-micr
 // See https://cloud.google.com/compute/docs/instances/verifying-instance-identity#request_signature
 const metadataServerTokenURL = 'http://metadata/computeMetadata/v1/instance/service-accounts/default/identity?audience=';
 
-var auth_token;
+//var auth_token;
 
 app.use('/auth', async (req, res, next) => {
     console.log("Proxy to fetch token.");
+    console.log("First handler body: " + JSON.stringify(req.body));
+    console.log("First handler header: " + JSON.stringify(req.headers));
     const tokenRequestOptions = {
         uri: metadataServerTokenURL + authApiServiceURL,
         headers: {
@@ -24,7 +27,8 @@ app.use('/auth', async (req, res, next) => {
     await request(tokenRequestOptions)
     .then((token) => {
         console.log("Fetched token: " + token);
-        auth_token = token;
+        req.session.token = token;
+        next()
     })
     .then((response) => {
         res.status(200).send(response);
@@ -32,20 +36,26 @@ app.use('/auth', async (req, res, next) => {
     .catch((error) => {
         res.status(400).send(error);
     });
-    next()
 })
 
 app.use('/auth', createProxyMiddleware({
     target: authApiServiceURL,
     onProxyReq: function (proxyReq, req, res) {
         console.log("onProxyReq.");
-        proxyReq.setHeader('Authorization', 'Bearer ' + auth_token);
-        console.log(req.get(headerName));
-        //console.log(JSON.stringify(proxyReq.headers));
+        console.log("Second handler body: " + JSON.stringify(req.body));
+        console.log("Second handler header: " + JSON.stringify(req.headers));
+        const fetched_token = req.session.token;
+        console.log("Session token: " + fetched_token);
+        proxyReq.setHeader('Authorization', 'Bearer ' + fetched_token);
+        //console.log(req.get(headerName));
+        console.log("Second handler proxy body: " + JSON.stringify(proxyReq.body));
+        console.log("Second handler proxy body" + JSON.stringify(proxyReq.headers));
         //console.log(auth_token);
         //proxyReq.setHeader('Authorization: ', 'Bearer ' + auth_token);
     }
 }));
+
+app.listen(8080);
 
 /*
 app.use('/login', createProxyMiddleware({
@@ -64,5 +74,3 @@ httpProxy.createProxyServer({
     target:'https://auth-microservice-s6rss6nenq-lz.a.run.app'
 }).listen(8000); // See (†)
 */
-
-app.listen(8080);
