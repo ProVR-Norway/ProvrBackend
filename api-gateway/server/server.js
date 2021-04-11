@@ -28,6 +28,7 @@ app.use('/auth', async (req, res, next) => {
     .then((token) => {
         console.log("Fetched token: " + token);
         req.setHeader('Authorization', 'Bearer ' + fetched_token);
+        console.log("First handler header with authorisation: " + JSON.stringify(req.headers));
     })
     .then((response) => {
         res.status(200).send(response);
@@ -45,13 +46,13 @@ app.use('/auth', createProxyMiddleware({
         console.log("Second handler body: " + JSON.stringify(req.body));
         console.log("Second handler header: " + JSON.stringify(req.headers));
         console.log("Second handler proxy body: " + JSON.stringify(proxyReq.body));
-        console.log("Second handler proxy body" + JSON.stringify(proxyReq.headers));
+        console.log("Second handler proxy header: " + JSON.stringify(proxyReq.headers));
         const fetched_token = req.headers['Authorization'];
         console.log("Session token: " + fetched_token);
         proxyReq.setHeader('Authorization', 'Bearer ' + fetched_token);
         //console.log(req.get(headerName));
         console.log("Second handler proxy body: " + JSON.stringify(proxyReq.body));
-        console.log("Second handler proxy body" + JSON.stringify(proxyReq.headers));
+        console.log("Second handler proxy header: " + JSON.stringify(proxyReq.headers));
         //console.log(auth_token);
         //proxyReq.setHeader('Authorization: ', 'Bearer ' + auth_token);
     }
