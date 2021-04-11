@@ -13,7 +13,7 @@ const metadataServerTokenURL = 'http://metadata/computeMetadata/v1/instance/serv
 
 //var auth_token;
 
-app.use('/auth', async (req, res, next) => {
+app.post('/auth', async (req, res, next) => {
     console.log("Proxy to fetch token.");
     console.log("First handler body: " + JSON.stringify(req.body));
     console.log("First handler header: " + JSON.stringify(req.headers));
@@ -39,7 +39,7 @@ app.use('/auth', async (req, res, next) => {
     next()
 })
 
-app.use('/auth', createProxyMiddleware({
+app.post('/auth', createProxyMiddleware({
     target: authApiServiceURL,
     onProxyReq: function (proxyReq, req, res) {
         console.log("onProxyReq.");
