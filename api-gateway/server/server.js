@@ -28,7 +28,6 @@ app.use('/auth', async (req, res, next) => {
     .then((token) => {
         console.log("Fetched token: " + token);
         req.session.token = token;
-        next()
     })
     .then((response) => {
         res.status(200).send(response);
@@ -36,6 +35,7 @@ app.use('/auth', async (req, res, next) => {
     .catch((error) => {
         res.status(400).send(error);
     });
+    next()
 })
 
 app.use('/auth', createProxyMiddleware({
