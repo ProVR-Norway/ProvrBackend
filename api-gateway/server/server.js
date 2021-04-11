@@ -11,9 +11,9 @@ const authApiServiceURL = process.env.URL_AUTH_MICROSERVICE; //https://auth-micr
 // See https://cloud.google.com/compute/docs/instances/verifying-instance-identity#request_signature
 const metadataServerTokenURL = 'http://metadata/computeMetadata/v1/instance/service-accounts/default/identity?audience=';
 
-//var auth_token;
+var auth_token;
 
-app.post('/auth', async (req, res, next) => {
+app.use('/auth', async (req, res, next) => {
     console.log("Proxy to fetch token.");
     console.log("First handler body: " + JSON.stringify(req.body));
     console.log("First handler header: " + JSON.stringify(req.headers));
@@ -27,8 +27,7 @@ app.post('/auth', async (req, res, next) => {
     await request(tokenRequestOptions)
     .then((token) => {
         console.log("Fetched token: " + token);
-        req.setHeader('Authorization', 'Bearer ' + fetched_token);
-        console.log("First handler header with authorisation: " + JSON.stringify(req.headers));
+        auth_token = token;
     })
     .then((response) => {
         res.status(200).send(response);
@@ -39,7 +38,7 @@ app.post('/auth', async (req, res, next) => {
     next()
 })
 
-app.post('/auth', createProxyMiddleware({
+app.use('/auth', createProxyMiddleware({
     target: authApiServiceURL,
     onProxyReq: function (proxyReq, req, res) {
         console.log("onProxyReq.");
@@ -47,9 +46,11 @@ app.post('/auth', createProxyMiddleware({
         console.log("Second handler header: " + JSON.stringify(req.headers));
         console.log("Second handler proxy body: " + JSON.stringify(proxyReq.body));
         console.log("Second handler proxy header: " + JSON.stringify(proxyReq.headers));
-        const fetched_token = req.headers['Authorization'];
-        console.log("Session token: " + fetched_token);
-        proxyReq.setHeader('Authorization', 'Bearer ' + fetched_token);
+        //const fetched_token = req.headers['Authorization'];
+        //console.log("Session token: " + auth_token);
+        //proxyReq.setHeader('Authorization', 'Bearer ' + auth_token);
+        proxyReq.headers = req.headers;
+        proxyReq.setHeader('Authorization', 'Bearer ' + auth_token);
         //console.log(req.get(headerName));
         console.log("Second handler proxy body: " + JSON.stringify(proxyReq.body));
         console.log("Second handler proxy header: " + JSON.stringify(proxyReq.headers));
