@@ -15,7 +15,7 @@ const metadataServerTokenURL = 'http://metadata/computeMetadata/v1/instance/serv
 
 app.use('/auth', async (req, res, next) => {
     console.log("Proxy to fetch token.");
-    console.log("First handler body: " + JSON.stringify(req.body.username));
+    console.log("First handler body: " + JSON.stringify(req.body));
     console.log("First handler header: " + JSON.stringify(req.headers));
     const tokenRequestOptions = {
         uri: metadataServerTokenURL + authApiServiceURL,
@@ -42,13 +42,15 @@ app.use('/auth', createProxyMiddleware({
     target: authApiServiceURL,
     onProxyReq: function (proxyReq, req, res) {
         console.log("onProxyReq.");
-        console.log("Second handler body: " + JSON.stringify(req.username));
+        console.log("Second handler body: " + JSON.stringify(req.body));
         console.log("Second handler header: " + JSON.stringify(req.headers));
+        console.log("Second handler proxy body: " + JSON.stringify(proxyReq.body));
+        console.log("Second handler proxy body" + JSON.stringify(proxyReq.headers));
         const fetched_token = req.headers['Authorization'];
         console.log("Session token: " + fetched_token);
         proxyReq.setHeader('Authorization', 'Bearer ' + fetched_token);
         //console.log(req.get(headerName));
-        console.log("Second handler proxy body: " + JSON.stringify(proxyReq.username));
+        console.log("Second handler proxy body: " + JSON.stringify(proxyReq.body));
         console.log("Second handler proxy body" + JSON.stringify(proxyReq.headers));
         //console.log(auth_token);
         //proxyReq.setHeader('Authorization: ', 'Bearer ' + auth_token);
