@@ -43,25 +43,17 @@ router.post('/', function(req, res){
 
       // If we successfully get the generated_token 
       else if (generated_token.length > 0) {
-         if () {
-            res.send({
-               "code":200,
-               "success":"Token-path access-check was successful; the token is authorized for the path.",
-             })
-         }
-         else {
-            res.send({
-               "code":401,
-               "failed":"Unauthorized. Please re-login.",
-            })
-         }
+         res.send({
+            "code":200,
+            "success":"Token-path access-check was successful; the token is authorized for the path.",
+          })
       }
 
       // If the user does not exist, or the user has no generated_token
       else {
          res.send({
-            "code":400,
-            "failed":"Invalid username or no valid token.",
+            "code":401,
+            "failed":"Unauthorized. Please re-login.",
          })
       }
 
