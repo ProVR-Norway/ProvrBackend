@@ -2,11 +2,11 @@
 
 const express = require('express');
 const request = require('request-promise');
-const bodyParser = require('body-parser');
+//const bodyParser = require('body-parser');
 const { createProxyMiddleware } = require('http-proxy-middleware');
 
 const app = express();
-//app.use(bodyParser.json());
+app.use(express.json());
 
 const authApiServiceURL = process.env.URL_AUTH_MICROSERVICE; ////'https://auth-microservice-s6rss6nenq-lz.a.run.app' 
 
@@ -51,7 +51,7 @@ app.use('/auth', createProxyMiddleware({
         //console.log("Session token: " + auth_token);
         //proxyReq.setHeader('Authorization', 'Bearer ' + auth_token);
         //req.headers['Authorization'] = 'Bearer ' + res.locals.token;
-        //proxyReq.headers = req.headers;
+        proxyReq.headers = req.headers;
         if(req.body) {
             let bodyData = JSON.stringify(req.body);
             // In case if content-type is application/x-www-form-urlencoded -> we need to change to application/json
