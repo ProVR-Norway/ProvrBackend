@@ -62,6 +62,12 @@ app.use('/auth', createProxyMiddleware({
         console.log("Second handler proxy header: " + JSON.stringify(proxyReq.headers));
         //console.log(auth_token);
         //proxyReq.setHeader('Authorization: ', 'Bearer ' + auth_token);
+    },
+    onProxyRes: function(proxyRes, req, res) {
+        console.log('proxyRes body' + JSON.stringify(proxyRes.body));
+        console.log('res body' + JSON.stringify(res.body));
+        proxyRes.body = res.body;
+        console.log('proxyRes body' + JSON.stringify(proxyRes.body));
     }
 }));
 
