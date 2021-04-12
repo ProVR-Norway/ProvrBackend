@@ -3,7 +3,7 @@ const request = require('request-promise');
 const { createProxyMiddleware } = require('http-proxy-middleware');
 
 const app = express();
-app.use(bodyParser.json());
+//app.use(bodyParser.json());
 
 const authApiServiceURL = process.env.URL_AUTH_MICROSERVICE; //https://auth-microservice-s6rss6nenq-lz.a.run.app
 
