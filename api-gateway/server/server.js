@@ -70,7 +70,15 @@ app.use('/auth/**', createProxyMiddleware({
         console.log('res body' + JSON.stringify(res.body));
         proxyRes.body = res.body;
         console.log('proxyRes body' + JSON.stringify(proxyRes.body));
-    }
+    },
+    onError: function(err, req, res) {
+        res.writeHead(500, {
+          'Content-Type': 'text/plain'
+        });
+        res.end(
+          'Something went wrong when communicating with the requested service.'
+        );
+      }
 }));
 
 app.listen(8080);
