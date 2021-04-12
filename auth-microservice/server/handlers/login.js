@@ -94,8 +94,9 @@ router.post('/', function(req, res){
       }
       // If there are a result we generate a token, stores it in redis and sends to the client
       else if (results.length > 0){
-  
-         if(results[0].password == users.password) {
+         // If the password is correct we generate and store a token
+         // Remember: we should use "===" and not "=="
+         if(results[0].password === users.password) {
             const generated_token = crypto.randomBytes(32).toString('hex');
             //const encrypted_token = ;
             client.set(users.username, generated_token, 'EX', '1800', (err, reply) => {
