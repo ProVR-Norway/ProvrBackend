@@ -47,7 +47,7 @@ app.use('/auth', createProxyMiddleware({
         //const fetched_token = req.headers['Authorization'];
         //console.log("Session token: " + auth_token);
         //proxyReq.setHeader('Authorization', 'Bearer ' + auth_token);
-        //proxyReq.headers = req.headers;
+        proxyReq.headers = req.headers;
         proxyReq.headers['Authorization'] = 'Bearer ' + res.locals.token;
         //console.log(req.get(headerName));
         console.log("Second handler proxy body: " + JSON.stringify(proxyReq.body));
