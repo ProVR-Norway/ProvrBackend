@@ -42,6 +42,7 @@ app.use('/auth/**', async (req, res, next) => {
 app.use('/auth/**', createProxyMiddleware({
     target: authApiServiceURL,
     changeOrigin: true,
+    secure: true,
     onProxyReq: function (proxyReq, req, res) {
         console.log("onProxyReq.");
         console.log("Second handler body: " + JSON.stringify(req.body));
