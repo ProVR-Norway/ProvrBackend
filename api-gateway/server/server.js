@@ -45,18 +45,16 @@ app.use('/auth', createProxyMiddleware({
         console.log("onProxyReq.");
         console.log("Second handler body: " + JSON.stringify(req.body));
         console.log("Second handler header: " + JSON.stringify(req.headers));
-        console.log("Second handler proxy body: " + JSON.stringify(proxyReq.body));
-        console.log("Second handler proxy header: " + JSON.stringify(proxyReq.headers));
         //const fetched_token = req.headers['Authorization'];
         //console.log("Session token: " + auth_token);
         //proxyReq.setHeader('Authorization', 'Bearer ' + auth_token);
         //req.headers['Authorization'] = 'Bearer ' + res.locals.token;
         proxyReq.headers = req.headers;
         if(req.body) {
-            let bodyData = JSON.stringify(req.body);
+            //let bodyData = JSON.stringify(req.body);
             // In case if content-type is application/x-www-form-urlencoded -> we need to change to application/json
             // Stream the content
-            proxyReq.body = bodyData;
+            proxyReq.body = req.body;
         }
         proxyReq.headers['authorization'] = 'bearer ' + res.locals.token;
         //console.log(req.get(headerName));
