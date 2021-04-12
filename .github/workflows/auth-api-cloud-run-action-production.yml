@@ -42,7 +42,7 @@ jobs:
       - name: Deploy
         run: |
           gcloud run deploy auth-microservice \
-          --region europe-north1 \
+          --region ${{ secrets.GCP_REGION }} \
           --image gcr.io/${{ secrets.GCP_PROJECT_ID }}/auth-microservice \
           --platform managed \
           --allow-unauthenticated \
