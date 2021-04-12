@@ -39,7 +39,7 @@ jobs:
       - name: Deploy
         run: |
           gcloud run deploy api-gateway \
-          --region europe-north1 \
+          --region ${{ secrets.GCP_REGION }} \
           --image gcr.io/${{ secrets.GCP_PROJECT_ID }}/api-gateway \
           --platform managed \
           --allow-unauthenticated \
