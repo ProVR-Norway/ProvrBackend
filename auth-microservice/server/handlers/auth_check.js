@@ -32,6 +32,14 @@ router.post('/', function(req, res){
       "password":req.body.password
    }
 
+   /* STEP BY STEP AUTH_CHECK
+      1. We want to check if a user has a valid token
+      2. We send a get request to fetch a user's token from the redis database
+      3. If a token is retrieved (token != nil), the user has a valid token
+      4. If no token is retrieved, the user is not authenticated and must re-login
+   */
+
+
    // Get generated_token from user in redis database
    client.get(users.username, generated_token, (err, reply) => {
       if (err){
