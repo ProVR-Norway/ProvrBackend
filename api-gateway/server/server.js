@@ -1,9 +1,9 @@
 'use strict';
 
 const express = require('express');
+const { createProxyMiddleware } = require('http-proxy-middleware');
 const request = require('request-promise');
 //const bodyParser = require('body-parser');
-const { createProxyMiddleware } = require('http-proxy-middleware');
 
 const app = express();
 app.use(express.json());
@@ -14,7 +14,7 @@ const authApiServiceURL = process.env.URL_AUTH_MICROSERVICE; ////'https://auth-m
 // See https://cloud.google.com/compute/docs/instances/verifying-instance-identity#request_signature
 const metadataServerTokenURL = 'http://metadata/computeMetadata/v1/instance/service-accounts/default/identity?audience=';
 
-app.use('/auth', async (req, res, next) => {
+app.use('/auth/**', async (req, res, next) => {
     console.log("Proxy to fetch token.");
     console.log("First handler body: " + JSON.stringify(req.body));
     console.log("First handler header: " + JSON.stringify(req.headers));
@@ -39,8 +39,9 @@ app.use('/auth', async (req, res, next) => {
     next()
 })
 
-app.use('/auth', createProxyMiddleware({
+app.use('/auth/**', createProxyMiddleware({
     target: authApiServiceURL,
+    changeOrigin: true,
     onProxyReq: function (proxyReq, req, res) {
         console.log("onProxyReq.");
         console.log("Second handler body: " + JSON.stringify(req.body));
