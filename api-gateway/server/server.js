@@ -1,9 +1,9 @@
 const express = require('express');
 const request = require('request-promise');
-var session = require('express-session')
 const { createProxyMiddleware } = require('http-proxy-middleware');
 
 const app = express();
+app.use(bodyParser.json());
 
 const authApiServiceURL = process.env.URL_AUTH_MICROSERVICE; //https://auth-microservice-s6rss6nenq-lz.a.run.app
 
@@ -47,8 +47,8 @@ app.use('/auth', createProxyMiddleware({
         //const fetched_token = req.headers['Authorization'];
         //console.log("Session token: " + auth_token);
         //proxyReq.setHeader('Authorization', 'Bearer ' + auth_token);
-        proxyReq.headers = req.headers;
-        proxyReq.setHeader('Authorization', 'Bearer ' + res.locals.token);
+        //proxyReq.headers = req.headers;
+        proxyReq.headers['Authorization'] = 'Bearer ' + res.locals.token;
         //console.log(req.get(headerName));
         console.log("Second handler proxy body: " + JSON.stringify(proxyReq.body));
         console.log("Second handler proxy header: " + JSON.stringify(proxyReq.headers));
