@@ -1,11 +1,14 @@
+'use strict';
+
 const express = require('express');
 const request = require('request-promise');
+const bodyParser = require('body-parser');
 const { createProxyMiddleware } = require('http-proxy-middleware');
 
 const app = express();
 //app.use(bodyParser.json());
 
-const authApiServiceURL = process.env.URL_AUTH_MICROSERVICE; //https://auth-microservice-s6rss6nenq-lz.a.run.app
+const authApiServiceURL = process.env.URL_AUTH_MICROSERVICE; ////'https://auth-microservice-s6rss6nenq-lz.a.run.app' 
 
 // Set up metadata server request
 // See https://cloud.google.com/compute/docs/instances/verifying-instance-identity#request_signature
@@ -47,9 +50,17 @@ app.use('/auth', createProxyMiddleware({
         //const fetched_token = req.headers['Authorization'];
         //console.log("Session token: " + auth_token);
         //proxyReq.setHeader('Authorization', 'Bearer ' + auth_token);
-        req.headers['Authorization'] = 'Bearer ' + res.locals.token;
+        //req.headers['Authorization'] = 'Bearer ' + res.locals.token;
         //proxyReq.headers = req.headers;
-        //proxyReq.headers['Authorization'] = 'Bearer ' + res.locals.token;
+        if(req.body) {
+            let bodyData = JSON.stringify(req.body);
+            // In case if content-type is application/x-www-form-urlencoded -> we need to change to application/json
+            proxyReq.headers['Content-Type'] = 'application/json';
+            proxyReq.headers['Content-Length'] = Buffer.byteLength(bodyData);
+            // Stream the content
+            proxyReq.write(bodyData);
+        }
+        proxyReq.headers['Authorization'] = 'Bearer ' + res.locals.token;
         //console.log(req.get(headerName));
         console.log("Second handler proxy body: " + JSON.stringify(proxyReq.body));
         console.log("Second handler proxy header: " + JSON.stringify(proxyReq.headers));
