@@ -81,7 +81,7 @@ app.use('/auth/**', createProxyMiddleware({
     */
 }));
 
-app.listen(9990);
+app.listen(8080);
 
 
 /*
