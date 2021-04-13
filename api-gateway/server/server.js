@@ -22,12 +22,14 @@ app.use('/auth/**', async (req, res, next) => {
     console.log("Proxy to fetch token.");
     console.log("First handler body: " + JSON.stringify(req.body));
     console.log("First handler header: " + JSON.stringify(req.headers));
+    //authApiServiceURL += req.originalUrl;
     const tokenRequestOptions = {
         uri: metadataServerTokenURL + authApiServiceURL,
         headers: {
             'Metadata-Flavor': 'Google'
         }
     };
+    console.log(authApiServiceURL + req.originalUrl);
     // Fetch the token, then provide the token in the request to the receiving service
     await request(tokenRequestOptions)
     .then((token) => {

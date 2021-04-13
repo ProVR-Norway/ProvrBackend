@@ -69,6 +69,9 @@ router.post('/', function(req, res){
       "userEmail":req.body.emailAddress,
       "password":req.body.password
    }
+
+   console.log(JSON.strigify(req.body))
+
    // Sending a query to the database to find all entries with the same username or email
    connection.query('SELECT * FROM User WHERE username = ? OR userEmail = ?', [users.username, users.userEmail], function (error, results, fields) {
       if (error) {
