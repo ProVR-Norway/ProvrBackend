@@ -56,8 +56,9 @@ if(!err) {
 });
 
 router.get('/', function(req, res){
+   res.status(405);
    res.send({
-      "code":405,
+      //"code":405,
       "failed":"Only POST method is accepted"
    })
 });
@@ -75,15 +76,17 @@ router.post('/', function(req, res){
    // Sending a query to the database to find all entries with the same username or email
    connection.query('SELECT * FROM User WHERE username = ? OR userEmail = ?', [users.username, users.userEmail], function (error, results, fields) {
       if (error) {
+         res.status(406);
          res.send({
-            "code":406,
+            //"code":406,
             "failed":"An error occured with the MySQL database: " + error.message
          })
       }
       // If there are any results then we return status code 409
       else if (results.length > 0) {
+         res.status(409);
          res.send({
-            "code":409,
+            //"code":409,
             "failed":"A user already exist with this email address or username"
          })
       } 
@@ -91,13 +94,15 @@ router.post('/', function(req, res){
       else {
       connection.query('INSERT INTO User SET ?', users, function (error, results, fields) {
          if (error) {
+            res.status(400);
             res.send({
-               "code":400,
+               //"code":400,
                "failed":"An error occured with the MySQL database: " + error.message
             })
          } else {
+            res.status(200);
             res.send({
-               "code":200,
+               //"code":200,
                "success":"Registration successful"
                });
             }
