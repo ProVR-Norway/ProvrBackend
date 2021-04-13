@@ -24,12 +24,12 @@ router.get('/', function(req, res){
    })
 });
 
-// Handler behaviour for POST method
+// Handler behaviour for POST method. This is the values the handler get from the body of the Postman JSON request
 router.post('/', function(req, res){
    // Object with all JSON key values from the request
    const users={
       "username":req.body.username,
-      "password":req.body.password
+      "token":req.body.token
    }
 
    /* STEP BY STEP AUTH_CHECK
@@ -39,9 +39,10 @@ router.post('/', function(req, res){
       4. If no token is retrieved, the user is not authenticated and must re-login
    */
 
+   // what does reply do if successful
 
    // Get generated_token from user in redis database
-   client.get(users.username, generated_token, (err, reply) => {
+   client.get(users.username, (err, reply) => {
       if (err){
          res.send({
             "code":406,
@@ -50,11 +51,18 @@ router.post('/', function(req, res){
       }
 
       // If we successfully get the generated_token 
-      else if (generated_token.length > 0) {
+      else if (reply !== null) {
+         if(users.token === reply)
          res.send({
             "code":200,
             "success":"Token-path access-check was successful; the token is authorized for the path.",
           })
+         else {
+            res.send({
+               "code":401,
+               "failed":"Unauthorized. Please re-login.",
+            })
+         }
       }
 
       // If the user does not exist, or the user has no generated_token
