@@ -1,19 +1,19 @@
 'use strict';
 
-const express = require('express');
-const { createProxyMiddleware } = require('http-proxy-middleware');
-const request = require('request-promise');
-//const bodyParser = require('body-parser');
+var express = require('express');
+//var request = require('request-promise');
+var { createProxyMiddleware } = require('http-proxy-middleware');
 
-const app = express();
+var app = express();
 app.use(express.json());
 
-const authApiServiceURL = process.env.URL_AUTH_MICROSERVICE; ////'https://auth-microservice-s6rss6nenq-lz.a.run.app' 
+const authApiServiceURL = process.env.URL_AUTH_MICROSERVICE;
 
 // Set up metadata server request
 // See https://cloud.google.com/compute/docs/instances/verifying-instance-identity#request_signature
 const metadataServerTokenURL = 'http://metadata/computeMetadata/v1/instance/service-accounts/default/identity?audience=';
 
+/*
 app.use('/auth/**', async (req, res, next) => {
     console.log("Proxy to fetch token.");
     console.log("First handler body: " + JSON.stringify(req.body));
@@ -37,12 +37,11 @@ app.use('/auth/**', async (req, res, next) => {
         res.status(400).send(error);
     });
     next()
-})
+})*/
 
 app.use('/auth/**', createProxyMiddleware({
-    target: authApiServiceURL,
-    changeOrigin: true,
-    secure: true,
+    target: authApiServiceURL
+    /*
     onProxyReq: function (proxyReq, req, res) {
         console.log("onProxyReq.");
         console.log("Second handler body: " + JSON.stringify(req.body));
@@ -58,7 +57,7 @@ app.use('/auth/**', createProxyMiddleware({
             // Stream the content
             proxyReq.body = req.body;
         }
-        proxyReq.headers['authorization'] = 'bearer ' + res.locals.token;
+        //proxyReq.headers['authorization'] = 'bearer ' + res.locals.token;
         //console.log(req.get(headerName));
         console.log("Second handler proxy body: " + JSON.stringify(proxyReq.body));
         console.log("Second handler proxy header: " + JSON.stringify(proxyReq.headers));
@@ -79,9 +78,11 @@ app.use('/auth/**', createProxyMiddleware({
           'Something went wrong when communicating with the requested service.'
         );
       }
+    */
 }));
 
-app.listen(8080);
+app.listen(9990);
+
 
 /*
 app.use('/login', createProxyMiddleware({
