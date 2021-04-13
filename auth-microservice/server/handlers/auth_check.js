@@ -1,4 +1,3 @@
-// https://auth-microservice-development-s6rss6nenq-lz.a.run.app/auth/auth_check
 var express = require('express');
 var router = express.Router();
 
@@ -32,15 +31,6 @@ router.post('/', function(req, res){
       "token":req.body.token
    }
 
-   /* STEP BY STEP AUTH_CHECK
-      1. We want to check if a user has a valid token
-      2. We send a get request to fetch a user's token from the redis database
-      3. If a token is retrieved (token != nil), the user has a valid token
-      4. If no token is retrieved, the user is not authenticated and must re-login
-   */
-
-   // what does reply do if successful
-
    // Get generated_token from user in redis database
    client.get(users.username, (err, reply) => {
       if (err){
@@ -59,8 +49,8 @@ router.post('/', function(req, res){
           })
          else {
             res.send({
-               "code":401,
-               "failed":"Unauthorized. Please re-login.",
+               "code":402,
+               "failed":"Unauthorized. Invalid token, please re-login.",
             })
          }
       }
