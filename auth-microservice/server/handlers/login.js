@@ -80,6 +80,7 @@ router.get('/', function(req, res){
 
 router.post('/', function(req, res){
    // Object with all JSON key values from the request
+   console.log("HTTP header of request to /auth/login: " + JSON.stringify(req.headers));// FOR TESTING ONLY!
    const users={
       "username":req.body.username,
       "password":req.body.password
