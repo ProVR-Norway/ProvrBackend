@@ -47,7 +47,7 @@ app.use('/auth/**', async (req, res, next) => {
 
 var options = {
     target: authApiServiceURL,
-    changeOrigin: true,
+    //changeOrigin: true,
     onProxyRes: function(proxyRes, req, res) {
         console.log('proxyRes body: ' + JSON.stringify(proxyRes.body));
         console.log('res body: ' + JSON.stringify(res.body));
