@@ -2,7 +2,6 @@
 
 var express = require('express');
 var request = require('request-promise');
-var { createProxyMiddleware } = require('http-proxy-middleware');
 //var router = express.Router();
 //var request = require('request-promise')
 
@@ -17,6 +16,8 @@ const authApiServiceURL = 'https://auth-microservice-development-iu3tuzfidq-ez.a
 const metadataServerTokenURL = 'http://metadata/computeMetadata/v1/instance/service-accounts/default/identity?audience=';
 
 var app = express();
+
+/*
 
 app.use('/auth/**', async (req, res, next) => {
     console.log("Proxy to fetch token.");
@@ -45,6 +46,7 @@ app.use('/auth/**', async (req, res, next) => {
     });
     next()
 })
+*/
 
 var options = {
     target: authApiServiceURL,
@@ -66,13 +68,14 @@ var options = {
     // onProxyReq must be below OnProxyRes and OnError!
     onProxyReq: function (proxyReq, req, res) {
         console.log("onProxyReq.");
-        console.log("Second handler body: " + JSON.stringify(req.body));
-        console.log("Second handler header: " + JSON.stringify(req.headers));
+        console.log(req.body);
+        console.log("Second handler header: " + req.headers);
         //const fetched_token = req.headers['Authorization'];
         console.log("Session token: " + res.locals.token);
         //proxyReq.setHeader('Authorization', 'Bearer ' + auth_token);
         //req.headers['Authorization'] = 'Bearer ' + res.locals.token;
         proxyReq.setHeader('Authorization','Bearer ' + res.locals.token);
+        //req.setHeader('Authorization','Bearer ' + res.locals.token);
         //proxyReq.headers = req.headers;
         if(req.body) {
             //let bodyData = JSON.stringify(req.body);
@@ -84,13 +87,15 @@ var options = {
         //proxyReq.headers['Content-Type'] = 'text/plain';
         //proxyReq.headers['Authorization'] = 'Bearer ' + res.locals.token;
         //console.log(req.get(headerName));
-        console.log("Second handler proxy body: " + JSON.stringify(proxyReq.body));
-        console.log("Second handler proxy header: " + JSON.stringify(proxyReq.headers));
+        console.log("Second handler proxy body: " + proxyReq.body);
+        console.log("Second handler proxy header: " + proxyReq.headers);
         //proxyReq.end();
         //console.log(auth_token);
         //proxyReq.setHeader('Authorization: ', 'Bearer ' + auth_token);
     }
 };
+
+var { createProxyMiddleware } = require('http-proxy-middleware');
 
 //app.use(express.json());
 app.use('/auth/**', createProxyMiddleware(options));
