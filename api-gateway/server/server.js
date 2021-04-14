@@ -15,9 +15,9 @@ const authApiServiceURL = 'https://auth-microservice-development-iu3tuzfidq-ez.a
 // See https://cloud.google.com/compute/docs/instances/verifying-instance-identity#request_signature
 const metadataServerTokenURL = 'http://metadata/computeMetadata/v1/instance/service-accounts/default/identity?audience=';
 
-/*
-
 var app = express();
+
+/*
 
 app.use('/auth/**', async (req, res, next) => {
     console.log("Proxy to fetch token.");
