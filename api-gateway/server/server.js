@@ -48,7 +48,8 @@ app.use('/auth/**', async (req, res, next) => {
 */
 
 var options = {
-    target: authApiServiceURL//,
+    target: authApiServiceURL,
+    changeOrigin: true
     /*
     onProxyRes: function(proxyRes, req, res) {
         console.log('Response received from the service');
