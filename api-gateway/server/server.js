@@ -17,8 +17,6 @@ const metadataServerTokenURL = 'http://metadata/computeMetadata/v1/instance/serv
 
 var app = express();
 
-/*
-
 app.use('/auth/**', async (req, res, next) => {
     console.log("Proxy to fetch token.");
     console.log("First handler body: " + JSON.stringify(req.body));
@@ -46,7 +44,6 @@ app.use('/auth/**', async (req, res, next) => {
     });
     next()
 })
-*/
 
 var options = {
     target: authApiServiceURL,
@@ -75,6 +72,7 @@ var options = {
         //proxyReq.setHeader('Authorization', 'Bearer ' + auth_token);
         //req.headers['Authorization'] = 'Bearer ' + res.locals.token;
         proxyReq.setHeader('Authorization','Bearer ' + res.locals.token);
+        //proxyReq.headers['Authorization'] = 'Bearer ' + res.locals.token;
         //req.setHeader('Authorization','Bearer ' + res.locals.token);
         //proxyReq.headers = req.headers;
         if(req.body) {
