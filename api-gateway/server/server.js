@@ -49,6 +49,7 @@ app.use('/auth/**', async (req, res, next) => {
 var options = {
     target: authApiServiceURL,
     changeOrigin: true, // THIS NEEDS TO BE HERE EVEN WHEN IT IS UPLOADED TO CLOUD RUN. IF NOT IT WONT WORK PROPERLY
+    /*
     onProxyRes: function(proxyRes, req, res) {
         console.log('Response received from the service');
     },
@@ -60,6 +61,7 @@ var options = {
           'Something went wrong when communicating with the requested service.'
         );
     },
+    */
     // onProxyReq must be below OnProxyRes and OnError!
     onProxyReq: function (proxyReq, req, res) {
         console.log("onProxyReq.");
