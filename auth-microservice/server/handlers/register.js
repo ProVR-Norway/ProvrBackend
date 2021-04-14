@@ -76,7 +76,7 @@ router.post('/', function(req, res){
    // Sending a query to the database to find all entries with the same username or email
    connection.query('SELECT * FROM User WHERE username = ? OR userEmail = ?', [users.username, users.userEmail], function (error, results, fields) {
       if (error) {
-         res.status(406);
+         res.status(500);
          res.send({
             "failed":"An error occured with the MySQL database: " + error.message
          })
@@ -92,7 +92,7 @@ router.post('/', function(req, res){
       else {
       connection.query('INSERT INTO User SET ?', users, function (error, results, fields) {
          if (error) {
-            res.status(406);
+            res.status(500);
             res.send({
                "failed":"An error occured with the MySQL database: " + error.message
             })

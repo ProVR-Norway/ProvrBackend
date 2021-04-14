@@ -5,7 +5,8 @@ const PORT = 8080;
 
 // App
 const app = express();
-app.use(express.json({ limit: '50mb' }));
+app.use(express.json);
+app.use(express.urlencoded({extended: true}));
 
 const login = require('./handlers/login.js');
 const register = require('./handlers/register.js');

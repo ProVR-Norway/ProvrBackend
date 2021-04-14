@@ -17,7 +17,7 @@ const metadataServerTokenURL = 'http://metadata/computeMetadata/v1/instance/serv
 
 var app = express();
 
-app.use('/auth/**', async (req, res, next) => {
+app.use('/auth/**', (req, res, next) => {
     console.log("Proxy to fetch token.");
     console.log("First handler body: " + JSON.stringify(req.body));
     console.log("First handler header: " + JSON.stringify(req.headers));
@@ -31,7 +31,7 @@ app.use('/auth/**', async (req, res, next) => {
     //console.log(authApiServiceURL + req.originalUrl);
     console.log(metadataServerTokenURL + fullPath);
     // Fetch the token, then provide the token in the request to the receiving service
-    await request(tokenRequestOptions)
+    request(tokenRequestOptions)
     .then((token) => {
         console.log("Fetched token: " + token);
         res.locals.token = token;
@@ -74,6 +74,7 @@ var options = {
         proxyReq.setHeader('Authorization','Bearer ' + res.locals.token);
         //proxyReq.headers['Authorization'] = 'Bearer ' + res.locals.token;
         //req.setHeader('Authorization','Bearer ' + res.locals.token);
+        //proxyReq.end()
         //proxyReq.headers = req.headers;
         if(req.body) {
             //let bodyData = JSON.stringify(req.body);
