@@ -22,14 +22,15 @@ app.use('/auth/**', async (req, res, next) => {
     console.log("Proxy to fetch token.");
     console.log("First handler body: " + JSON.stringify(req.body));
     console.log("First handler header: " + JSON.stringify(req.headers));
-    //authApiServiceURL += req.originalUrl;
+    let fullPath = authApiServiceURL + req.originalUrl;
     const tokenRequestOptions = {
-        uri: metadataServerTokenURL + authApiServiceURL,
+        uri: metadataServerTokenURL + fullPath,
         headers: {
             'Metadata-Flavor': 'Google'
         }
     };
-    console.log(authApiServiceURL + req.originalUrl);
+    //console.log(authApiServiceURL + req.originalUrl);
+    console.log(metadataServerTokenURL + fullPath);
     // Fetch the token, then provide the token in the request to the receiving service
     await request(tokenRequestOptions)
     .then((token) => {
@@ -51,7 +52,7 @@ var options = {
     onProxyRes: function(proxyRes, req, res) {
         console.log('proxyRes body: ' + JSON.stringify(proxyRes.body));
         console.log('res body: ' + JSON.stringify(res.body));
-        proxyRes.body = res.body;
+        //proxyRes.body = res.body;
         console.log('proxyRes body' + JSON.stringify(proxyRes.body));
     },
     onError: function(err, req, res) {
@@ -68,7 +69,7 @@ var options = {
         console.log("Second handler body: " + JSON.stringify(req.body));
         console.log("Second handler header: " + JSON.stringify(req.headers));
         //const fetched_token = req.headers['Authorization'];
-        //console.log("Session token: " + auth_token);
+        console.log("Session token: " + res.locals.token);
         //proxyReq.setHeader('Authorization', 'Bearer ' + auth_token);
         //req.headers['Authorization'] = 'Bearer ' + res.locals.token;
         proxyReq.setHeader('Authorization','Bearer ' + res.locals.token);

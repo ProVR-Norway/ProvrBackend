@@ -72,8 +72,8 @@ if(!err) {
 });
 
 router.get('/', function(req, res){
+   res.status(405);
    res.send({
-      "code":405,
       "failed":"Only POST method is accepted"
    })
 });
@@ -88,8 +88,8 @@ router.post('/', function(req, res){
    // Sending a query to the MySQL server to find the user's password
    connection.query('SELECT password FROM User WHERE username = ?', users.username, function (error, results, fields) {
       if (error) {
+         res.status(406);
          res.send({
-         "code":406,
          "failed":"An error occured with the MySQL database: " + error.message,
          })
       }
@@ -102,30 +102,30 @@ router.post('/', function(req, res){
             //const encrypted_token = ;
             client.set(users.username, generated_token, 'EX', '1800', (err, reply) => {
                if (err){
+                  res.status(407);
                   res.send({
-                     "code":406,
                      "failed":"An error occured with redis: " + err.message,
                   })
                };
             })
+            res.status(200);
             res.send({
-              "code":200,
               "success":"Login successful",
               "token":generated_token
             })
             }
          // If the password is incorrect
          else {
+            res.status(400);
             res.send({
-               "code":400,
                "failed":"Invalid username or password"
             })
          }
       }
       // If the username is invalid
       else {
+         res.status(400);
          res.send({
-            "code":400,
             "failed":"Invalid username or password"
          })
       }

@@ -58,7 +58,6 @@ if(!err) {
 router.get('/', function(req, res){
    res.status(405);
    res.send({
-      //"code":405,
       "failed":"Only POST method is accepted"
    })
 });
@@ -78,7 +77,6 @@ router.post('/', function(req, res){
       if (error) {
          res.status(406);
          res.send({
-            //"code":406,
             "failed":"An error occured with the MySQL database: " + error.message
          })
       }
@@ -86,7 +84,6 @@ router.post('/', function(req, res){
       else if (results.length > 0) {
          res.status(409);
          res.send({
-            //"code":409,
             "failed":"A user already exist with this email address or username"
          })
       } 
@@ -94,15 +91,13 @@ router.post('/', function(req, res){
       else {
       connection.query('INSERT INTO User SET ?', users, function (error, results, fields) {
          if (error) {
-            res.status(400);
+            res.status(406);
             res.send({
-               //"code":400,
                "failed":"An error occured with the MySQL database: " + error.message
             })
          } else {
             res.status(200);
             res.send({
-               //"code":200,
                "success":"Registration successful"
                });
             }
