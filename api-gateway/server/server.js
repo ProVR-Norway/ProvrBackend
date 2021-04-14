@@ -48,7 +48,8 @@ app.use('/auth/**', async (req, res, next) => {
 */
 
 var options = {
-    target: authApiServiceURL,
+    target: authApiServiceURL//,
+    /*
     onProxyRes: function(proxyRes, req, res) {
         console.log('Response received from the service');
     },
@@ -91,6 +92,7 @@ var options = {
         //console.log(auth_token);
         //proxyReq.setHeader('Authorization: ', 'Bearer ' + auth_token);
     }
+    */
 };
 
 var { createProxyMiddleware } = require('http-proxy-middleware');
