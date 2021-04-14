@@ -5,8 +5,8 @@ const PORT = 8080;
 
 // App
 const app = express();
-app.use(express.json);
-app.use(express.urlencoded({extended: true}));
+app.use(express.json({ limit:'50mb' })); // MUST BE MAX 50MB OR ELSE EVERYTHING WILL CRASH!!! (I <3 NodeJS ...)
+app.use(express.urlencoded({ extended: true }));
 
 const login = require('./handlers/login.js');
 const register = require('./handlers/register.js');

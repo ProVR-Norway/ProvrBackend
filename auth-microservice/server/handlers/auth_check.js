@@ -31,6 +31,9 @@ router.post('/', function(req, res){
       "token":req.body.token
    }
 
+   console.log("HTTP header of request to /auth/auth_check: " + JSON.stringify(req.headers));// FOR TESTING ONLY!
+   console.log("HTTP body of request to /auth/auth_check: " + JSON.stringify(req.body));// FOR TESTING ONLY!
+
    // Get generated_token from user in redis database
    client.get(users.username, (err, reply) => {
       if (err){
