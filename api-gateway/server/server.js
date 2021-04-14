@@ -17,7 +17,7 @@ const metadataServerTokenURL = 'http://metadata/computeMetadata/v1/instance/serv
 
 var app = express();
 
-app.use('/auth/**', (req, res, next) => {
+app.use('/auth/**', async (req, res, next) => {
     console.log("Proxy to fetch token.");
     console.log("First handler body: " + JSON.stringify(req.body));
     console.log("First handler header: " + JSON.stringify(req.headers));
@@ -31,7 +31,7 @@ app.use('/auth/**', (req, res, next) => {
     //console.log(authApiServiceURL + req.originalUrl);
     console.log(metadataServerTokenURL + fullPath);
     // Fetch the token, then provide the token in the request to the receiving service
-    request(tokenRequestOptions)
+    await request(tokenRequestOptions)
     .then((token) => {
         console.log("Fetched token: " + token);
         res.locals.token = token;
@@ -63,7 +63,7 @@ var options = {
         );
     },
     // onProxyReq must be below OnProxyRes and OnError!
-    onProxyReq: function (proxyReq, req, res) {
+    onProxyReq: async (proxyReq, req, res) => {
         console.log("onProxyReq.");
         console.log(req.body);
         console.log("Second handler header: " + req.headers);
@@ -71,7 +71,7 @@ var options = {
         console.log("Session token: " + res.locals.token);
         //proxyReq.setHeader('Authorization', 'Bearer ' + auth_token);
         //req.headers['Authorization'] = 'Bearer ' + res.locals.token;
-        proxyReq.setHeader('Authorization','Bearer ' + res.locals.token);
+        await proxyReq.setHeader('Authorization','Bearer ' + res.locals.token);
         //proxyReq.headers['Authorization'] = 'Bearer ' + res.locals.token;
         //req.setHeader('Authorization','Bearer ' + res.locals.token);
         //proxyReq.end()
