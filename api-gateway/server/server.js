@@ -54,11 +54,15 @@ app.use('/auth/**', async (req, res, next) => {
 var options = {
     target: authApiServiceURL,
     changeOrigin: true, // THIS NEEDS TO BE HERE EVEN WHEN IT IS UPLOADED TO CLOUD RUN. IF NOT IT WONT WORK PROPERLY
-    /*
     onProxyRes: function(proxyRes, req, res) {
-        console.log('Response received from the service');
+        res.writeHead(proxyRes.statusCode, {
+            //proxyRes.headers
+            'Content-Type': 'application/json'
+        });
+        res.end(
+            proxyRes.body
+        );
     },
-    */
     onError: function(err, req, res) {
         res.writeHead(500, {
           'Content-Type': 'text/plain'
