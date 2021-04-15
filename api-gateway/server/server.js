@@ -17,7 +17,7 @@ const metadataServerTokenURL = 'http://metadata/computeMetadata/v1/instance/serv
 
 var app = express();
 
-
+/*
 app.use('/auth/**', async (req, res, next) => {
     console.log("Proxy to fetch token.");
     console.log("First handler body: " + JSON.stringify(req.body));
@@ -32,7 +32,7 @@ app.use('/auth/**', async (req, res, next) => {
     //console.log(authApiServiceURL + req.originalUrl);
     console.log(metadataServerTokenURL + fullPath);
     // Fetch the token, then provide the token in the request to the receiving service
-    res.locals.token = 'eyJhbGciOiJSUzI1NiIsImtpZCI6Ijc3NDU3MzIxOGM2ZjZhMmZlNTBlMjlhY2JjNjg2NDMyODYzZmM5YzMiLCJ0eXAiOiJKV1QifQ.eyJhdWQiOiJodHRwczovL2F1dGgtbWljcm9zZXJ2aWNlLWRldmVsb3BtZW50LWl1M3R1emZpZHEtZXouYS5ydW4uYXBwL2F1dGgvbG9naW4iLCJhenAiOiIxMTE0MTk0OTg4MDMzOTQ2NzY2NDUiLCJlbWFpbCI6IjEyMjkxOTk3MDMwMi1jb21wdXRlQGRldmVsb3Blci5nc2VydmljZWFjY291bnQuY29tIiwiZW1haWxfdmVyaWZpZWQiOnRydWUsImV4cCI6MTYxODQyOTgwMSwiaWF0IjoxNjE4NDI2MjAxLCJpc3MiOiJodHRwczovL2FjY291bnRzLmdvb2dsZS5jb20iLCJzdWIiOiIxMTE0MTk0OTg4MDMzOTQ2NzY2NDUifQ.m6lT5W70NRvqG9wzPaPY3nx6sxSEIMRAkQpDqHion3z1BS7MrNOEXXm6hxRQsI3TAmhIzzJ_IVXxoa6FbJLo5aWLLEZhgyIKAO98pjgkwHRU0iTI5xqz-FNeaT8OsY8DvtJDzn6XTKffE7kcf3L_qjmb8g42ZHEgPzF8bf7QHpciPmpkEZDMARNqV1p56_sA2HyDgAFyIcVKRbs3d15gWFmLOfS5lAlp2ueXIq_gg0eQteDtXZ5GlsX21WJzI-uUJy2gIxyW-eBW0UR5XmZ76SycRzVbSiQYjq4n5iVWXZ89RFqgwz75HW3YldoAMIQhthtPwcv9OzIq19MTORTMMQ';
+    //res.locals.token = 'eyJhbGciOiJSUzI1NiIsImtpZCI6Ijc3NDU3MzIxOGM2ZjZhMmZlNTBlMjlhY2JjNjg2NDMyODYzZmM5YzMiLCJ0eXAiOiJKV1QifQ.eyJhdWQiOiJodHRwczovL2F1dGgtbWljcm9zZXJ2aWNlLWRldmVsb3BtZW50LWl1M3R1emZpZHEtZXouYS5ydW4uYXBwL2F1dGgvbG9naW4iLCJhenAiOiIxMTE0MTk0OTg4MDMzOTQ2NzY2NDUiLCJlbWFpbCI6IjEyMjkxOTk3MDMwMi1jb21wdXRlQGRldmVsb3Blci5nc2VydmljZWFjY291bnQuY29tIiwiZW1haWxfdmVyaWZpZWQiOnRydWUsImV4cCI6MTYxODQyOTgwMSwiaWF0IjoxNjE4NDI2MjAxLCJpc3MiOiJodHRwczovL2FjY291bnRzLmdvb2dsZS5jb20iLCJzdWIiOiIxMTE0MTk0OTg4MDMzOTQ2NzY2NDUifQ.m6lT5W70NRvqG9wzPaPY3nx6sxSEIMRAkQpDqHion3z1BS7MrNOEXXm6hxRQsI3TAmhIzzJ_IVXxoa6FbJLo5aWLLEZhgyIKAO98pjgkwHRU0iTI5xqz-FNeaT8OsY8DvtJDzn6XTKffE7kcf3L_qjmb8g42ZHEgPzF8bf7QHpciPmpkEZDMARNqV1p56_sA2HyDgAFyIcVKRbs3d15gWFmLOfS5lAlp2ueXIq_gg0eQteDtXZ5GlsX21WJzI-uUJy2gIxyW-eBW0UR5XmZ76SycRzVbSiQYjq4n5iVWXZ89RFqgwz75HW3YldoAMIQhthtPwcv9OzIq19MTORTMMQ';
     /*
     // THIS IS THE CAUSE OF THE PROBLEM!!!
     // Can this be done in a different way to see if the problem is fixed then?
@@ -47,9 +47,9 @@ app.use('/auth/**', async (req, res, next) => {
     .catch((error) => {
         res.status(400).send(error);
     });
-    */
     next()
 });
+*/
 
 var options = {
     target: authApiServiceURL,
@@ -71,11 +71,30 @@ var options = {
         console.log(req.body);
         console.log("Second handler header: " + req.headers);
         //const fetched_token = req.headers['Authorization'];
-        console.log("Session token: " + res.locals.token);
+        let bearer_token;
+        let fullPath = authApiServiceURL + req.originalUrl;
+        const tokenRequestOptions = {
+            uri: metadataServerTokenURL + fullPath,
+            headers: {
+                'Metadata-Flavor': 'Google'
+            }
+        };
+        await request(tokenRequestOptions)
+        .then((token) => {
+            console.log("Fetched token: " + token);
+            bearer_token = token;
+        })
+        .then((response) => {
+            res.status(200).send(response);
+        })
+        .catch((error) => {
+            res.status(400).send(error);
+        });
+        console.log("Session token: " + bearer_token);
         //proxyReq.setHeader('Authorization', 'Bearer ' + auth_token);
         //req.headers['Authorization'] = 'Bearer ' + res.locals.token;
         //let token = 'eyJhbGciOiJSUzI1NiIsImtpZCI6Ijc3NDU3MzIxOGM2ZjZhMmZlNTBlMjlhY2JjNjg2NDMyODYzZmM5YzMiLCJ0eXAiOiJKV1QifQ.eyJhdWQiOiJodHRwczovL2F1dGgtbWljcm9zZXJ2aWNlLWRldmVsb3BtZW50LWl1M3R1emZpZHEtZXouYS5ydW4uYXBwL2F1dGgvbG9naW4iLCJhenAiOiIxMTE0MTk0OTg4MDMzOTQ2NzY2NDUiLCJlbWFpbCI6IjEyMjkxOTk3MDMwMi1jb21wdXRlQGRldmVsb3Blci5nc2VydmljZWFjY291bnQuY29tIiwiZW1haWxfdmVyaWZpZWQiOnRydWUsImV4cCI6MTYxODQyOTgwMSwiaWF0IjoxNjE4NDI2MjAxLCJpc3MiOiJodHRwczovL2FjY291bnRzLmdvb2dsZS5jb20iLCJzdWIiOiIxMTE0MTk0OTg4MDMzOTQ2NzY2NDUifQ.m6lT5W70NRvqG9wzPaPY3nx6sxSEIMRAkQpDqHion3z1BS7MrNOEXXm6hxRQsI3TAmhIzzJ_IVXxoa6FbJLo5aWLLEZhgyIKAO98pjgkwHRU0iTI5xqz-FNeaT8OsY8DvtJDzn6XTKffE7kcf3L_qjmb8g42ZHEgPzF8bf7QHpciPmpkEZDMARNqV1p56_sA2HyDgAFyIcVKRbs3d15gWFmLOfS5lAlp2ueXIq_gg0eQteDtXZ5GlsX21WJzI-uUJy2gIxyW-eBW0UR5XmZ76SycRzVbSiQYjq4n5iVWXZ89RFqgwz75HW3YldoAMIQhthtPwcv9OzIq19MTORTMMQ';
-        proxyReq.setHeader('Authorization','Bearer ' + res.locals.token);//res.locals.token);
+        proxyReq.setHeader('Authorization','Bearer ' + bearer_token);//res.locals.token);
         //proxyReq.headers['Authorization'] = 'Bearer ' + res.locals.token;
         //req.setHeader('Authorization','Bearer ' + res.locals.token);
         //proxyReq.end()
