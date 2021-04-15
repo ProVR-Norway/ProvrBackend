@@ -9,13 +9,15 @@
 
 */
 
-const express = require('express');
+const express = require('express'); 
 // Needed to send requests to the
 const request = require('request-promise');
 
 // THE FOLLOWING LINE CANNOT BE USED TOGETHER WITH HTTP-PROXY-MIDDLEWARE
 // MORE INFO HERE: https://stackoverflow.com/questions/52270848/zero-response-through-http-proxy-middleware
 //app.use(express.json()); 
+
+const authApiServiceURL = process.env.URL_AUTH_MICROSERVICE;
 
 // Set up metadata server request
 // See https://cloud.google.com/compute/docs/instances/verifying-instance-identity#request_signature
@@ -26,9 +28,9 @@ const app = express();
 app.use('/auth/**', async (req, res, next) => {
     // The full path is retrieved based on the following answer:
     // Link: https://stackoverflow.com/a/10185427
-    let fullPath = req.protocol + '://' + req.get('host') + req.originalUrl;
+    // Set the options for the request to get the token
     const tokenRequestOptions = {
-        uri: metadataServerTokenURL + fullPath,
+        uri: metadataServerTokenURL + authApiServiceURL + req.originalUrl,
         headers: {
             'Metadata-Flavor': 'Google'
         }
