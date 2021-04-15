@@ -81,8 +81,9 @@ var options = {
         };
         await request(tokenRequestOptions)
         .then((token) => {
-            console.log("Fetched token: " + token);
-            proxyReq.setHeader('Authorization','Bearer ' + token);
+            return request(authApiServiceURL).auth(null, null, true, token)
+            //console.log("Fetched token: " + token);
+            //proxyReq.setHeader('Authorization','Bearer ' + token);
         })
         //.then((response) => {
         //    res.status(201).send(response);
@@ -90,7 +91,7 @@ var options = {
         .catch((error) => {
             res.status(500).send(error);
         });
-        console.log("Session token: " + bearer_token);
+        //console.log("Session token: " + bearer_token);
         //proxyReq.setHeader('Authorization', 'Bearer ' + auth_token);
         //req.headers['Authorization'] = 'Bearer ' + res.locals.token;
         //let token = 'eyJhbGciOiJSUzI1NiIsImtpZCI6Ijc3NDU3MzIxOGM2ZjZhMmZlNTBlMjlhY2JjNjg2NDMyODYzZmM5YzMiLCJ0eXAiOiJKV1QifQ.eyJhdWQiOiJodHRwczovL2F1dGgtbWljcm9zZXJ2aWNlLWRldmVsb3BtZW50LWl1M3R1emZpZHEtZXouYS5ydW4uYXBwL2F1dGgvbG9naW4iLCJhenAiOiIxMTE0MTk0OTg4MDMzOTQ2NzY2NDUiLCJlbWFpbCI6IjEyMjkxOTk3MDMwMi1jb21wdXRlQGRldmVsb3Blci5nc2VydmljZWFjY291bnQuY29tIiwiZW1haWxfdmVyaWZpZWQiOnRydWUsImV4cCI6MTYxODQyOTgwMSwiaWF0IjoxNjE4NDI2MjAxLCJpc3MiOiJodHRwczovL2FjY291bnRzLmdvb2dsZS5jb20iLCJzdWIiOiIxMTE0MTk0OTg4MDMzOTQ2NzY2NDUifQ.m6lT5W70NRvqG9wzPaPY3nx6sxSEIMRAkQpDqHion3z1BS7MrNOEXXm6hxRQsI3TAmhIzzJ_IVXxoa6FbJLo5aWLLEZhgyIKAO98pjgkwHRU0iTI5xqz-FNeaT8OsY8DvtJDzn6XTKffE7kcf3L_qjmb8g42ZHEgPzF8bf7QHpciPmpkEZDMARNqV1p56_sA2HyDgAFyIcVKRbs3d15gWFmLOfS5lAlp2ueXIq_gg0eQteDtXZ5GlsX21WJzI-uUJy2gIxyW-eBW0UR5XmZ76SycRzVbSiQYjq4n5iVWXZ89RFqgwz75HW3YldoAMIQhthtPwcv9OzIq19MTORTMMQ';//res.locals.token);
@@ -98,12 +99,12 @@ var options = {
         //req.setHeader('Authorization','Bearer ' + res.locals.token);
         //proxyReq.end()
         //proxyReq.headers = req.headers;
-        if(req.body) {
+        //if(req.body) {
             //let bodyData = JSON.stringify(req.body);
             // In case if content-type is application/x-www-form-urlencoded -> we need to change to application/json
             // Stream the content
             
-        }
+        //}
         //proxyReq.body = req.body;
         //proxyReq.headers['Content-Type'] = 'text/plain';
         //proxyReq.headers['Authorization'] = 'Bearer ' + res.locals.token;
