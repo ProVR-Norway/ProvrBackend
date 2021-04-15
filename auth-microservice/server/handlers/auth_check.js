@@ -28,46 +28,55 @@ router.post('/', function(req, res){
    // Object with all JSON key values from the request
    const users={
       "username":req.body.username,
-      "token":req.body.token
+      "token"   :req.body.token
    }
 
-   console.log("HTTP header of request to /auth/auth_check: " + JSON.stringify(req.headers));// FOR TESTING ONLY!
-   console.log("HTTP body of request to /auth/auth_check: " + JSON.stringify(req.body));// FOR TESTING ONLY!
+   /******************************************************************
+    **************** PRINT REQUEST TO CONSOLE ************************
+   */
+    console.log("HTTP header of request to " + req.originalUrl + ": " + JSON.stringify(req.headers));
+    console.log("HTTP header of request to " + req.originalUrl + ": "  + JSON.stringify(req.body));
+   /************** END PRINT REQUEST TO CONSOLE **********************
+    ******************************************************************
+   */
 
    // Get generated_token from user in redis database
    client.get(users.username, (err, reply) => {
       if (err){
-         res.status(406);
+         res.status(500);
+         // PRINT OUT THE SPECIFIC ERROR
+         console.log("An error occured with redis: " + err.message);
          res.send({
-            "failed":"An error occured with redis: " + err.message
-         })
+            "failed":"Internal error"
+         });
       }
-
-      // If we successfully get the generated_token 
+      // If we successfully get the generated token 
       else if (reply !== null) {
+         // If the token supplied in the request is the same as the one in redis
+         // under the same username.
          if(users.token === reply){
-         res.status(200);
-         res.send({
-            "success":"Token-path access-check was successful; the token is authorized for the path."
-         })}
+            res.status(200);
+            res.send({
+               "success":"Token-path access-check was successful; the token is authorized for the path"
+            });
+         }
+         // If the token is incorrect
          else {
             res.status(402);
             res.send({
-               "failed":"Unauthorized. Invalid token, please re-login."
-            })
+               "failed":"Unauthorized with invalid token. Please re-login"
+            });
          }
       }
-
-      // If the user does not exist, or the user has no generated_token
+      // If the user does not exist, or the user has no generated token
       else {
          res.status(401);
          res.send({
-            "failed":"Unauthorized. Please re-login."
-         })
+            "failed":"Unauthorized. Please re-login"
+         });
       }
-
    })
 
 });
-//export this router to use in our index.js
+//export this router to use in our server.js
 module.exports = router;
