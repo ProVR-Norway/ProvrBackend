@@ -56,7 +56,7 @@ var options = {
     changeOrigin: true, // THIS NEEDS TO BE HERE EVEN WHEN IT IS UPLOADED TO CLOUD RUN. IF NOT IT WONT WORK PROPERLY
     onProxyRes: function(proxyRes, req, res) {
         console.log("proxyRes: " + proxyRes.headers);
-        console.log("res: "req.headers);
+        console.log("res: " + req.headers);
     },
     onError: function(err, req, res) {
         res.writeHead(500, {
