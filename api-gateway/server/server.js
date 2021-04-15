@@ -84,11 +84,11 @@ var options = {
             console.log("Fetched token: " + token);
             proxyReq.setHeader('Authorization','Bearer ' + token);
         })
-        .then((response) => {
-            res.status(201).send(response);
-        })
+        //.then((response) => {
+        //    res.status(201).send(response);
+        //})
         .catch((error) => {
-            res.status(400).send(error);
+            res.status(500).send(error);
         });
         console.log("Session token: " + bearer_token);
         //proxyReq.setHeader('Authorization', 'Bearer ' + auth_token);
