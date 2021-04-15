@@ -66,7 +66,7 @@ var options = {
         );
     },
     // onProxyReq must be below OnProxyRes and OnError!
-    onProxyReq: function (proxyReq, req, res) {
+    onProxyReq: async (proxyReq, req, res) => {
         console.log("onProxyReq.");
         console.log(req.body);
         console.log("Second handler header: " + req.headers);
