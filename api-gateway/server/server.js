@@ -7,6 +7,11 @@
     [ERR_HTTP_HEADERS_SENT]: Cannot set headers after they are sent to the client.
     Currently we have not found any alternatives.
 
+    UPDATE APRIL 16 2021:
+    It might be possible to avoid having two middlewares if we figure out how to
+    handle async functions better. There might just be a problem in the way we are thinking.
+    We will need to look into this later when if we get time.
+
 */
 
 const express = require('express'); 

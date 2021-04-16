@@ -11,8 +11,10 @@ app.use(express.json({ limit:'50mb' }));
 app.use(express.urlencoded({ extended: true }));
 
 const getSignedURL = require('./handlers/get_signed_url.js');
+//const getSignedURL = require('./handlers/put_signed_url.js');
 
-app.use('/cad/models/getsignedurl', getSignedURL);
+app.use('/cad/models/signedurl/download', getSignedURL);
+//app.use('/cad/models/signedurl/upload', getSignedURL);
 
 // THE PORT MUST BE 8080 WHEN UPLODADED TO CLOUD RUN
 app.listen(8080);
