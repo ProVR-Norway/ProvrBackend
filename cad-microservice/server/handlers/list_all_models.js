@@ -34,7 +34,7 @@ if(!err) {
 router.get('/:username', function(req, res){
 
     const username = req.params.username;
-    let userID;
+    let userId;
 
     // Sending a query to the database to find all entries with the same username or email
     connection.query('SELECT userID FROM User WHERE username = ?', username, function (error, results, fields) {
@@ -48,7 +48,8 @@ router.get('/:username', function(req, res){
         }
         // If there are any results then we return status code 409
         else if (results.length > 0) {
-            userID = results[0].userID;
+            userId = results[0].userID;
+            console.log(userId) // TESTING ONLY!
         } else {
             res.status(403);
             console.log("User does not exist.");
@@ -59,7 +60,7 @@ router.get('/:username', function(req, res){
     });
 
     // Sending a query to the database to find all entries with the same username or email
-    connection.query('SELECT * FROM Model WHERE userID = ?', userID, function (error, results, fields) {
+    connection.query('SELECT name FROM Model WHERE userID = ?', userId, function (error, results, fields) {
         if (error) {
             res.status(500);
             // PRINT OUT THE SPECIFIC ERROR
