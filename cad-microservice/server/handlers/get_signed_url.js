@@ -37,10 +37,11 @@ async function getSecret() {
 
 //const KEY_FILE = '/Users/oysteinlondalnilsen/Downloads/vr-collaboration-room-eb4eeb9d0a40.json' // stored on GCP as a secret
 
-router.get('/', function(req, res){
+// Use route parameters (username and modelname)
+router.get('/:username/:modelname', function(req, res){
 
-  const username = req.query.username;
-  const modelName = req.query.modelname;
+  const username = req.params.username;
+  const modelName = req.params.modelname
   // POSSIBLY WE DO NOT NEED THIS SINCE WE MIGHT NEED TWO DIFFERENT 
   // ENDPOINTS FOR GENERATING UPLOAD SIGNEDURL AND DOWNLOAD SIGNED URL
   // If the user can download (read) or upload read, write the object stored
@@ -61,7 +62,7 @@ router.get('/', function(req, res){
 
     const options = {
       version: 'v4',
-      action: accessType,
+      action: 'read',
       expires: Date.now() + 5 * 60 * 1000, // 5 minutes
     };
   
