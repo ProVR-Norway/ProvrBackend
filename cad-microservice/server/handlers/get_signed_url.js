@@ -39,8 +39,8 @@ async function getSecret() {
 
 router.get('/', function(req, res){
 
-  const username = req.body.username;
-  const modelName = req.body.modelname;
+  const username = req.query.username;
+  const modelName = req.query.modelname;
   // POSSIBLY WE DO NOT NEED THIS SINCE WE MIGHT NEED TWO DIFFERENT 
   // ENDPOINTS FOR GENERATING UPLOAD SIGNEDURL AND DOWNLOAD SIGNED URL
   // If the user can download (read) or upload read, write the object stored
