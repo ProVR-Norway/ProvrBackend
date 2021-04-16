@@ -74,14 +74,14 @@ router.get('/:username', function(req, res){
             let owning_models = [];
             // Construct JSON array with every model in it
             results.forEach(model => {
-                owning_models.push({
-                    modelname: model.name
-                    //dateUploaded: model.dateUploaded
-                });
+                console.log(model.name)
+                owning_models.push(model.name);
             });
             res.status(200);
             res.contentType("application/json");
-            res.send(JSON.stringify(owning_models));
+            res.send({
+                "modelnames": JSON.stringify(owning_models)
+            });
         }
     });
     
