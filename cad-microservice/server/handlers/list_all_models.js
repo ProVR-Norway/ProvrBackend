@@ -60,7 +60,7 @@ router.get('/:username', function(req, res){
     });
 
     // Sending a query to the database to find all entries with the same username or email
-    connection.query('SELECT name FROM Model WHERE userID = ?', userId, function (error, results, fields) {
+    connection.query('SELECT * FROM Model WHERE userID = ?', String(userId), function (error, results, fields) {
         if (error) {
             res.status(500);
             // PRINT OUT THE SPECIFIC ERROR
