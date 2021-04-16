@@ -1,0 +1,50 @@
+name: publish
+
+on:
+  push:
+    branches:
+      - feature/signed-url-endpoint
+
+jobs:
+  build:
+    name: Cloud Run Deployment
+    runs-on: ubuntu-latest
+    steps:
+
+      - name: Checkout
+        uses: actions/checkout@master
+
+      - name: Setup GCP Service Account
+        uses: google-github-actions/setup-gcloud@master
+        with:
+          service_account_email: ${{ secrets.GCP_SA_EMAIL }}
+          service_account_key: ${{ secrets.GCP_SA_KEY }}
+          export_default_credentials: true
+          
+      - name: Configure Docker
+        run: |
+          gcloud auth configure-docker
+      
+      - name: Build
+        #with:
+        #  repository: ProvrBackend/auth-microservice
+        run: |
+          docker build -t gcr.io/${{ secrets.GCP_PROJECT_ID }}/cad-microservice -f cad-microservice/Dockerfile .
+
+      - name: Push
+        run: |
+          docker push gcr.io/${{ secrets.GCP_PROJECT_ID }}/cad-microservice
+      
+      #- name: Build
+      #  run: |
+      #    gcloud builds submit --tag gcr.io/${{ secrets.GCP_PROJECT_ID }}/auth-microservice
+
+      - name: Deploy
+        run: |
+          gcloud run deploy cad-microservice \
+          --region ${{ secrets.GCP_REGION }} \
+          --image gcr.io/${{ secrets.GCP_PROJECT_ID }}/cad-microservice \
+          --platform managed \
+          --allow-unauthenticated \
+          --project ${{ secrets.GCP_PROJECT_ID }} \
+          --set-env-vars USER_MODELS_BUCKET_NAME=${{ secrets.USER_MODELS_BUCKET_NAME }}

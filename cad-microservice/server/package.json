@@ -1,0 +1,17 @@
+{
+  "name": "cad-model-microservice",
+  "version": "1.0.0",
+  "description": "Private API that enables users to access and upload cad models.",
+  "author": "ProVR",
+  "license": "MIT",
+  "main": "server.js",
+  "scripts": {
+    "start": "node ./server.js"
+  },
+  "dependencies": {
+    "@google-cloud/secret-manager": "^3.6.0",
+    "@google-cloud/storage": "^5.8.3",
+    "express": "^4.16.1",
+    "mysql8.0": "^1.1.2"
+  }
+}
