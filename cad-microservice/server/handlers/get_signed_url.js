@@ -1,11 +1,13 @@
 const express = require('express');
 const router = express.Router();
 
-// Google Developer Console project ID
-//const PROJECT_ID = 'vr-collaboration-room'; // stored in GitHub secrets
+/**
+ *  IMPORTANT! For the handler below to be able to generate a signed URL the service account of the
+ *  Cloud Run instance needs the have the role "Service Account Token Creator".
+ */
 
 // The ID of your GCS bucket
-const bucketName = process.env.USER_MODELS_BUCKET_NAME;// stored in GitHub secrets
+const bucketName = process.env.USER_MODELS_BUCKET_NAME; // stored in GitHub secrets
 
 // Imports the Google Cloud client library
 const {Storage} = require('@google-cloud/storage');
@@ -35,7 +37,7 @@ async function getSecret() {
      Add credentials -> Service account -> JSON -> Create 
 */
 
-//const KEY_FILE = '/Users/oysteinlondalnilsen/Downloads/vr-collaboration-room-eb4eeb9d0a40.json' // stored on GCP as a secret
+//const KEY_FILE = '' // stored on GCP as a secret
 
 // Use route parameters (username and modelname)
 router.get('/:username/:modelname', function(req, res){
