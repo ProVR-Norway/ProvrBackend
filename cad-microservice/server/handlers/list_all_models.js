@@ -77,15 +77,14 @@ router.get('/:username', function(req, res){
                 console.log(model.name)
                 owning_models.push(model.name);
             });
+            console.log(results.length);
             res.status(200);
-            res.contentType("application/json");
+            //res.contentType("application/json");
             res.send({
-                "modelnames": JSON.stringify(owning_models)
+                "modelnames": owning_models
             });
         }
     });
-    
-    
 });
 
 //export this router to use in our server.js
