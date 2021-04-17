@@ -86,18 +86,6 @@ router.get('/:username', function(req, res){
             });
         }
     });
-    let id1 = '1';
-    let id2 = 1;
-
-    console.log(typeof id1);
-    console.log(typeof id2);
-    console.log(id1);
-    console.log(id2);
-    console.log(typeof userId);
-    console.log(typeof String(userId));
-    console.log(typeof parseInt(userId));
-    console.log(String(userId));
-    console.log(parseInt(userId));
 });
 
 //export this router to use in our server.js
