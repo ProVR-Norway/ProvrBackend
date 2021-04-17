@@ -99,7 +99,7 @@ var authOptions = {
     // The onProxyReq must be below the other events (onError and onProxyRes)
     // If not the proxyReq will be undefined and we cannot use the setHeader function
     // The ALTERNATIVE can be used instead
-    onProxyReq: function (proxyReq, req, res) {
+    onProxyReq: async (proxyReq, req, res) => {
         let id_token = await getToken(req, res);
         proxyReq.setHeader('Authorization','Bearer ' + id_token);
         // ALTERNATIVE:
