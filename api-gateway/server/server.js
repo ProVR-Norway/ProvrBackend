@@ -135,7 +135,7 @@ var options = {
         .then((token) => {
             //console.log("Fetched token: " + token);
             //Passing token to the second middleware
-            proxyReq.setHeader('Authorization','Bearer ' + token);
+            return proxyReq.setHeader('Authorization','Bearer ' + token);
         })
         .catch((error) => {
             res.status(400).send(error);
