@@ -19,7 +19,10 @@
 
 const express = require('express'); 
 // Needed to send requests to the
-const request = require('request-promise');
+//const request = require('request-promise');
+//const got = require('got');
+const {GoogleAuth} = require('google-auth-library');
+const auth = new GoogleAuth();
 
 // THE FOLLOWING LINE CANNOT BE USED TOGETHER WITH HTTP-PROXY-MIDDLEWARE
 // MORE INFO HERE: https://stackoverflow.com/questions/52270848/zero-response-through-http-proxy-middleware
@@ -34,6 +37,7 @@ const metadataServerTokenURL = 'http://metadata/computeMetadata/v1/instance/serv
 
 const app = express();
 
+/*
 async function getToken (req, res) {
     // The full path is retrieved based on the following answer:
     // Link: https://stackoverflow.com/a/10185427
@@ -55,6 +59,7 @@ async function getToken (req, res) {
         return;
     });
 };
+*/
 
 /*
 var authOptions = {
@@ -100,7 +105,22 @@ var authOptions = {
     // If not the proxyReq will be undefined and we cannot use the setHeader function
     // The ALTERNATIVE can be used instead
     onProxyReq: async (proxyReq, req, res) => {
-        let id_token = await getToken(req, res);
+        try {
+            // Create a Google Auth client with the Renderer service url as the target audience.
+            if (!client) client = await auth.getIdTokenClient(authApiServiceURL + req.originalUrl);
+            // Fetch the client request headers and add them to the service request headers.
+            // The client request headers include an ID token that authenticates the request.
+            const clientHeaders = await client.getRequestHeaders();
+            proxyReq.headers['Authorization'] = clientHeaders['Authorization'];
+          } catch (err) {
+            // Use response instead
+            res.writeHead(500, {
+                'Content-Type': 'text/plain'
+              });
+              res.end(
+                'Could not create an identity token: ' + err
+              );
+          }
         proxyReq.setHeader('Authorization','Bearer ' + id_token);
         // ALTERNATIVE:
         //proxyReq.headers['Authorization'] = 'Bearer ' + res.locals.token;

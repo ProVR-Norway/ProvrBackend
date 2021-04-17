@@ -10,6 +10,7 @@
   },
   "dependencies": {
     "express": "^4.17.1",
+    "google-auth-library": "^7.0.4",
     "got": "^11.8.2",
     "http-proxy-middleware": "^1.1.1",
     "request": "^2.88.2",
