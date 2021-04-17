@@ -131,19 +131,15 @@ var options = {
                 'Metadata-Flavor': 'Google'
             }
         };
-
-        let idToken;
-
-        await request(tokenRequestOptions)
+        request(tokenRequestOptions)
         .then((token) => {
             //console.log("Fetched token: " + token);
             //Passing token to the second middleware
-            idToken = token;
+            proxyReq.setHeader('Authorization','Bearer ' + token);
         })
         .catch((error) => {
             res.status(400).send(error);
         });
-        proxyReq.setHeader('Authorization','Bearer ' + idToken);
         // ALTERNATIVE:
         //proxyReq.headers['Authorization'] = 'Bearer ' + res.locals.token;
     }
