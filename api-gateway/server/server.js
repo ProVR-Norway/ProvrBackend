@@ -106,8 +106,9 @@ var authOptions = {
     // The ALTERNATIVE can be used instead
     onProxyReq: async (proxyReq, req, res) => {
         try {
-            // Create a Google Auth client with the Renderer service url as the target audience.
-            if (!client) client = await auth.getIdTokenClient(authApiServiceURL + req.originalUrl);
+            // Create a Google Auth client with the requested service url as the target audience.
+            //if (!client) client = await auth.getIdTokenClient(authApiServiceURL + req.originalUrl);
+            let client = await auth.getIdTokenClient(authApiServiceURL + req.originalUrl);
             // Fetch the client request headers and add them to the service request headers.
             // The client request headers include an ID token that authenticates the request.
             const clientHeaders = await client.getRequestHeaders();
