@@ -112,15 +112,15 @@ var authOptions = {
             // Fetch the client request headers and add them to the service request headers.
             // The client request headers include an ID token that authenticates the request.
             const clientHeaders = await client.getRequestHeaders();
-            proxyReq.headers['Authorization'] = clientHeaders['Authorization'];
+            proxyReq.setHeader('Authorization', clientHeaders['Authorization']);
         } catch (err) {
         // Use response instead
         res.writeHead(500, {
             'Content-Type': 'text/plain'
             });
-            res.end(
-            'Could not create an identity token: ' + err
-            );
+        res.end(
+        'Could not create an identity token: ' + err
+        );
         }
         //proxyReq.setHeader('Authorization','Bearer ' + id_token);
         // ALTERNATIVE:
