@@ -30,14 +30,14 @@ if(!err) {
 }
 });
 
-// THE PROBLEM WAS THAT THE TWO QUERIES ARE ASYNCHRONUS AND THEREFORE THEY NEED TO BE NESTED WITH
+// SINCE THE QUERIES ARE DEPENDANT AND ASYNCHRONUS WE NEED TO NEST THEM. AWAIT COULD ALSO HAVE BEEN USED
 // LINK: https://stackoverflow.com/questions/53649272/how-to-use-result-array-of-a-query-in-another-query-in-mysqlnode-js
-// Use route parameters (username and modelname)
+// Use route parameters (username in this case).
 router.get('/:username', function(req, res){
 
     const username = req.params.username;
 
-    // Sending a query to the database to find all entries with the same username or email
+    // Sending a query to the database to find the user id of the person with this username
     connection.query('SELECT userID FROM User WHERE username = ?', username, function (error, results, fields) {
         if (error) {
             res.status(500);
@@ -47,12 +47,10 @@ router.get('/:username', function(req, res){
                 "failed":"Internal error"
             });
         }
-        // If there are any results then we return status code 409
+        // If we get a result we send a new query to get the owning models of that person
         else if (results.length > 0) {
             let userId = results[0].userID;
-            // WE GET NO RESULT FROM THIS QUERY BEACUSE THERE IS A PROBLEM WITH PASSING IN INTEGERS
-            // CONVERTING IT TO STRING DOES NOT SEEM TO HELP. NEED TO FIGURE OUT WHAT TYPE IT NEEDS
-            // TO BE CONVERTED TO.
+            // IMPORTANT! We use the userID as foreign key to ensure scalability (if we later want the user to be able to change username)
             connection.query('SELECT * FROM Model WHERE userID = ?', userId, function (error, results, fields) {
                 if (error) {
                     res.status(500);
@@ -62,22 +60,23 @@ router.get('/:username', function(req, res){
                         "failed":"Internal error"
                     });
                 }
-                // If there are any results then we return status code 409
+                // Regardless of the user has any models or not we send an array to the client (empty if no models are uploaded)
                 else {
                     let owning_models = [];
                     // Construct JSON array with every model in it
                     results.forEach(model => {
-                        console.log(model.name)
-                        owning_models.push(model.name);
+                        owning_models.push({
+                            "modelName": model.name,
+                            "dateUploaded": model.dateUploaded
+                        });
                     });
-                    console.log(results.length);
                     res.status(200);
-                    //res.contentType("application/json");
                     res.send({
                         "modelnames": owning_models
                     });
                 }
             });
+        // If we find no matching username, we return the 403 status code
         } else {
             res.status(403);
             console.log("User does not exist.");
