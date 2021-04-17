@@ -3,7 +3,7 @@ name: publish
 on:
   push:
     branches:
-      - feature/signed-url-endpoint
+      - feature/list-all-models
 
 jobs:
   build:
@@ -47,4 +47,6 @@ jobs:
           --platform managed \
           --allow-unauthenticated \
           --project ${{ secrets.GCP_PROJECT_ID }} \
-          --set-env-vars USER_MODELS_BUCKET_NAME=${{ secrets.USER_MODELS_BUCKET_NAME }}
+          --vpc-connector ${{ secrets.GCP_VCP_CONNECTOR }} \
+          --add-cloudsql-instances ${{ secrets.CLOUD_SQL_INSTANCE_NAME }} \
+          --set-env-vars USER_MODELS_BUCKET_NAME=${{ secrets.USER_MODELS_BUCKET_NAME }},MYSQL_HOST=${{ secrets.MYSQL_AUTH_MICROSERVICE_HOST }},MYSQL_PORT=${{ secrets.MYSQL_AUTH_MICROSERVICE_PORT }},MYSQL_USER=${{ secrets.MYSQL_AUTH_MICROSERVICE_USERNAME }},MYSQL_PASSWORD=${{ secrets.MYSQL_AUTH_MICROSERVICE_PASSWORD }},MYSQL_DATABASE=${{ secrets.MYSQL_AUTH_MICROSERVICE_DATABASE }}
