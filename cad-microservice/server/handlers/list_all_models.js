@@ -59,8 +59,10 @@ router.get('/:username', function(req, res){
         }
     });
 
-    // Sending a query to the database to find all entries with the same username or email
-    connection.query('SELECT * FROM Model WHERE userID = ?', String(userId), function (error, results, fields) {
+    // WE GET NO RESULT FROM THIS QUERY BEACUSE THERE IS A PROBLEM WITH PASSING IN INTEGERS
+    // CONVERTING IT TO STRING DOES NOT SEEM TO HELP. NEED TO FIGURE OUT WHAT TYPE IT NEEDS
+    // TO BE CONVERTED TO.
+    connection.query('SELECT * FROM Model WHERE userID = ?', int(userId), function (error, results, fields) {
         if (error) {
             res.status(500);
             // PRINT OUT THE SPECIFIC ERROR
