@@ -63,14 +63,18 @@ router.get('/:username', function(req, res){
 
     console.log(typeof id1);
     console.log(typeof id2);
+    console.log(id1);
+    console.log(id2);
     console.log(typeof userId);
     console.log(typeof String(userId));
     console.log(typeof parseInt(userId));
+    console.log(String(userId));
+    console.log(parseInt(userId));
 
     // WE GET NO RESULT FROM THIS QUERY BEACUSE THERE IS A PROBLEM WITH PASSING IN INTEGERS
     // CONVERTING IT TO STRING DOES NOT SEEM TO HELP. NEED TO FIGURE OUT WHAT TYPE IT NEEDS
     // TO BE CONVERTED TO.
-    connection.query('SELECT * FROM Model WHERE userID = ?', parseInt(userId), function (error, results, fields) {
+    connection.query('SELECT * FROM Model WHERE userID = ?', String(userId), function (error, results, fields) {
         if (error) {
             res.status(500);
             // PRINT OUT THE SPECIFIC ERROR
