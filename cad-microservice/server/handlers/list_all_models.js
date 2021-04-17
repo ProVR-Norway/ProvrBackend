@@ -30,11 +30,12 @@ if(!err) {
 }
 });
 
+// THE PROBLEM WAS THAT THE TWO QUERIES ARE ASYNCHRONUS AND THEREFORE THEY NEED TO BE NESTED WITH
+// LINK: https://stackoverflow.com/questions/53649272/how-to-use-result-array-of-a-query-in-another-query-in-mysqlnode-js
 // Use route parameters (username and modelname)
 router.get('/:username', function(req, res){
 
     const username = req.params.username;
-    let userId;
 
     // Sending a query to the database to find all entries with the same username or email
     connection.query('SELECT userID FROM User WHERE username = ?', username, function (error, results, fields) {
@@ -48,8 +49,35 @@ router.get('/:username', function(req, res){
         }
         // If there are any results then we return status code 409
         else if (results.length > 0) {
-            userId = results[0].userID;
-            console.log(userId) // TESTING ONLY!
+            let userId = results[0].userID;
+            // WE GET NO RESULT FROM THIS QUERY BEACUSE THERE IS A PROBLEM WITH PASSING IN INTEGERS
+            // CONVERTING IT TO STRING DOES NOT SEEM TO HELP. NEED TO FIGURE OUT WHAT TYPE IT NEEDS
+            // TO BE CONVERTED TO.
+            connection.query('SELECT * FROM Model WHERE userID = ?', userId, function (error, results, fields) {
+                if (error) {
+                    res.status(500);
+                    // PRINT OUT THE SPECIFIC ERROR
+                    console.log("An error occured with the MySQL database: " + error.message);
+                    res.send({
+                        "failed":"Internal error"
+                    });
+                }
+                // If there are any results then we return status code 409
+                else {
+                    let owning_models = [];
+                    // Construct JSON array with every model in it
+                    results.forEach(model => {
+                        console.log(model.name)
+                        owning_models.push(model.name);
+                    });
+                    console.log(results.length);
+                    res.status(200);
+                    //res.contentType("application/json");
+                    res.send({
+                        "modelnames": owning_models
+                    });
+                }
+            });
         } else {
             res.status(403);
             console.log("User does not exist.");
@@ -70,35 +98,6 @@ router.get('/:username', function(req, res){
     console.log(typeof parseInt(userId));
     console.log(String(userId));
     console.log(parseInt(userId));
-
-    // WE GET NO RESULT FROM THIS QUERY BEACUSE THERE IS A PROBLEM WITH PASSING IN INTEGERS
-    // CONVERTING IT TO STRING DOES NOT SEEM TO HELP. NEED TO FIGURE OUT WHAT TYPE IT NEEDS
-    // TO BE CONVERTED TO.
-    connection.query('SELECT * FROM Model WHERE userID = ?', String(userId), function (error, results, fields) {
-        if (error) {
-            res.status(500);
-            // PRINT OUT THE SPECIFIC ERROR
-            console.log("An error occured with the MySQL database: " + error.message);
-            res.send({
-                "failed":"Internal error"
-            });
-        }
-        // If there are any results then we return status code 409
-        else {
-            let owning_models = [];
-            // Construct JSON array with every model in it
-            results.forEach(model => {
-                console.log(model.name)
-                owning_models.push(model.name);
-            });
-            console.log(results.length);
-            res.status(200);
-            //res.contentType("application/json");
-            res.send({
-                "modelnames": owning_models
-            });
-        }
-    });
 });
 
 //export this router to use in our server.js
