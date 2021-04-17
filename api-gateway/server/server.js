@@ -113,16 +113,16 @@ var authOptions = {
             // The client request headers include an ID token that authenticates the request.
             const clientHeaders = await client.getRequestHeaders();
             proxyReq.headers['Authorization'] = clientHeaders['Authorization'];
-          } catch (err) {
-            // Use response instead
-            res.writeHead(500, {
-                'Content-Type': 'text/plain'
-              });
-              res.end(
-                'Could not create an identity token: ' + err
-              );
-          }
-        proxyReq.setHeader('Authorization','Bearer ' + id_token);
+        } catch (err) {
+        // Use response instead
+        res.writeHead(500, {
+            'Content-Type': 'text/plain'
+            });
+            res.end(
+            'Could not create an identity token: ' + err
+            );
+        }
+        //proxyReq.setHeader('Authorization','Bearer ' + id_token);
         // ALTERNATIVE:
         //proxyReq.headers['Authorization'] = 'Bearer ' + res.locals.token;
     }
