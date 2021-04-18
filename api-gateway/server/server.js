@@ -231,10 +231,12 @@ async function verifyBasicToken (req, res, next) {
     } catch (err) {
         // Use response instead
         console.log(err.code);
-        console.log((err.message).match('^\d{3}$'));
+        console.log((err.message).match(/^\d{3}$/));
         console.log(err.message);
-        if (String(err).startsWith('HTTPError')) {
-            res.writeHead((err.message).match('^\d{3}$'), {
+        console.log(err.name);
+        console.log(String(err));
+        if ((err.name).startsWith('HTTPError')) {
+            res.writeHead((err.message).match(/^\d{3}$/), {
                 'Content-Type': 'application/json'
             });
             res.end(responseBody);
