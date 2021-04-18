@@ -230,7 +230,9 @@ async function verifyBasicToken (req, res, next) {
         next();
     } catch (err) {
         // Use response instead
-        if (err.startsWith('HTTPError')) {
+        console.log(err.code);
+        console.log((err.message).match('^\d{3}$'));
+        if (String(err).startsWith('HTTPError')) {
             res.writeHead((err.message).match('^\d{3}$'), {
                 'Content-Type': 'application/json'
             });
