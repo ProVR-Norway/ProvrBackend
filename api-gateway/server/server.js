@@ -29,7 +29,7 @@ const auth = new GoogleAuth();
 //app.use(express.json()); 
 
 const authApiServiceURL = process.env.URL_AUTH_MICROSERVICE;
-//const cadApiServiceURL = process.env.URL_CAD_MICROSERVICE;
+const cadApiServiceURL = process.env.URL_CAD_MICROSERVICE;
 // Set up metadata server request
 // See https://cloud.google.com/compute/docs/instances/verifying-instance-identity#request_signature
 //const metadataServerTokenURL = 'http://metadata/computeMetadata/v1/instance/service-accounts/default/identity?audience=';
@@ -40,12 +40,13 @@ async function getIdToken (req, res, next) {
     // The full path is retrieved based on the following answer:
     // Link: https://stackoverflow.com/a/10185427
     try {
+        const audience = authApiServiceURL + req.originalUrl
         // Create a Google Auth client with the requested service url as the target audience.
-        //if (!client) client = await auth.getIdTokenClient(authApiServiceURL + req.originalUrl);
-        let client = await auth.getIdTokenClient(authApiServiceURL + req.originalUrl);
+        const client = await auth.getIdTokenClient(audience);
         // Fetch the client request headers and add them to the service request headers.
         // The client request headers include an ID token that authenticates the request.
         const clientHeaders = await client.getRequestHeaders();
+        // Pass the header to the next middleware
         res.locals.authorizationHeader = clientHeaders['Authorization'];
     } catch (err) {
         // Use response instead
@@ -55,12 +56,94 @@ async function getIdToken (req, res, next) {
         res.end(
             'Could not create an identity token: ' + err
         );
+        return;
+    }
+    next();
+};
+
+const authCheckURL = authApiServiceURL + '/auth/auth_check';
+
+async function getIdTokenForAuthCheck (req, res, next) {
+    // The full path is retrieved based on the following answer:
+    // Link: https://stackoverflow.com/a/10185427
+    try {
+        // Create a Google Auth client with the requested service url as the target audience.
+        const client = await auth.getIdTokenClient(authCheckURL);
+        // Fetch the client request headers and add them to the service request headers.
+        // The client request headers include an ID token that authenticates the request.
+        const clientHeaders = await client.getRequestHeaders();
+        // Pass the header to the next middleware
+        res.locals.authorizationHeaderForAuthCheck = clientHeaders['Authorization'];
+    } catch (err) {
+        // Use response instead
+        res.writeHead(500, {
+            'Content-Type': 'text/plain'
+        });
+        res.end(
+            'Could not create an identity token: ' + err
+        );
+        return;
+    }
+    next();
+};
+
+async function verifyBasicToken (req, res, next) {
+    // The full path is retrieved based on the following answer:
+    // Link: https://stackoverflow.com/a/10185427
+    try {
+        const providedToken = req.headers['Authorization'].replace('Basic ','');
+        console.log(providedToken);
+        const {body} = await got.post(authCheckURL, {
+            headers: { 
+                'Authrization': res.locals.authorizationHeaderForAuthCheck
+            },
+            json: {
+                token: providedToken,
+                username: 'admin' // TESTING ONLY!
+            },
+            responseType: 'json'
+        });
+        // End the chain if the token is not valid
+        if (!res.status(200)) return;
+    } catch (err) {
+        // Use response instead
+        res.writeHead(500, {
+            'Content-Type': 'text/plain'
+        });
+        res.end(
+            'Could not verify the basic token: ' + err
+        );
+        return;
     }
     next();
 };
 
 var authOptions = {
     target: authApiServiceURL,
+    // THE FOLLOWING OPTION NEEDS TO BE HERE EVEN WHEN IT IS UPLOADED TO CLOUD RUN. 
+    // IF NOT THE PROXY WON'T WORK PROPERLY!
+    changeOrigin: true,
+    onError: function(err, req, res) {
+        res.writeHead(500, {
+          'Content-Type': 'text/plain'
+        });
+        res.end(
+          'The gateway is currently unable to communicated with the requested service.'
+        );
+    },
+    // IMPORTANT! 
+    // The onProxyReq must be below the other events (onError and onProxyRes)
+    // If not the proxyReq will be undefined and we cannot use the setHeader function
+    // The ALTERNATIVE can be used instead
+    onProxyReq: function (proxyReq, req, res) {
+        proxyReq.setHeader('Authorization', res.locals.authorizationHeader);
+        // ALTERNATIVE:
+        //proxyReq.headers['Authorization'] = 'Bearer ' + res.locals.token;
+    }
+};
+
+var cadOptions = {
+    target: cadApiServiceURL,
     // THE FOLLOWING OPTION NEEDS TO BE HERE EVEN WHEN IT IS UPLOADED TO CLOUD RUN. 
     // IF NOT THE PROXY WON'T WORK PROPERLY!
     changeOrigin: true,
@@ -135,7 +218,7 @@ var { createProxyMiddleware } = require('http-proxy-middleware');
 // FOR EXAMPLE auth/login AND auth/register
 // ONLY /auth WILL NOT WORK DUE TO "**"
 app.use('/auth/**', getIdToken, createProxyMiddleware(authOptions));
-//app.use('cadmodels/**', createProxyMiddleware(cadOptions));
+app.use('/cadmodels/**', getIdTokenForAuthCheck, verifyBasicToken, getIdToken, createProxyMiddleware(cadOptions));
 
 // THE PORT MUST BE 8080 WHEN UPLODADED TO CLOUD RUN
 app.listen(8080);
