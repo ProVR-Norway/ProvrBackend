@@ -72,6 +72,7 @@ async function getIdTokenForAuthCheck (req, res, next) {
         // Fetch the client request headers and add them to the service request headers.
         // The client request headers include an ID token that authenticates the request.
         const clientHeaders = await client.getRequestHeaders();
+        console.log(clientHeaders);
         // Pass the header to the next middleware
         res.locals.authorizationHeaderForAuthCheck = clientHeaders['Authorization'];
     } catch (err) {
