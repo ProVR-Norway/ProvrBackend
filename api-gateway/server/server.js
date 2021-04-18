@@ -227,7 +227,10 @@ async function verifyBasicToken (req, res, next) {
             responseType: 'json'
         });
         // End the chain if the token is not valid
-        if (!res.status(200)) return;
+        if (!res.status(200)) {
+            res.end(body.data);
+            return;
+        }
     } catch (err) {
         // Use response instead
         res.writeHead(500, {
