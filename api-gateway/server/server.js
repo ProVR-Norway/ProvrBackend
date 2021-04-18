@@ -175,7 +175,6 @@ async function getIdToken (req, res, next) {
         res.end(
             'Could not create an identity token: ' + err
         );
-        return;
     }
     next();
 };
@@ -201,7 +200,6 @@ async function getIdTokenForAuthCheck (req, res, next) {
         res.end(
             'Could not create an identity token: ' + err
         );
-        return;
     }
     next();
 };
@@ -211,6 +209,7 @@ async function verifyBasicToken (req, res, next) {
     // Link: https://stackoverflow.com/a/10185427
     try {
         console.log(JSON.stringify(req.headers));
+        // The "A" in "Authirization" cannot be captital! It must be lowercased
         const providedToken = req.headers['authorization'].split(' ')[1];//.replace('Basic ','');
         console.log(providedToken);
         const {body} = await got.post(authCheckURL, {
@@ -226,11 +225,9 @@ async function verifyBasicToken (req, res, next) {
             },
             responseType: 'json'
         });
+        console.log('Here!');
         // End the chain if the token is not valid
-        if (!res.status(200)) {
-            res.end(body.data);
-            return;
-        }
+        if (res.statusCode !== 200) res.end(body.data)
     } catch (err) {
         // Use response instead
         res.writeHead(500, {
@@ -239,7 +236,6 @@ async function verifyBasicToken (req, res, next) {
         res.end(
             'Could not verify the basic token: ' + err
         );
-        return;
     }
     next();
 };
