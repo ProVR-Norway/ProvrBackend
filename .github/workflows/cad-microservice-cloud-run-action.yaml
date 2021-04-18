@@ -45,7 +45,7 @@ jobs:
           --region ${{ secrets.GCP_REGION }} \
           --image gcr.io/${{ secrets.GCP_PROJECT_ID }}/cad-microservice \
           --platform managed \
-          --allow-unauthenticated \
+          --no-allow-unauthenticated \
           --project ${{ secrets.GCP_PROJECT_ID }} \
           --vpc-connector ${{ secrets.GCP_VCP_CONNECTOR }} \
           --add-cloudsql-instances ${{ secrets.CLOUD_SQL_INSTANCE_NAME }} \
