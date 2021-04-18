@@ -195,7 +195,7 @@ async function verifyBasicToken (req, res, next) {
     // Link: https://stackoverflow.com/a/10185427
     try {
         console.log(JSON.stringify(req.headers));
-        const providedToken = req.headers['Authorization'].replace('Basic ','');
+        const providedToken = req.headers['authorization'].split(' ')[1];//.replace('Basic ','');
         console.log(providedToken);
         const {body} = await got.post(authCheckURL, {
             headers: { 
