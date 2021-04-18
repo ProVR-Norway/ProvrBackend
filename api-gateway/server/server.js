@@ -38,7 +38,7 @@ const metadataServerTokenURL = 'http://metadata/computeMetadata/v1/instance/serv
 const app = express();
 
 
-app.use('/auth/**', async (req, res) => {
+app.use('/auth/**', async (req, res, next) => {
     // The full path is retrieved based on the following answer:
     // Link: https://stackoverflow.com/a/10185427
     // Set the options for the request to get the token
