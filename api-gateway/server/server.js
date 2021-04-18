@@ -207,15 +207,16 @@ async function getIdTokenForAuthCheck (req, res, next) {
 async function verifyBasicToken (req, res, next) {
     // The full path is retrieved based on the following answer:
     // Link: https://stackoverflow.com/a/10185427
+    let responseBody;
     try {
         console.log(JSON.stringify(req.headers));
         // The "A" in "Authirization" cannot be captital! It must be lowercased
         const providedToken = req.headers['authorization'].split(' ')[1];//.replace('Basic ','');
         console.log(providedToken);
-        const {body} = await got.post(authCheckURL, {
+        {responseBody} = await got.post(authCheckURL, {
             // Option makes got forward bad requests to the client
             // instead of as exceptions.
-            throwHttpErrors: false,
+            //throwHttpErrors: false,
             headers: { 
                 'Authorization': res.locals.authorizationHeaderForAuthCheck
             },
@@ -226,15 +227,14 @@ async function verifyBasicToken (req, res, next) {
             responseType: 'json'
         });
         console.log('Here!');
-        // End the chain if the token is not valid
-        if (res.statusCode === 200) {
-            console.log('Here! (Again)');
-            next();
-        }
+        next();
     } catch (err) {
         // Use response instead
-        if (err.code) {
-
+        if (err.code === 'HTTPError') {
+            res.writeHead((err.message).match('^\d{3}$'), {
+                'Content-Type': 'application/json'
+            });
+            res.end(responseBody);
         }
         else {
             res.writeHead(500, {
