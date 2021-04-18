@@ -168,6 +168,7 @@ async function getIdTokenForAuthCheck (req, res, next) {
     // The full path is retrieved based on the following answer:
     // Link: https://stackoverflow.com/a/10185427
     try {
+        console.log(JSON.stringify(req.headers));
         // Create a Google Auth client with the requested service url as the target audience.
         const client = await auth.getIdTokenClient(authCheckURL);
         // Fetch the client request headers and add them to the service request headers.
@@ -193,6 +194,7 @@ async function verifyBasicToken (req, res, next) {
     // The full path is retrieved based on the following answer:
     // Link: https://stackoverflow.com/a/10185427
     try {
+        console.log(JSON.stringify(req.headers));
         const providedToken = req.headers['Authorization'].replace('Basic ','');
         console.log(providedToken);
         const {body} = await got.post(authCheckURL, {
