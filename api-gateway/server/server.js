@@ -37,29 +37,6 @@ const metadataServerTokenURL = 'http://metadata/computeMetadata/v1/instance/serv
 
 const app = express();
 
-
-app.use('/auth/**', async (req, res, next) => {
-    // The full path is retrieved based on the following answer:
-    // Link: https://stackoverflow.com/a/10185427
-    // Set the options for the request to get the token
-    const tokenRequestOptions = {
-        uri: metadataServerTokenURL + authApiServiceURL + req.originalUrl,
-        headers: {
-            'Metadata-Flavor': 'Google'
-        }
-    };
-    await request(tokenRequestOptions)
-    .then((token) => {
-        //console.log("Fetched token: " + token);
-        //Passing token to the second middleware
-        res.locals.token = token;
-    })
-    .catch((error) => {
-        res.status(400).send(error);
-    });
-    next();
-});
-
 var authOptions = {
     target: authApiServiceURL,
     // THE FOLLOWING OPTION NEEDS TO BE HERE EVEN WHEN IT IS UPLOADED TO CLOUD RUN. 
@@ -77,8 +54,25 @@ var authOptions = {
     // The onProxyReq must be below the other events (onError and onProxyRes)
     // If not the proxyReq will be undefined and we cannot use the setHeader function
     // The ALTERNATIVE can be used instead
-    onProxyReq: function (proxyReq, req, res) {
-        proxyReq.setHeader('Authorization','Bearer ' + res.locals.token);
+    onProxyReq: async (proxyReq, req, res) => {
+        const tokenRequestOptions = {
+            uri: metadataServerTokenURL + authApiServiceURL + req.originalUrl,
+            headers: {
+                'Metadata-Flavor': 'Google'
+            }
+        };
+        proxyReq.socket.pause();
+        await request(tokenRequestOptions)
+        .then((token) => {
+            //console.log("Fetched token: " + token);
+            //Passing token to the second middleware
+            proxyReq.setHeader('Authorization','Bearer ' + token);
+            proxyReq.socket.resume();
+        })
+        .catch((error) => {
+            res.status(400).send(error);
+        });
+        
         // ALTERNATIVE:
         //proxyReq.headers['Authorization'] = 'Bearer ' + res.locals.token;
     }
