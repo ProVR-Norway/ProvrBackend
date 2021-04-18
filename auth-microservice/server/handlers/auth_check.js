@@ -57,14 +57,14 @@ router.post('/', function(req, res){
          if(users.token === reply){
             res.status(200);
             res.send({
-               "success":"Token-path access-check was successful; the token is authorized for the path"
+               success:"Token-path access-check was successful; the token is authorized for the path"
             });
          }
          // If the token is incorrect
          else {
             res.status(402);
             res.send({
-               "failed":"Unauthorized with invalid token. Please re-login"
+               failed:"Unauthorized with invalid token. Please re-login"
             });
          }
       }

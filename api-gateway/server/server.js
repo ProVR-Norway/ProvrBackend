@@ -235,7 +235,9 @@ async function verifyBasicToken (req, res, next) {
             res.writeHead(statusCodeExtracted, {
                 'Content-Type': 'application/json'
             });
-            res.end(responseBody.data);
+            // responseBody is not defined when there is an unsuccessful request
+            // TODO: Find a replacement for the 'got' module
+            res.end();
         }
         else {
             res.writeHead(500, {
