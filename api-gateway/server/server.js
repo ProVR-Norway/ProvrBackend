@@ -214,6 +214,9 @@ async function verifyBasicToken (req, res, next) {
         const providedToken = req.headers['authorization'].split(' ')[1];//.replace('Basic ','');
         console.log(providedToken);
         const {body} = await got.post(authCheckURL, {
+            // Option makes got forward bad requests to the client
+            // instead of as exceptions.
+            throwHttpErrors: false,
             headers: { 
                 'Authorization': res.locals.authorizationHeaderForAuthCheck
             },
