@@ -143,7 +143,9 @@ async function getIdToken (req, res, next) {
     // The full path is retrieved based on the following answer:
     // Link: https://stackoverflow.com/a/10185427
     try {
-        const audience = authApiServiceURL + req.originalUrl
+        // Get destination url of the request 
+        const audience = req.protocol + '://' + req.get('host') + req.originalUrl
+        console.log(audience);
         // Create a Google Auth client with the requested service url as the target audience.
         const client = await auth.getIdTokenClient(audience);
         // Fetch the client request headers and add them to the service request headers.
