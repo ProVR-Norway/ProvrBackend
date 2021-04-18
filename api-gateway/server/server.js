@@ -213,7 +213,7 @@ async function verifyBasicToken (req, res, next) {
         // The "A" in "Authirization" cannot be captital! It must be lowercased
         const providedToken = req.headers['authorization'].split(' ')[1];//.replace('Basic ','');
         console.log(providedToken);
-        {responseBody} = await got.post(authCheckURL, {
+        responseBody = await got.post(authCheckURL, {
             // Option makes got forward bad requests to the client
             // instead of as exceptions.
             //throwHttpErrors: false,
