@@ -145,10 +145,10 @@ async function getIdToken (req, res, next) {
     try {
         // Get destination url of the request 
         let audience;
-        if (req.originalUrl.startWith('/auth')) {
+        if ((req.originalUrl).startWith('/auth')) {
             audience = authApiServiceURL + req.originalUrl;
         }
-        else if (req.originalUrl.startWith('/cadmodels')){
+        else if ((req.originalUrl).startWith('/cadmodels')){
             audience = cadApiServiceURL + req.originalUrl;
         } else {
             throw new Error('Unknown path!');
