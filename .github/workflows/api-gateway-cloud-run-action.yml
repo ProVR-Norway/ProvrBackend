@@ -28,20 +28,20 @@ jobs:
       
       - name: Build
         run: |
-          docker build -t gcr.io/${{ secrets.GCP_PROJECT_ID }}/api-gateway -f api-gateway/Dockerfile .
+          docker build -t gcr.io/${{ secrets.GCP_PROJECT_ID }}/api-gateway-dev -f api-gateway/Dockerfile .
 
       - name: Push
         run: |
-          docker push gcr.io/${{ secrets.GCP_PROJECT_ID }}/api-gateway
+          docker push gcr.io/${{ secrets.GCP_PROJECT_ID }}/api-gateway-dev
       #- name: Build
       #  run: |
       #    gcloud builds submit --tag gcr.io/${{ secrets.GCP_PROJECT_ID }}/auth-microservice
 
       - name: Deploy
         run: |
-          gcloud run deploy api-gateway \
+          gcloud run deploy api-gateway-dev \
           --region ${{ secrets.GCP_REGION }} \
-          --image gcr.io/${{ secrets.GCP_PROJECT_ID }}/api-gateway \
+          --image gcr.io/${{ secrets.GCP_PROJECT_ID }}/api-gateway-dev \
           --platform managed \
           --allow-unauthenticated \
           --project ${{ secrets.GCP_PROJECT_ID }} \
