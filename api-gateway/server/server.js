@@ -106,6 +106,7 @@ var authOptions = {
     // The ALTERNATIVE can be used instead
     onProxyReq: async (proxyReq, req, res) => {
         try {
+            proxyReq.socket.pause();
             // Create a Google Auth client with the requested service url as the target audience.
             //if (!client) client = await auth.getIdTokenClient(authApiServiceURL + req.originalUrl);
             let client = await auth.getIdTokenClient(authApiServiceURL + req.originalUrl);
@@ -113,14 +114,16 @@ var authOptions = {
             // The client request headers include an ID token that authenticates the request.
             const clientHeaders = await client.getRequestHeaders();
             proxyReq.setHeader('Authorization', clientHeaders['Authorization']);
+            proxyReq.socket.resume();
         } catch (err) {
-        // Use response instead
-        res.writeHead(500, {
-            'Content-Type': 'text/plain'
+            // Use response instead
+            proxyReq.socket.resume();
+            res.writeHead(500, {
+                'Content-Type': 'text/plain'
             });
-        res.end(
-        'Could not create an identity token: ' + err
-        );
+            res.end(
+            'Could not create an identity token: ' + err
+            );
         }
         //proxyReq.setHeader('Authorization','Bearer ' + id_token);
         // ALTERNATIVE:
