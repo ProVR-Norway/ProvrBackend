@@ -199,7 +199,7 @@ async function verifyBasicToken (req, res, next) {
         console.log(providedToken);
         const {body} = await got.post(authCheckURL, {
             headers: { 
-                'Authrization': res.locals.authorizationHeaderForAuthCheck
+                'Authorization': res.locals.authorizationHeaderForAuthCheck
             },
             json: {
                 token: providedToken,
