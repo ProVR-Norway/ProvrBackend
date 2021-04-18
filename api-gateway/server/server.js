@@ -144,7 +144,15 @@ async function getIdToken (req, res, next) {
     // Link: https://stackoverflow.com/a/10185427
     try {
         // Get destination url of the request 
-        const audience = req.protocol + '://' + req.get('host') + req.originalUrl
+        let audience;
+        if (req.originalUrl.startWith('/auth')) {
+            audience = authApiServiceURL + req.originalUrl;
+        }
+        else if (req.originalUrl.startWith('/cadmodels')){
+            audience = cadApiServiceURL + req.originalUrl;
+        } else {
+            throw new Error('Unknown path!');
+        }
         console.log(audience);
         // Create a Google Auth client with the requested service url as the target audience.
         const client = await auth.getIdTokenClient(audience);
