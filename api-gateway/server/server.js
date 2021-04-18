@@ -19,7 +19,7 @@
 
 const express = require('express'); 
 // Needed to send requests to the
-const request = require('request-promise');
+//const request = require('request-promise');
 //const got = require('got');
 const {GoogleAuth} = require('google-auth-library');
 const auth = new GoogleAuth();
@@ -30,12 +30,34 @@ const auth = new GoogleAuth();
 
 const authApiServiceURL = process.env.URL_AUTH_MICROSERVICE;
 //const cadApiServiceURL = process.env.URL_CAD_MICROSERVICE;
-
 // Set up metadata server request
 // See https://cloud.google.com/compute/docs/instances/verifying-instance-identity#request_signature
-const metadataServerTokenURL = 'http://metadata/computeMetadata/v1/instance/service-accounts/default/identity?audience=';
+//const metadataServerTokenURL = 'http://metadata/computeMetadata/v1/instance/service-accounts/default/identity?audience=';
 
 const app = express();
+
+async function getIdToken (req, res, next) {
+    // The full path is retrieved based on the following answer:
+    // Link: https://stackoverflow.com/a/10185427
+    try {
+        // Create a Google Auth client with the requested service url as the target audience.
+        //if (!client) client = await auth.getIdTokenClient(authApiServiceURL + req.originalUrl);
+        let client = await auth.getIdTokenClient(authApiServiceURL + req.originalUrl);
+        // Fetch the client request headers and add them to the service request headers.
+        // The client request headers include an ID token that authenticates the request.
+        const clientHeaders = await client.getRequestHeaders();
+        res.locals.authorizationHeader = clientHeaders['Authorization'];
+    } catch (err) {
+        // Use response instead
+        res.writeHead(500, {
+            'Content-Type': 'text/plain'
+        });
+        res.end(
+            'Could not create an identity token: ' + err
+        );
+    }
+    next();
+};
 
 var authOptions = {
     target: authApiServiceURL,
@@ -54,25 +76,8 @@ var authOptions = {
     // The onProxyReq must be below the other events (onError and onProxyRes)
     // If not the proxyReq will be undefined and we cannot use the setHeader function
     // The ALTERNATIVE can be used instead
-    onProxyReq: async (proxyReq, req, res) => {
-        const tokenRequestOptions = {
-            uri: metadataServerTokenURL + authApiServiceURL + req.originalUrl,
-            headers: {
-                'Metadata-Flavor': 'Google'
-            }
-        };
-        proxyReq.socket.pause();
-        await request(tokenRequestOptions)
-        .then((token) => {
-            //console.log("Fetched token: " + token);
-            //Passing token to the second middleware
-            proxyReq.setHeader('Authorization','Bearer ' + token);
-            proxyReq.socket.resume();
-        })
-        .catch((error) => {
-            res.status(400).send(error);
-        });
-        
+    onProxyReq: function (proxyReq, req, res) {
+        proxyReq.setHeader('Authorization', res.locals.authorizationHeader);
         // ALTERNATIVE:
         //proxyReq.headers['Authorization'] = 'Bearer ' + res.locals.token;
     }
@@ -129,7 +134,7 @@ var { createProxyMiddleware } = require('http-proxy-middleware');
 // LISTENS FOR REQUESTS WITH PATH STARTING WITH /auth
 // FOR EXAMPLE auth/login AND auth/register
 // ONLY /auth WILL NOT WORK DUE TO "**"
-app.use('/auth/**', createProxyMiddleware(authOptions));
+app.use('/auth/**', getIdToken, createProxyMiddleware(authOptions));
 //app.use('cadmodels/**', createProxyMiddleware(cadOptions));
 
 // THE PORT MUST BE 8080 WHEN UPLODADED TO CLOUD RUN
