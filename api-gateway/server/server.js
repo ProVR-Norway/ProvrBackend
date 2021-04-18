@@ -167,6 +167,7 @@ async function getIdToken (req, res, next) {
         const clientHeaders = await client.getRequestHeaders();
         // Pass the header to the next middleware
         res.locals.authorizationHeader = clientHeaders['Authorization'];
+        next();
     } catch (err) {
         // Use response instead
         res.writeHead(500, {
@@ -176,7 +177,6 @@ async function getIdToken (req, res, next) {
             'Could not create an identity token: ' + err
         );
     }
-    next();
 };
 
 async function getIdTokenForAuthCheck (req, res, next) {
@@ -192,6 +192,7 @@ async function getIdTokenForAuthCheck (req, res, next) {
         console.log(clientHeaders);
         // Pass the header to the next middleware
         res.locals.authorizationHeaderForAuthCheck = clientHeaders['Authorization'];
+        next();
     } catch (err) {
         // Use response instead
         res.writeHead(500, {
@@ -201,7 +202,6 @@ async function getIdTokenForAuthCheck (req, res, next) {
             'Could not create an identity token: ' + err
         );
     }
-    next();
 };
 
 async function verifyBasicToken (req, res, next) {
@@ -215,7 +215,7 @@ async function verifyBasicToken (req, res, next) {
         const {body} = await got.post(authCheckURL, {
             // Option makes got forward bad requests to the client
             // instead of as exceptions.
-            throwHttpErrors: false,
+            //throwHttpErrors: false,
             headers: { 
                 'Authorization': res.locals.authorizationHeaderForAuthCheck
             },
@@ -227,17 +227,21 @@ async function verifyBasicToken (req, res, next) {
         });
         console.log('Here!');
         // End the chain if the token is not valid
-        if (res.statusCode !== 200) res.end(body.data)
+        if (res.statusCode === 200) next();
     } catch (err) {
         // Use response instead
-        res.writeHead(500, {
-            'Content-Type': 'text/plain'
-        });
-        res.end(
-            'Could not verify the basic token: ' + err
-        );
+        if (err.code) {
+
+        }
+        else {
+            res.writeHead(500, {
+                'Content-Type': 'text/plain'
+            });
+            res.end(
+                'Could not verify the basic token: ' + err
+            );
+        }
     }
-    next();
 };
 
 // THE PORT MUST BE 8080 WHEN UPLODADED TO CLOUD RUN
