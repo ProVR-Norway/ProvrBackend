@@ -37,8 +37,8 @@ const metadataServerTokenURL = 'http://metadata/computeMetadata/v1/instance/serv
 
 const app = express();
 
-/*
-async function getToken (req, res) {
+
+app.use('/auth/**', async (req, res) => {
     // The full path is retrieved based on the following answer:
     // Link: https://stackoverflow.com/a/10185427
     // Set the options for the request to get the token
@@ -52,16 +52,14 @@ async function getToken (req, res) {
     .then((token) => {
         //console.log("Fetched token: " + token);
         //Passing token to the second middleware
-        return token;
+        res.locals.token = token;
     })
     .catch((error) => {
         res.status(400).send(error);
-        return;
     });
-};
-*/
+    next();
+});
 
-/*
 var authOptions = {
     target: authApiServiceURL,
     // THE FOLLOWING OPTION NEEDS TO BE HERE EVEN WHEN IT IS UPLOADED TO CLOUD RUN. 
@@ -85,8 +83,8 @@ var authOptions = {
         //proxyReq.headers['Authorization'] = 'Bearer ' + res.locals.token;
     }
 };
-*/
 
+/*
 var authOptions = {
     target: authApiServiceURL,
     // THE FOLLOWING OPTION NEEDS TO BE HERE EVEN WHEN IT IS UPLOADED TO CLOUD RUN. 
@@ -130,6 +128,7 @@ var authOptions = {
         //proxyReq.headers['Authorization'] = 'Bearer ' + res.locals.token;
     }
 };
+*/
 
 var { createProxyMiddleware } = require('http-proxy-middleware');
 
