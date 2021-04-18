@@ -233,10 +233,11 @@ async function verifyBasicToken (req, res, next) {
         console.log(err.code);
         console.log(err.message);
         console.log(err.name);
-        const regExp = /^(?:\D*\d){3}\D*$/;
-        console.log(regExp);
         if (err.name = 'HTTPError') {
-            res.writeHead((err.message).match(regExp), {
+            const regExp = /^(?:\D*\d){3}\D*$/;
+            const statusCodeExtracted = (err.message).match(regExp);
+            console.log(statusCodeExtracted);
+            res.writeHead(400, {
                 'Content-Type': 'application/json'
             });
             res.end(responseBody);
