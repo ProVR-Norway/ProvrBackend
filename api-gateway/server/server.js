@@ -215,7 +215,7 @@ async function verifyBasicToken (req, res, next) {
         const {body} = await got.post(authCheckURL, {
             // Option makes got forward bad requests to the client
             // instead of as exceptions.
-            //throwHttpErrors: false,
+            throwHttpErrors: false,
             headers: { 
                 'Authorization': res.locals.authorizationHeaderForAuthCheck
             },
@@ -227,7 +227,10 @@ async function verifyBasicToken (req, res, next) {
         });
         console.log('Here!');
         // End the chain if the token is not valid
-        if (res.statusCode === 200) next();
+        if (res.statusCode === 200) {
+            console.log('Here! (Again)');
+            next();
+        }
     } catch (err) {
         // Use response instead
         if (err.code) {
