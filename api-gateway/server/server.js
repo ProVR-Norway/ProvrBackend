@@ -231,8 +231,7 @@ async function verifyBasicToken (req, res, next) {
                 console.log('Token is Ok. Continuing the middleware chain.');
                 next();
             } else {
-                res.writeHead(response.status);
-                res.end(response.body);
+                res.send(response.body);
             }
         })
     } catch (err) {
