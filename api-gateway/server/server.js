@@ -226,8 +226,13 @@ async function verifyBasicToken (req, res, next) {
                 'Content-Type': 'application/json'
             }
         })
-        .then(response => response.json())
-        .then(json => console.log(json));
+        .then(response => {
+            if (response.ok) {
+                console.log('Token is valid ...');
+                next();
+            }
+        })
+        res.send(responseBody);
         /*
         .then(response => {
             if (response.ok) { // res.status >= 200 && res.status < 300
