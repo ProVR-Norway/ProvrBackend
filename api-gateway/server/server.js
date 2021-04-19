@@ -220,9 +220,10 @@ async function verifyBasicToken (req, res, next) {
             username: 'admin' // TESTING ONLY!
         });
         const response = await fetch(authCheckURL, {
-            method: 'post',
+            method: 'POST',
             body:    requestBody,
             headers: {
+                "Content-Type": "application/json",
                 'Authorization': res.locals.authorizationHeaderForAuthCheck,
             }
         });
