@@ -223,7 +223,8 @@ async function verifyBasicToken (req, res, next) {
                 console.log("Something is very wrong!!!");
                 next();
             } else {
-                return;
+                console.log("Ending the chain ...");
+                res.end();
             }
         }
         fetch(authCheckURL, {
