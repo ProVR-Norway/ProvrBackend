@@ -218,22 +218,23 @@ async function verifyBasicToken (req, res, next) {
             token: providedToken,
             username: 'admin' // TESTING ONLY!
         };
-        const responseBody = await fetch(authCheckURL, {
+        const response = await fetch(authCheckURL, {
             method: 'POST',
             body:    requestBody,
             headers: {
                 'Authorization': res.locals.authorizationHeaderForAuthCheck,
                 'Content-Type': 'application/json'
             }
-        })
-        .then(response => {
-            console.log(response.body);
-            if (response.ok) {
-                console.log('Token is valid ...');
-                next();
-            }
-        })
-        res.send(responseBody);
+        });
+        if (response.ok) { // res.status >= 200 && res.status < 300
+            console.log('Token is valid ...');
+            next();
+        } else {
+            const data = await response.json();
+            console.log(data);
+            res.status(response.status);
+            res.send(data);
+        }
         /*
         .then(response => {
             if (response.ok) { // res.status >= 200 && res.status < 300
