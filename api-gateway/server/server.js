@@ -222,6 +222,8 @@ async function verifyBasicToken (req, res, next) {
             if (res.ok) { // res.status >= 200 && res.status < 300
                 console.log("Something is very wrong!!!");
                 next();
+            } else {
+                return;
             }
         }
         fetch(authCheckURL, {
