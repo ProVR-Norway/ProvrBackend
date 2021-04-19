@@ -45,7 +45,7 @@ router.get('/:username', function(req, res){
             // PRINT OUT THE SPECIFIC ERROR
             console.log("An error occured with the MySQL database: " + error.message);
             res.send({
-                "failed":"Internal error"
+                failed:"Internal error"
             });
         }
         // If we get a result we send a new query to get the owning models of that person
@@ -58,7 +58,7 @@ router.get('/:username', function(req, res){
                     // PRINT OUT THE SPECIFIC ERROR
                     console.log("An error occured with the MySQL database: " + error.message);
                     res.send({
-                        "failed":"Internal error"
+                        failed:"Internal error"
                     });
                 }
                 // Regardless of the user has any models or not we send an array to the client (empty if no models are uploaded)
@@ -67,22 +67,22 @@ router.get('/:username', function(req, res){
                     // Construct JSON array with every model in it
                     results.forEach(model => {
                         owning_models.push({
-                            "modelName": model.name,
-                            "dateUploaded": model.dateUploaded
+                            modelName: model.name,
+                            dateUploaded: model.dateUploaded
                         });
                     });
                     res.status(200);
                     res.send({
-                        "modelnames": owning_models
+                        modelnames: owning_models
                     });
                 }
             });
         // If we find no matching username, we return the 403 status code
         } else {
             res.status(403);
-            console.log("User does not exist.");
+            console.log("User does not exist");
             res.send({
-                "failed":"User does not exist."
+                failed:"User does not exist"
             });
         }
     });

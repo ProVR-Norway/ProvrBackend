@@ -14,7 +14,7 @@ const getSignedURL = require('./handlers/get_signed_url.js');
 const listAllModels = require('./handlers/list_all_models.js');
 //const getSignedURL = require('./handlers/put_signed_url.js');
 
-app.use('/cadmodels/signedurl/get', getSignedURL);
+app.use('/cadmodels/signedurl', getSignedURL);
 app.use('/cadmodels/listall', listAllModels);
 //app.use('/cad/models/signedurl/upload', getSignedURL);
 
