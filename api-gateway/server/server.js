@@ -215,10 +215,10 @@ async function verifyBasicToken (req, res, next) {
         const providedToken = req.headers['authorization'].split(' ')[1];//.replace('Basic ','');
         console.log(providedToken);
         console.log(res.locals.authorizationHeaderForAuthCheck);
-        const requestBody = {
+        const requestBody = JSON.stringify({
             token: providedToken,
             username: 'admin' // TESTING ONLY!
-        };
+        });
         const response = await fetch(authCheckURL, {
             method: 'post',
             body:    requestBody,
