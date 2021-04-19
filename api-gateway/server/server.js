@@ -218,15 +218,6 @@ async function verifyBasicToken (req, res, next) {
             token: providedToken,
             username: 'admin' // TESTING ONLY!
         };
-        function checkStatus(res) {
-            if (res.ok) { // res.status >= 200 && res.status < 300
-                console.log("Something is very wrong!!!");
-                next();
-            } else {
-                console.log("Ending the chain ...");
-                res.end();
-            }
-        }
         fetch(authCheckURL, {
             method: 'POST',
             body:    requestBody,
@@ -235,7 +226,15 @@ async function verifyBasicToken (req, res, next) {
                 'Content-Type': 'application/json'
             }
         })
-        .then(checkStatus)
+        .then(response => {
+            if (response.ok) { // res.status >= 200 && res.status < 300
+                console.log('Token is Ok. Continuing the middleware chain.');
+                next();
+            } else {
+                res.writeHead(response.status);
+                res.end(response.body);
+            }
+        })
     } catch (err) {
         res.writeHead(500, {
             'Content-Type': 'text/plain'
