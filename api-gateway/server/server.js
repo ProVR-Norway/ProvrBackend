@@ -220,6 +220,7 @@ async function verifyBasicToken (req, res, next) {
         };
         function checkStatus(res) {
             if (res.ok) { // res.status >= 200 && res.status < 300
+                console.log("Something is very wrong!!!");
                 next();
             }
         }
@@ -261,7 +262,6 @@ async function verifyBasicToken (req, res, next) {
         }
         */
     }
-    next();
 };
 
 // THE PORT MUST BE 8080 WHEN UPLODADED TO CLOUD RUN
