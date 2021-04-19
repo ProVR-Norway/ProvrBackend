@@ -214,18 +214,19 @@ async function verifyBasicToken (req, res, next) {
         // The "A" in "Authirization" cannot be captital! It must be lowercased
         const providedToken = req.headers['authorization'].split(' ')[1];//.replace('Basic ','');
         console.log(providedToken);
+        console.log(res.locals.authorizationHeaderForAuthCheck);
         const requestBody = {
             token: providedToken,
             username: 'admin' // TESTING ONLY!
         };
         const response = await fetch(authCheckURL, {
-            method: 'POST',
+            method: 'post',
             body:    requestBody,
             headers: {
                 'Authorization': res.locals.authorizationHeaderForAuthCheck,
-                'Content-Type': 'application/json'
             }
         });
+        console.log(response);
         if (response.ok) { // res.status >= 200 && res.status < 300
             console.log('Token is valid ...');
             next();
