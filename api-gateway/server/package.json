@@ -13,7 +13,6 @@
     "google-auth-library": "^7.0.4",
     "got": "^11.8.2",
     "http-proxy-middleware": "^1.1.1",
-    "request": "^2.88.2",
-    "request-promise": "^4.2.6"
+    "node-fetch": "^2.6.1"
   }
 }

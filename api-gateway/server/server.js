@@ -20,7 +20,9 @@
 const express = require('express');
 // Needed to send requests to the
 //const request = require('request-promise');
-const got = require('got');
+//const got = require('got');
+// Switched package to node-fectch from got since I had problems using got
+const fetch = require('node-fetch');
 const {GoogleAuth} = require('google-auth-library');
 const auth = new GoogleAuth();
 
@@ -212,22 +214,26 @@ async function verifyBasicToken (req, res, next) {
         // The "A" in "Authirization" cannot be captital! It must be lowercased
         const providedToken = req.headers['authorization'].split(' ')[1];//.replace('Basic ','');
         console.log(providedToken);
-        var {responseBody} = await got.post(authCheckURL, {
-            // Option makes got forward bad requests to the client
-            // instead of as exceptions.
-            //throwHttpErrors: false,
-            headers: { 
-                'Authorization': res.locals.authorizationHeaderForAuthCheck
-            },
-            json: {
-                token: providedToken,
-                username: 'admin' // TESTING ONLY!
-            },
-            responseType: 'json'
+        const requestBody = {
+            token: providedToken,
+            username: 'admin' // TESTING ONLY!
+        };
+        fetch(authCheckURL, {
+            method: 'POST',
+            body:    requestBody,
+            headers: {
+                'Authorization': res.locals.authorizationHeaderForAuthCheck,
+                'Content-Type': 'application/json'
+            }
         });
-        console.log('Here!');
-        next();
     } catch (err) {
+        res.writeHead(500, {
+            'Content-Type': 'text/plain'
+        });
+        res.end(
+            'Could not verify the basic token: ' + err
+        );
+        /*
         if (err.name = 'HTTPError') {
             const regExp = /\b\d{3}\b/g;
             const statusCodeExtracted = (err.message).match(regExp)[0];
@@ -247,7 +253,9 @@ async function verifyBasicToken (req, res, next) {
                 'Could not verify the basic token: ' + err
             );
         }
+        */
     }
+    next();
 };
 
 // THE PORT MUST BE 8080 WHEN UPLODADED TO CLOUD RUN

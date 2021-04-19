@@ -30,7 +30,7 @@ router.post('/', function(req, res){
       "username":req.body.username,
       "token"   :req.body.token
    }
-
+   
    /******************************************************************
     **************** PRINT REQUEST TO CONSOLE ************************
    */

@@ -38,6 +38,7 @@ router.get('/:username', function(req, res){
     const username = req.params.username;
 
     // Sending a query to the database to find the user id of the person with this username
+    // if (username.conta)
     connection.query('SELECT userID FROM User WHERE username = ?', username, function (error, results, fields) {
         if (error) {
             res.status(500);
