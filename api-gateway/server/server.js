@@ -218,6 +218,11 @@ async function verifyBasicToken (req, res, next) {
             token: providedToken,
             username: 'admin' // TESTING ONLY!
         };
+        function checkStatus(res) {
+            if (res.ok) { // res.status >= 200 && res.status < 300
+                next();
+            }
+        }
         fetch(authCheckURL, {
             method: 'POST',
             body:    requestBody,
@@ -225,7 +230,8 @@ async function verifyBasicToken (req, res, next) {
                 'Authorization': res.locals.authorizationHeaderForAuthCheck,
                 'Content-Type': 'application/json'
             }
-        });
+        })
+        .then(checkStatus)
     } catch (err) {
         res.writeHead(500, {
             'Content-Type': 'text/plain'
