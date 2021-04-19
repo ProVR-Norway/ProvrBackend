@@ -44,7 +44,7 @@ if(!err) {
 router.get('/', function(req, res){
    res.status(405);
    res.send({
-      "failed":"Only POST method is accepted"
+      failed:"Only POST method is accepted"
    })
 });
 
@@ -71,7 +71,7 @@ router.post('/', function(req, res){
          // PRINT OUT THE SPECIFIC ERROR
          console.log("An error occured with the MySQL database: " + error.message);
          res.send({
-            "failed":"Internal error"
+            failed:"Internal error"
          });
       }
       // If there are a result we generate a token, stores it in redis and sends to the client
@@ -86,21 +86,21 @@ router.post('/', function(req, res){
                   // PRINT OUT THE SPECIFIC ERROR
                   console.log("An error occured with redis: " + err.message);
                   res.send({
-                     "failed":"Internal error"
+                     failed:"Internal error"
                   });
                };
             })
             res.status(200);
             res.send({
-              "success":"Login successful",
-              "token":generated_token
+              success:"Login successful",
+              token:generated_token
             });
          }
          // If the password is incorrect
          else {
             res.status(400);
             res.send({
-               "failed":"Invalid username or password"
+               failed:"Invalid username or password"
             });
          }
       }
@@ -108,7 +108,7 @@ router.post('/', function(req, res){
       else {
          res.status(400);
          res.send({
-            "failed":"Invalid username or password"
+            failed:"Invalid username or password"
          });
       }
    });

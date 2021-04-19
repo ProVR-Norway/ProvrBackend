@@ -19,7 +19,7 @@ client.on('error', err => console.error('Error when connecting to redis:', err))
 router.get('/', function(req, res){
    res.status(405);
    res.send({
-      "failed":"Only POST method is accepted"
+      failed:"Only POST method is accepted"
    })
 });
 
@@ -47,7 +47,7 @@ router.post('/', function(req, res){
          // PRINT OUT THE SPECIFIC ERROR
          console.log("An error occured with redis: " + err.message);
          res.send({
-            "failed":"Internal error"
+            failed:"Internal error"
          });
       }
       // If we successfully get the generated token 
@@ -72,7 +72,7 @@ router.post('/', function(req, res){
       else {
          res.status(401);
          res.send({
-            "failed":"Unauthorized. Please re-login"
+            failed:"Unauthorized. Please re-login"
          });
       }
    })
