@@ -227,6 +227,7 @@ async function verifyBasicToken (req, res, next) {
             }
         })
         .then(response => {
+            console.log(response.body);
             if (response.ok) {
                 console.log('Token is valid ...');
                 next();
