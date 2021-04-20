@@ -148,7 +148,8 @@ async function verifyBasicToken (req, res, next) {
         // Extracts the token from 'Basic hdbshbvsjvuweihddsfefwfwfwf'.
         const providedToken = req.headers['authorization'].split(' ')[1];
         const requestBody = JSON.stringify({
-            token: providedToken
+            token: providedToken,
+            username: req.params.username
         });
         // Sends request to auth_check to check if the token is valid
         const response = await fetch(authCheckURL, {
