@@ -27,7 +27,6 @@ router.get('/', function(req, res){
 router.post('/', function(req, res){
    // Object with all JSON key values from the request
    const users={
-      "username":req.body.username,
       "token"   :req.body.token
    }
 
@@ -41,7 +40,7 @@ router.post('/', function(req, res){
    */
 
    // Get generated_token from user in redis database
-   client.get(users.username, (err, reply) => {
+   client.get(users.token, (err, reply) => {
       if (err){
          res.status(500);
          // PRINT OUT THE SPECIFIC ERROR
@@ -52,31 +51,18 @@ router.post('/', function(req, res){
       }
       // If we successfully get the generated token 
       else if (reply !== null) {
-         // If the token supplied in the request is the same as the one in redis
-         // under the same username.
-         if(users.token === reply){
-            res.status(200);
+         res.status(200);
             res.send({
-               success:"Token-path access-check was successful; the token is authorized for the path"
-            });
-         }
-         // If the token is incorrect
-         else {
-            res.status(402);
-            res.send({
-               failed:"Unauthorized with invalid token. Please re-login"
-            });
-         }
-      }
-      // If the user does not exist, or the user has no generated token
-      else {
-         res.status(401);
-         res.send({
-            failed:"Unauthorized. Please re-login"
+               success:"The access check was successful. The token is authorized for the path"
          });
       }
-   })
-
+      else {
+            res.status(401);
+            res.send({
+               failed:"Unauthorized. Please re-login"
+            });
+         }
+   });
 });
 //export this router to use in our server.js
 module.exports = router;
