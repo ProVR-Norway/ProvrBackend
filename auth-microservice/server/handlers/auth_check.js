@@ -23,9 +23,8 @@ router.get('/', function(req, res){
    })
 });
 
-// Handler behaviour for POST method. This is the values the handler get from the body of the Postman JSON request
 router.post('/', function(req, res){
-   // Object with all JSON key values from the request
+   // Object with the JSON key value from the request
    const users={
       "token"   :req.body.token
    }
@@ -56,12 +55,13 @@ router.post('/', function(req, res){
                success:"The access check was successful. The token is authorized for the path"
          });
       }
+      // If the token does not exist
       else {
-            res.status(401);
-            res.send({
-               failed:"Unauthorized. Please re-login"
-            });
-         }
+         res.status(401);
+         res.send({
+            failed:"Unauthorized. Please re-login"
+         });
+      }
    });
 });
 //export this router to use in our server.js

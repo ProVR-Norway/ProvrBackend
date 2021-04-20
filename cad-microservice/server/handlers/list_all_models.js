@@ -38,7 +38,6 @@ router.get('/:username', function(req, res){
     const username = req.params.username;
 
     // Sending a query to the database to find the user id of the person with this username
-    // if (username.conta)
     connection.query('SELECT userID FROM User WHERE username = ?', username, function (error, results, fields) {
         if (error) {
             res.status(500);
@@ -61,7 +60,7 @@ router.get('/:username', function(req, res){
                         failed:"Internal error"
                     });
                 }
-                // Regardless of the user has any models or not we send an array to the client (empty if no models are uploaded)
+                // Regardless of if the user has any models or not we send an array to the client (empty if no models are uploaded)
                 else {
                     let owning_models = [];
                     // Construct JSON array with every model in it
