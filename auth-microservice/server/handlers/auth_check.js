@@ -24,42 +24,36 @@ router.get('/', function(req, res){
 });
 
 router.post('/', function(req, res){
-   // Object with the JSON key value from the request
-   const users={
-      "token"   :req.body.token
-   }
-
-   /******************************************************************
-    **************** PRINT REQUEST TO CONSOLE ************************
-   */
-    console.log("HTTP header of request to " + req.originalUrl + ": " + JSON.stringify(req.headers));
-    console.log("HTTP body of request to " + req.originalUrl + ": "  + JSON.stringify(req.body));
-   /************** END PRINT REQUEST TO CONSOLE **********************
-    ******************************************************************
-   */
-
    // Get generated_token from user in redis database
-   client.get(users.token, (err, reply) => {
-      if (err){
+   client.get(users.username, (err, reply) => {
+      if (error) {
          res.status(500);
          // PRINT OUT THE SPECIFIC ERROR
-         console.log("An error occured with redis: " + err.message);
+         console.log("An error occured with the MySQL database: " + error.message);
          res.send({
             failed:"Internal error"
          });
       }
-      // If we successfully get the generated token 
       else if (reply !== null) {
-         res.status(200);
+         // If the token supplied in the request is the same as the one in redis
+         // under the same username.
+         if(users.token === reply){
+            res.status(200);
             res.send({
                success:"The access check was successful. The token is authorized for the path"
-         });
+            });
+         }
+         // If the token is incorrect
+         else {
+            res.status(401);
+               success:"Unauthorized. Please re-login"
+         }
       }
-      // If the token does not exist
+      // If the user does not exist, or the user has no generated token
       else {
-         res.status(401);
+         res.status(402);
          res.send({
-            failed:"Unauthorized. Please re-login"
+            failed:"Invalid username"
          });
       }
    });
