@@ -52,7 +52,7 @@ router.get('/:username', function(req, res){
         else if (results.length > 0) {
             let userId = results[0].userID;
             // IMPORTANT! We use the userID as foreign key to ensure scalability (if we later want the user to be able to change username)
-            connection.query('SELECT * FROM Model WHERE userID = ?', userId, function (error, results, fields) {
+            connection.query('SELECT * FROM Model WHERE userID = ? AND dateUploaded IS NOT NULL', userId, function (error, results, fields) {
                 if (error) {
                     res.status(500);
                     // PRINT OUT THE SPECIFIC ERROR

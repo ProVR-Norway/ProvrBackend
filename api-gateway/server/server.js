@@ -15,10 +15,12 @@
     UPDATE APRIL 17 2021:
     The issue of concern was tried to be solved, but it seems that when
 
+    UPDATE APRIL 19 2021:
+    The API Gateway now work as expected after switching from the module 'got' to 'node-fetch'
+
 */
 
 const express = require('express');
-// Switched package to node-fectch from got since I had problems using got
 const fetch = require('node-fetch');
 const {GoogleAuth} = require('google-auth-library');
 const auth = new GoogleAuth();
@@ -83,43 +85,34 @@ const { createProxyMiddleware } = require('http-proxy-middleware');
 // FOR EXAMPLE auth/login AND auth/register
 // ONLY /auth WILL NOT WORK DUE TO "**"
 app.use('/auth/**', getIdToken, createProxyMiddleware(authOptions));
+// LISTENS FOR REQUESTS WITH PATH STARTING WITH /cadmodels
+// FOR EXAMPLE cadmodels/listall/{username}
+// ONLY /cadmodels WILL NOT WORK DUE TO "**"
 app.use('/cadmodels/**', getIdTokenForAuthCheck, verifyBasicToken, getIdToken, createProxyMiddleware(cadOptions));
 
-// THE FOLLOWING LINE CANNOT BE USED TOGETHER WITH HTTP-PROXY-MIDDLEWARE
-// MORE INFO HERE: https://stackoverflow.com/questions/52270848/zero-response-through-http-proxy-middleware
+// THE FOLLOWING LINE MUST BE BELOW THE HTTP-PROXIES!
 app.use(express.json()); 
 
 async function getIdToken (req, res, next) {
-    // The full path is retrieved based on the following answer:
-    // Link: https://stackoverflow.com/a/10185427
     try {
         // Get destination url of the request 
         let audience;
         const pathURL = req.originalUrl;
+        // Set the audience based on the path of the request sent
         if (pathURL.startsWith('/auth')) {
             audience = authApiServiceURL + pathURL;
         } else {
             audience = cadApiServiceURL + pathURL;
         }
-        /*
-        else if (pathURL.startsWith('/cadmodels')){
-            audience = cadApiServiceURL + pathURL;
-        }
-        else {
-            throw new Error('Unknown path!');
-        }
-        */
-        console.log(audience);
         // Create a Google Auth client with the requested service url as the target audience.
         const client = await auth.getIdTokenClient(audience);
         // Fetch the client request headers and add them to the service request headers.
         // The client request headers include an ID token that authenticates the request.
         const clientHeaders = await client.getRequestHeaders();
-        // Pass the header to the next middleware
+        // Pass the header to the retrieved next middleware
         res.locals.authorizationHeader = clientHeaders['Authorization'];
         next();
     } catch (err) {
-        // Use response instead
         res.writeHead(500, {
             'Content-Type': 'application/json'
         });
@@ -130,21 +123,16 @@ async function getIdToken (req, res, next) {
 };
 
 async function getIdTokenForAuthCheck (req, res, next) {
-    // The full path is retrieved based on the following answer:
-    // Link: https://stackoverflow.com/a/10185427
     try {
-        // console.log(JSON.stringify(req.headers));
         // Create a Google Auth client with the requested service url as the target audience.
         const client = await auth.getIdTokenClient(authCheckURL);
         // Fetch the client request headers and add them to the service request headers.
         // The client request headers include an ID token that authenticates the request.
         const clientHeaders = await client.getRequestHeaders();
-        // console.log(clientHeaders);
-        // Pass the header to the next middleware
+        // Pass the retrieved header to the next middleware
         res.locals.authorizationHeaderForAuthCheck = clientHeaders['Authorization'];
         next();
     } catch (err) {
-        // Use response instead
         res.writeHead(500, {
             'Content-Type': 'application/json'
         });
@@ -155,18 +143,14 @@ async function getIdTokenForAuthCheck (req, res, next) {
 };
 
 async function verifyBasicToken (req, res, next) {
-    // The full path is retrieved based on the following answer:
-    // Link: https://stackoverflow.com/a/10185427
     try {
-        // console.log(JSON.stringify(req.headers));
         // The "A" in "Authirization" cannot be captital! It must be lowercased
-        const providedToken = req.headers['authorization'].split(' ')[1];//.replace('Basic ','');
-        // console.log(providedToken);
-        // console.log(res.locals.authorizationHeaderForAuthCheck);
+        // Extracts the token from 'Basic hdbshbvsjvuweihddsfefwfwfwf'.
+        const providedToken = req.headers['authorization'].split(' ')[1];
         const requestBody = JSON.stringify({
-            token: providedToken,
-            username: 'admin' // TESTING ONLY!
+            token: providedToken
         });
+        // Sends request to auth_check to check if the token is valid
         const response = await fetch(authCheckURL, {
             method: 'POST',
             body:    requestBody,
@@ -175,17 +159,16 @@ async function verifyBasicToken (req, res, next) {
                 'Authorization': res.locals.authorizationHeaderForAuthCheck,
             }
         });
-        // console.log(response);
         // If we get a successful response (token is valid)
-        // We switch to the next middleware where the models
+        // we switch to the next middleware
         if (response.ok) { // res.status >= 200 && res.status < 300
             next();
+        // If the response is unsuccessful we exit the middleware chain
         } else {
             // Get the json reponse from auth_check
             // Note: This throws an error if the response is
             // not a JSON object. 
             const data = await response.json();
-            // console.log(data);
             // Pass the response from auth_check to the client
             res.status(response.status);
             res.send(data);

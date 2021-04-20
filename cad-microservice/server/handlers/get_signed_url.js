@@ -41,7 +41,7 @@ async function getSecret() {
 
 // Use route parameters (username and modelname)
 router.get('/:username/:modelname', function(req, res){
-
+  // todo test with slash, questionmark, space, etc
   const username = req.params.username;
   const modelName = req.params.modelname
   // POSSIBLY WE DO NOT NEED THIS SINCE WE MIGHT NEED TWO DIFFERENT 
@@ -62,10 +62,13 @@ router.get('/:username/:modelname', function(req, res){
 
   async function generatedV4ReadSignedUrl() {
 
+    // Milliseconds 
+    const expirationTime = 5 * 60 * 1000; // 5 minutes
+
     const options = {
       version: 'v4',
       action: 'read',
-      expires: Date.now() + 5 * 60 * 1000, // 5 minutes
+      expires: Date.now() + expirationTime, 
     };
   
     // Get a v4 signed URL for reading the file
@@ -74,48 +77,18 @@ router.get('/:username/:modelname', function(req, res){
       .file(fileName)
       .getSignedUrl(options);
 
-    console.log(`The signed url for ${fileName} is ${signedURL}.`); // NEEDS TO BE REMOVED I PRODUCTION!
+    // console.log('The signed url for ${fileName} is ${signedURL}.'); // NEEDS TO BE REMOVED In PRODUCTION!
     // Sending OK response to the client
-    //res.status(200); // We don't need this since await storage sends status 200 anyways
+    // res.status(200); // We don't need this since await storage sends status 200 anyways
     // Sending the signed URL to the client in JSON format
     res.send({
-      "signedURL": signedURL
+      signedURL: signedURL,
+      expirationTime: expirationTime 
     });
-    
   }
-
   // Responds with status 500 if an error occures with the request to calculate the signed URL
   // The message sent is the error code
   generatedV4ReadSignedUrl().catch(error => {res.status(500); res.send(error.message)})
-
-  /*
-  async () => { 
-    try { 
-      await generatedV4ReadSignedUrl();
-      console.log("Herrrrrrr");
-      res.status(200);
-      res.send({
-        "signedURL": "null"
-      });
-    } catch (err) {
-       console.log(err) 
-    }
-  }
-  */
-
-  /*
-  try {
-    generatedV4ReadSignedUrl();
-  } catch (error) {
-    res.send(error.message);
-  } finally {
-    console.log("Herrrrrrr");
-    res.status(200);
-    res.send({
-      "signedURL": "null"
-    });
-  };
-  */
 
 });
 
