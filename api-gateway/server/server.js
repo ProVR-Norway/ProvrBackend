@@ -155,7 +155,7 @@ async function verifyBasicToken (req, res, next) {
             method: 'POST',
             body:    requestBody,
             headers: {
-                "Content-Type": "application/json",
+                'Content-Type': 'application/json',
                 'Authorization': res.locals.authorizationHeaderForAuthCheck,
             }
         });

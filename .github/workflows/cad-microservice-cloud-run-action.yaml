@@ -3,7 +3,8 @@ name: publish
 on:
   push:
     branches:
-      - feature/list-all-models
+      - master
+      - development
 
 jobs:
   build:
