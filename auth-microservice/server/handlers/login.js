@@ -44,7 +44,7 @@ if(!err) {
 router.get('/', function(req, res){
    res.status(405);
    res.send({
-      failed:"Only POST method is accepted"
+      message:"Only POST method is accepted"
    })
 });
 
@@ -71,7 +71,7 @@ router.post('/', function(req, res){
          // PRINT OUT THE SPECIFIC ERROR
          console.log("An error occured with the MySQL database: " + error.message);
          res.send({
-            failed:"Internal error"
+            message:"Internal error"
          });
       }
       // If there are a result we generate a token, stores it in redis and sends to the client
@@ -79,20 +79,20 @@ router.post('/', function(req, res){
          // If the password is correct we generate and store a token
          // Remember: we should use "===" and not "=="
          if(results[0].password === users.password) {
-            const generated_token = crypto.randomBytes(32).toString('hex');
-            client.set(users.username, generated_token, 'EX', '1800', (err, reply) => {
+            const generated_token = crypto.randomBytes(64).toString('hex');
+            client.set(generated_token, users.username, 'EX', '1800', (err, reply) => {
                if (err){
                   res.status(500);
                   // PRINT OUT THE SPECIFIC ERROR
                   console.log("An error occured with redis: " + err.message);
                   res.send({
-                     failed:"Internal error"
+                     message:"Internal error"
                   });
                };
             })
             res.status(200);
             res.send({
-              success:"Login successful",
+              message:"Login successful",
               token:generated_token
             });
          }
@@ -100,7 +100,7 @@ router.post('/', function(req, res){
          else {
             res.status(400);
             res.send({
-               failed:"Invalid username or password"
+               message:"Invalid username or password"
             });
          }
       }
@@ -108,7 +108,7 @@ router.post('/', function(req, res){
       else {
          res.status(400);
          res.send({
-            failed:"Invalid username or password"
+            message:"Invalid username or password"
          });
       }
    });

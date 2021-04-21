@@ -30,7 +30,7 @@ if(!err) {
 router.get('/', function(req, res){
    res.status(405);
    res.send({
-      failed:"Only POST method is accepted"
+      message:"Only POST method is accepted"
    })
 });
 
@@ -58,14 +58,14 @@ router.post('/', function(req, res){
          // PRINT OUT THE SPECIFIC ERROR
          console.log("An error occured with the MySQL database: " + error.message);
          res.send({
-            failed:"Internal error"
+            message:"Internal error"
          });
       }
       // If there are any results then we return status code 409
       else if (results.length > 0) {
          res.status(409);
          res.send({
-            failed:"A user already exist with this email address or username"
+            message:"A user already exist with this email address or username"
          });
       } 
       // If there are no user that already exist we create an account for the user
@@ -76,12 +76,12 @@ router.post('/', function(req, res){
             // PRINT OUT THE SPECIFIC ERROR
             console.log("An error occured with the MySQL database: " + error.message);
             res.send({
-               failed:"Internal error"
+               message:"Internal error"
             });
          } else {
             res.status(200);
             res.send({
-               success:"Registration successful"
+               message:"Registration successful"
             });
          }
       });     

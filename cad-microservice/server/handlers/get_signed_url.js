@@ -88,7 +88,12 @@ router.get('/:username/:modelname', function(req, res){
   }
   // Responds with status 500 if an error occures with the request to calculate the signed URL
   // The message sent is the error code
-  generatedV4ReadSignedUrl().catch(error => {res.status(500); res.send(error.message)})
+  generatedV4ReadSignedUrl().catch(error => {
+    res.status(500); 
+    res.send({
+      message: 'The server failed to generate a signed URL: ' + error.message}
+    )}
+  );
 
 });
 

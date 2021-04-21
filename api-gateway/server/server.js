@@ -41,7 +41,7 @@ const authOptions = {
             'Content-Type': 'application/json'
         });
         res.end({
-            failed: 'The gateway is currently unable to communicated with the requested service.'
+            message: 'The gateway is currently unable to communicated with the requested service.'
         });
     },
     // IMPORTANT! 
@@ -65,7 +65,7 @@ var cadOptions = {
             'Content-Type': 'application/json'
         });
         res.end({
-            failed: 'The gateway is currently unable to communicated with the requested service.'
+            message: 'The gateway is currently unable to communicated with the requested service.'
         });
     },
     // IMPORTANT! 
@@ -117,7 +117,7 @@ async function getIdToken (req, res, next) {
             'Content-Type': 'application/json'
         });
         res.end({
-            failed: 'Could not create an identity token: ' + err
+            message: 'Could not create an identity token: ' + err
         });
     }
 };
@@ -137,19 +137,18 @@ async function getIdTokenForAuthCheck (req, res, next) {
             'Content-Type': 'application/json'
         });
         res.end({
-            failed: 'Could not create an identity token: ' + err
+            message: 'Could not create an identity token: ' + err
         });
     }
 };
 
 async function verifyBasicToken (req, res, next) {
     try {
-        // The "A" in "Authirization" cannot be captital! It must be lowercased
+        // The "A" in "Authorization" cannot be captital! It must be lowercased
         // Extracts the token from 'Basic hdbshbvsjvuweihddsfefwfwfwf'.
         const providedToken = req.headers['authorization'].split(' ')[1];
         const requestBody = JSON.stringify({
-            token: providedToken,
-            username: req.params.username
+            token: providedToken
         });
         // Sends request to auth_check to check if the token is valid
         const response = await fetch(authCheckURL, {
@@ -179,7 +178,7 @@ async function verifyBasicToken (req, res, next) {
             'Content-Type': 'application/json'
         });
         res.end({
-            failed: 'Could not verify the basic token: ' + err
+            message: 'Could not verify the basic token: ' + err
         });
     }
 };

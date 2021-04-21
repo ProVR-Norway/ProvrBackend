@@ -19,24 +19,37 @@ client.on('error', err => console.error('Error when connecting to redis:', err))
 router.get('/', function(req, res){
    res.status(405);
    res.send({
-      failed:"Only POST method is accepted"
+      message:"Only POST method is accepted"
    })
 });
 
 router.post('/', function(req, res){
+
+   const users={
+      "token":req.body.token,
+      //"username":req.body.username
+   }
+
    // Get generated_token from user in redis database
-   client.get(users.username, (err, reply) => {
-      if (error) {
+   client.get(users.token, (err, reply) => {
+      // If an error occures with the redis query
+      if (err) {
          res.status(500);
          // PRINT OUT THE SPECIFIC ERROR
-         console.log("An error occured with the MySQL database: " + error.message);
+         console.log("An error occured with the MySQL database: " + err.message);
          res.send({
-            failed:"Internal error"
+            message:"Internal error"
          });
       }
+      // If we get a response then it is certain that the user is authroised
+      // since it means that the supplied token exist in redis.
       else if (reply !== null) {
+         res.status(200);
+         res.send({
+            message:"The access check was successful. The token is authorized for the path"
+         });
+         /*
          // If the token supplied in the request is the same as the one in redis
-         // under the same username.
          if(users.token === reply){
             res.status(200);
             res.send({
@@ -46,14 +59,18 @@ router.post('/', function(req, res){
          // If the token is incorrect
          else {
             res.status(401);
+            res.send({
                success:"Unauthorized. Please re-login"
+            });
          }
+         */
       }
-      // If the user does not exist, or the user has no generated token
+      // If there is a reply equal to null then the token does not exist
+      // and the request is unauthorised.
       else {
-         res.status(402);
+         res.status(401);
          res.send({
-            failed:"Invalid username"
+            message:"Unauthorized. Please re-login"
          });
       }
    });

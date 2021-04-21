@@ -44,7 +44,7 @@ router.get('/:username', function(req, res){
             // PRINT OUT THE SPECIFIC ERROR
             console.log("An error occured with the MySQL database: " + error.message);
             res.send({
-                failed:"Internal error"
+                message:"Internal error"
             });
         }
         // If we get a result we send a new query to get the owning models of that person
@@ -57,7 +57,7 @@ router.get('/:username', function(req, res){
                     // PRINT OUT THE SPECIFIC ERROR
                     console.log("An error occured with the MySQL database: " + error.message);
                     res.send({
-                        failed:"Internal error"
+                        message:"Internal error"
                     });
                 }
                 // Regardless of if the user has any models or not we send an array to the client (empty if no models are uploaded)
@@ -81,7 +81,7 @@ router.get('/:username', function(req, res){
             res.status(403);
             console.log("User does not exist");
             res.send({
-                failed:"User does not exist"
+                message:"User does not exist"
             });
         }
     });
