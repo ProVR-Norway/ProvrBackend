@@ -72,7 +72,7 @@ router.get('/:username', function(req, res){
                     });
                     res.status(200);
                     res.send({
-                        modelnames: owning_models
+                        models: owning_models
                     });
                 }
             });
