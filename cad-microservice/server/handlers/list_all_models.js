@@ -78,7 +78,7 @@ router.get('/:username', function(req, res){
             });
         // If we find no matching username, we return the 403 status code
         } else {
-            res.status(403);
+            res.status(404);
             console.log("User does not exist");
             res.send({
                 message:"User does not exist"
