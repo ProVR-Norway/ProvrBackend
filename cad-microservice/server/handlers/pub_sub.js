@@ -47,6 +47,7 @@ router.post('/', function(req, res){
     if (notificationData.eventType === 'OBJECT_FINALIZE') {
 
         const objectIdSplit = notificationData.objectId.split('/');
+        const username = objectIdSplit[0];
         const modelName = objectIdSplit[1];
         const uploadDate = notificationData.eventTime.substring(0, 10);
 
@@ -83,9 +84,9 @@ router.post('/', function(req, res){
                     }
                     else {
                         res.status(200).send();
-                        console.log("Models date successfully updated");
+                        console.log("Model's date successfully updated");
                         res.send({
-                            message:"Models date successfully updated"
+                            message:"Model's date successfully updated"
                         });
                     }
                 });
