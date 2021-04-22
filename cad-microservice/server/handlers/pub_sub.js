@@ -10,6 +10,11 @@ router.post('/', function(req, res){
    /************** END PRINT REQUEST TO CONSOLE **********************
     ******************************************************************
    */
+
+    console.log(req.body.message.data);
+    console.log(req.body.message.data.attributes);
+    console.log(req.body.message.data.attributes['eventType']);
+
     res.status(200).send();
 });
 
