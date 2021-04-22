@@ -11,9 +11,19 @@ router.post('/', function(req, res){
     ******************************************************************
    */
 
-    console.log(req.body.message.data);
-    console.log(req.body.message.data.attributes);
-    console.log(req.body.message.data.attributes['eventType']);
+    console.log(req.body.message);
+    console.log(req.body.message.attributes);
+    console.log(req.body.message.attributes['eventType']);
+    console.log(req.body.message.attributes['objectId']);
+    console.log(req.body.message.attributes['publish_time']);
+
+    console.log(req.body.message.data.attributes.eventType);
+    console.log(req.body.message.data.attributes.objectId);
+    console.log(req.body.message.data.attributes.publish_time);
+
+    console.log(req.body.message[0].attributes[0].eventType);
+    console.log(req.body.message[0].attributes[0].objectId);
+    console.log(req.body.message[0].attributes[0].publish_time);
 
     res.status(200).send();
 });
