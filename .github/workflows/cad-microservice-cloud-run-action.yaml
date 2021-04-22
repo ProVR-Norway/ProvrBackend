@@ -5,6 +5,7 @@ on:
     branches:
       - master
       - development
+      - feature/pub-sub
 
 jobs:
   build:
