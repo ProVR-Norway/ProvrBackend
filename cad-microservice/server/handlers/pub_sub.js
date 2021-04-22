@@ -73,10 +73,26 @@ router.post('/', function(req, res){
                             message:"Internal error"
                         });
                     }
+                    else if (result.affectedRows === 0) {
+                        res.status(404);
+                        // PRINT OUT THE SPECIFIC ERROR
+                        console.log("Model does not exist");
+                        res.send({
+                            message:"Model does not exist"
+                        });
+                    }
+                    else {
+                        res.status(200).send();
+                        console.log("Models date successfully updated");
+                        res.send({
+                            message:"Models date successfully updated"
+                        });
+                    }
                 });
             }
             else {
                 res.status(404);
+                // PRINT OUT THE SPECIFIC ERROR
                 console.log("User does not exist");
                 res.send({
                     message:"User does not exist"
@@ -84,8 +100,6 @@ router.post('/', function(req, res){
             }
         });
     }
-
-    res.status(200).send();
 
 });
 
