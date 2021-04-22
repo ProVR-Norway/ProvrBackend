@@ -45,12 +45,12 @@ router.post('/', function(req, res){
 
     // If the notification is about a file being uploaded
     if (notificationData.eventType === 'OBJECT_FINALIZE') {
-        
+
         const objectIdSplit = notificationData.objectId.split('/');
         const modelName = objectIdSplit[1];
         const uploadDate = notificationData.eventTime.substring(0, 11);
 
-        connection.query('UPDATE Model SET dateUploaded = ? WHERE modelName = ?', [uploadDate, modelName], function (error, results, fields) {
+        connection.query('UPDATE Model SET dateUploaded = ? WHERE name = ?', [uploadDate, modelName], function (error, results, fields) {
             if (error) {
                 res.status(500);
                 // PRINT OUT THE SPECIFIC ERROR
