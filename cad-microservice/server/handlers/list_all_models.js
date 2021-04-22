@@ -49,7 +49,7 @@ router.get('/:username', function(req, res){
         }
         // If we get a result we send a new query to get the owning models of that person
         else if (results.length > 0) {
-            let userId = results[0].userID;
+            const userId = results[0].userID;
             // IMPORTANT! We use the userID as foreign key to ensure scalability (if we later want the user to be able to change username)
             //  AND dateUploaded IS NOT NULL
             connection.query('SELECT * FROM Model WHERE userID = ?', userId, function (error, results, fields) {

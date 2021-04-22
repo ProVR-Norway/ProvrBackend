@@ -48,15 +48,38 @@ router.post('/', function(req, res){
 
         const objectIdSplit = notificationData.objectId.split('/');
         const modelName = objectIdSplit[1];
-        const uploadDate = notificationData.eventTime.substring(0, 11);
+        const uploadDate = notificationData.eventTime.substring(0, 10);
 
-        connection.query('UPDATE Model SET dateUploaded = ? WHERE name = ?', [uploadDate, modelName], function (error, results, fields) {
+        // Sending a query to the database to find the user id of the person with this username
+        connection.query('SELECT userID FROM User WHERE username = ?', username, function (error, results, fields) {
             if (error) {
                 res.status(500);
                 // PRINT OUT THE SPECIFIC ERROR
                 console.log("An error occured with the MySQL database: " + error.message);
                 res.send({
                     message:"Internal error"
+                });
+            }
+            else if (results.length > 0) {
+                const userId = results[0].userID;
+                // IMPORTANT! We use the userID as foreign key to ensure scalability (if we later want the user to be able to change username)
+                //  AND dateUploaded IS NOT NULL
+                connection.query('UPDATE Model SET dateUploaded = ? WHERE name = ? AND userID = ?', [uploadDate, modelName, userId], function (error, results, fields) {
+                    if (error) {
+                        res.status(500);
+                        // PRINT OUT THE SPECIFIC ERROR
+                        console.log("An error occured with the MySQL database: " + error.message);
+                        res.send({
+                            message:"Internal error"
+                        });
+                    }
+                });
+            }
+            else {
+                res.status(404);
+                console.log("User does not exist");
+                res.send({
+                    message:"User does not exist"
                 });
             }
         });
