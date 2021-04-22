@@ -74,7 +74,7 @@ router.post('/', function(req, res){
                             message:"Internal error"
                         });
                     }
-                    else if (result.affectedRows === 0) {
+                    else if (results.affectedRows === 0) {
                         res.status(404);
                         // PRINT OUT THE SPECIFIC ERROR
                         console.log("Model does not exist");
