@@ -10,6 +10,7 @@ router.post('/', function(req, res){
    /************** END PRINT REQUEST TO CONSOLE **********************
     ******************************************************************
    */
+    res.status(200).send();
 });
 
 //export this router to use in our server.js
