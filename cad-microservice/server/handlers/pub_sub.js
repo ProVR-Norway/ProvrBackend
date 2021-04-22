@@ -83,7 +83,7 @@ router.post('/', function(req, res){
                         });
                     }
                     else {
-                        res.status(200).send();
+                        res.status(200);
                         console.log("Model's date successfully updated");
                         res.send({
                             message:"Model's date successfully updated"
