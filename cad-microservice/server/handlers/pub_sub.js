@@ -65,7 +65,7 @@ router.post('/', function(req, res){
                 const userId = results[0].userID;
                 // IMPORTANT! We use the userID as foreign key to ensure scalability (if we later want the user to be able to change username)
                 //  AND dateUploaded IS NOT NULL
-                connection.query('UPDATE Model SET dateUploaded = ? WHERE name = ? AND userID = ?', [uploadDate, modelName, userId], function (error, results, fields) {
+                connection.query('UPDATE Model SET uploaded = 1, dateUploaded = ? WHERE name = ? AND userID = ?', [uploadDate, modelName, userId], function (error, results, fields) {
                     if (error) {
                         res.status(500);
                         // PRINT OUT THE SPECIFIC ERROR
