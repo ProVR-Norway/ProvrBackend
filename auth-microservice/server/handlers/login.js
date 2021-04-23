@@ -80,7 +80,7 @@ router.post('/', function(req, res){
          // Remember: we should use "===" and not "=="
          if(results[0].password === users.password) {
             const generated_token = crypto.randomBytes(64).toString('hex');
-            client.set(generated_token, users.username, 'EX', '1800', (err, reply) => {
+            client.set(generated_token, users.username, 'EX', '30', (err, reply) => {
                if (err){
                   res.status(500);
                   // PRINT OUT THE SPECIFIC ERROR
