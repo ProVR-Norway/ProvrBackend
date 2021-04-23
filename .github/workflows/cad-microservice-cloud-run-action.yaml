@@ -5,7 +5,7 @@ on:
     branches:
       - master
       - development
-      - feature/pub-sub
+      - feature/signed-url-for-upload
 
 jobs:
   build:
