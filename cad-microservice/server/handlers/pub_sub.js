@@ -68,7 +68,7 @@ router.post('/', function(req, res){
             else if (results.length > 0) {
                 const userId = results[0].userID;
                 // IMPORTANT! We use the userID as foreign key to ensure scalability (if we later want the user to be able to change username)
-                connection.query('SELECT * FROM Model WHERE modelName = ? AND userID = ?', [modelName, userId], function (error, results, fields) {
+                connection.query('SELECT * FROM Model WHERE name = ? AND userID = ?', [modelName, userId], function (error, results, fields) {
                     if (error) {
                         res.status(500);
                         // PRINT OUT THE SPECIFIC ERROR
