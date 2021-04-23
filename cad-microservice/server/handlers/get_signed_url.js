@@ -97,6 +97,56 @@ router.get('/:username/:modelname', function(req, res){
 
 });
 
+router.put('/', function(req, res){
+  // todo test with slash, questionmark, space, etc
+  const cloudStorageData={
+    'username': req.body.username,
+    'modelName': req.body.modelname
+  };
+
+  // The ID of the GCS file
+  const fileName = username + '/' + modelName + '/' + modelName + '.gltf'; 
+  // Creates a client
+  const storage = new Storage();
+
+  async function generatedV4WriteSignedUrl() {
+
+    // Milliseconds 
+    const expirationTime = 5 * 60 * 1000; // 5 minutes
+
+    const options = {
+      version: 'v4',
+      action: 'write',
+      expires: Date.now() + expirationTime, 
+      contentType: 'application/octet-stream',
+    };
+  
+    // Get a v4 signed URL for reading the file
+    const [signedURL] = await storage
+      .bucket(bucketName)
+      .file(fileName)
+      .getSignedUrl(options);
+      
+    res.send({
+      signedURL: signedURL,
+      expirationTime: expirationTime 
+    });
+  }
+  // Responds with status 500 if an error occures with the request to calculate the signed URL
+  // The message sent is the error code
+  generatedV4WriteSignedUrl().catch(error => {
+    res.status(500); 
+    res.send({
+      message: 'The server failed to generate a signed URL: ' + error.message}
+    )}
+  );
+
+  // To use this signed url we need to send a file thorugh a PUT HTTP request to the generated URL with the
+  // HTTP header with content-type: application/octet-stream.
+
+});
+
+
 //export this router to use in our server.js
 module.exports = router;
 
