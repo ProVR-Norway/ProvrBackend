@@ -52,7 +52,7 @@ router.post('/', function(req, res){
         const username = objectIdSplit[0];
         const modelName = objectIdSplit[1];
         const uploadDate = notificationData.eventTime.substring(0, 10);
-        const uploaded = new Bolean(true);
+        const uploaded = 1;
 
         connection.query('SELECT userID FROM User WHERE username = ?', username, function (error, results, fields) {
             if (error) {
