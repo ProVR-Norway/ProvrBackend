@@ -67,6 +67,8 @@ router.post('/', function(req, res){
             // If there is a result we update or insert in a new model
             else if (results.length > 0) {
                 const userId = results[0].userID;
+                // THE CHECK FOR IF THE MODEL ALREADY EXITS MIGHT NOT BE NEEDED IN PRODUCTION!
+                // WE MOST LIKELIY ONLY NEED TO CREATE ROWS.
                 // IMPORTANT! We use the userID as foreign key to ensure scalability (if we later want the user to be able to change username)
                 connection.query('SELECT * FROM Model WHERE name = ? AND userID = ?', [modelName, userId], function (error, results, fields) {
                     if (error) {
