@@ -99,13 +99,13 @@ router.get('/:username/:modelname', function(req, res){
 
 router.put('/', function(req, res){
   // todo test with slash, questionmark, space, etc
-  const cloudStorageData={
+  const JSONData={
     'username': req.body.username,
-    'modelName': req.body.modelname
+    'modelname': req.body.modelname
   };
 
   // The ID of the GCS file
-  const fileName = username + '/' + modelName + '/' + modelName + '.gltf'; 
+  const fileName = JSONData.username + '/' + JSONData.modelname + '/' + JSONData.modelname + '.gltf'; 
   // Creates a client
   const storage = new Storage();
 
