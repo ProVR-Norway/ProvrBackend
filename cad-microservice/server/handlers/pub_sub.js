@@ -54,6 +54,7 @@ router.post('/', function(req, res){
         const uploadDate = notificationData.eventTime.substring(0, 10);
         const uploaded = 1;
 
+        // Retrieving the userID from the User table, since it is the foreign key of the Model table
         connection.query('SELECT userID FROM User WHERE username = ?', username, function (error, results, fields) {
             if (error) {
                 res.status(500);
@@ -63,10 +64,11 @@ router.post('/', function(req, res){
                     message:"Internal error"
                 });
             }
+            // If there is a result we update or insert in a new model
             else if (results.length > 0) {
                 const userId = results[0].userID;
                 // IMPORTANT! We use the userID as foreign key to ensure scalability (if we later want the user to be able to change username)
-                connection.query('INSERT INTO Model (uploaded, dateUploaded, name, userID) VALUES (?, ?, ?, ?);', [uploaded, uploadDate, modelName, userId], function (error, results, fields) {
+                connection.query('SELECT * FROM Model WHERE modelName = ? AND userID = ?', [modelName, userId], function (error, results, fields) {
                     if (error) {
                         res.status(500);
                         // PRINT OUT THE SPECIFIC ERROR
@@ -75,11 +77,46 @@ router.post('/', function(req, res){
                             message:"Internal error"
                         });
                     }
+                    // If we get a result then we know that there already exist a model.
+                    // We only update the dateUploaded and upladed columns.
+                    else if (results.length > 0) {
+                        connection.query('UPDATE Model SET uploaded = 1, dateUploaded = ? WHERE name = ? AND userID = ?', [uploadDate, modelName, userId], function (error, results, fields) {
+                            if (error) {
+                                res.status(500);
+                                // PRINT OUT THE SPECIFIC ERROR
+                                console.log("An error occured with the MySQL database: " + error.message);
+                                res.send({
+                                    message:"Internal error"
+                                });
+                            }
+                            else {
+                                res.status(200);
+                                console.log("Model data successfully updated");
+                                res.send({
+                                    message:"Model data successfully updated"
+                                });
+                            }
+                        });
+                    }
+                    // If no model exist we insert a new row in the Model table
                     else {
-                        res.status(200);
-                        console.log("Model data successfully inserted into the database");
-                        res.send({
-                            message:"Model data successfully inserted into the database"
+                        // IMPORTANT! We use the userID as foreign key to ensure scalability (if we later want the user to be able to change username)
+                        connection.query('INSERT INTO Model (uploaded, dateUploaded, name, userID) VALUES (?, ?, ?, ?);', [uploaded, uploadDate, modelName, userId], function (error, results, fields) {
+                            if (error) {
+                                res.status(500);
+                                // PRINT OUT THE SPECIFIC ERROR
+                                console.log("An error occured with the MySQL database: " + error.message);
+                                res.send({
+                                    message:"Internal error"
+                                });
+                            }
+                            else {
+                                res.status(200);
+                                console.log("Model data successfully inserted into the database");
+                                res.send({
+                                    message:"Model data successfully inserted into the database"
+                                });
+                            }
                         });
                     }
                 });
