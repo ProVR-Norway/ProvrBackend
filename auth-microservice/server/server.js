@@ -1,5 +1,4 @@
 const express = require('express');
-const cors = require('cors');
 
 /*
 
@@ -24,8 +23,6 @@ const register = require('./handlers/register.js');
 const auth_check = require('./handlers/auth_check.js');
 //const forgotten_password = require('./handlers/forgotten_password.js');
 
-// This will enable browsers to be able to use the endpoints
-app.use(cors());
 app.use('/auth/login', login);
 app.use('/auth/register', register);
 app.use('/auth/auth_check', auth_check);

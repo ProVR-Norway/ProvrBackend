@@ -24,12 +24,16 @@ const express = require('express');
 const fetch = require('node-fetch');
 const {GoogleAuth} = require('google-auth-library');
 const auth = new GoogleAuth();
+const cors = require('cors');
 
 const authApiServiceURL = process.env.URL_AUTH_MICROSERVICE;
 const cadApiServiceURL = process.env.URL_CAD_MICROSERVICE;
 const authCheckURL = authApiServiceURL + '/auth/auth_check';
 
 const app = express();
+
+// This will enable browsers to be able to use the endpoints
+app.use(cors());
 
 const authOptions = {
     target: authApiServiceURL,
