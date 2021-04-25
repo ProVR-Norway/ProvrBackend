@@ -113,11 +113,9 @@ async function getIdToken (req, res, next) {
         res.locals.authorizationHeader = clientHeaders['Authorization'];
         next();
     } catch (err) {
-        res.writeHead(500, {
-            'Content-Type': 'application/json'
-        });
-        res.end({
-            message: 'Could not create an identity token: ' + err
+        res.status(500);
+        res.send({
+            message: 'Could not create an identity token:' + err.message
         });
     }
 };
@@ -133,11 +131,9 @@ async function getIdTokenForAuthCheck (req, res, next) {
         res.locals.authorizationHeaderForAuthCheck = clientHeaders['Authorization'];
         next();
     } catch (err) {
-        res.writeHead(500, {
-            'Content-Type': 'application/json'
-        });
-        res.end({
-            message: 'Could not create an identity token: ' + err
+        res.status(500);
+        res.send({
+            message: 'Could not create an identity token:' + err.message
         });
     }
 };
@@ -174,11 +170,9 @@ async function verifyBasicToken (req, res, next) {
             res.send(data);
         }
     } catch (err) {
-        res.writeHead(500, {
-            'Content-Type': 'application/json'
-        });
-        res.end({
-            message: 'Could not verify the basic token: ' + err
+        res.status(500);
+        res.send({
+            message: 'Could not verify the basic token: ' + err.message
         });
     }
 };
