@@ -18,7 +18,7 @@ const destroySession = require('./handlers/destroy_session.js');
 const listAllSessions = require('./handlers/list_all_sessions.js');
 
 app.use('/sessions/join', joinSession);
-app.use('/sessions/create', createSession);
+app.use('/sessions', createSession);
 app.use('/sessions/invite', inviteToSession);
 app.use('/sessions/destroy', destroySession);
 app.use('/sessions/leave', leaveSession);

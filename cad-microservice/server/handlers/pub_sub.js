@@ -23,9 +23,9 @@ const connection = mysql.createConnection({
 // Checks for any errors upon connecting to the server
 connection.connect(function(err){
 if(!err) {
-    console.log("Database is connected ...");
+    console.log('Database is connected ...');
 } else {
-    console.log("Error when connecting to the MySQL database: " + err.message);
+    console.log('Error when connecting to the MySQL database: ' + err.message);
 }
 });
 
@@ -39,8 +39,8 @@ router.post('/', function(req, res){
     /******************************************************************
     **************** PRINT REQUEST TO CONSOLE ************************
    */
-    console.log("HTTP header of request to " + req.originalUrl + ": " + JSON.stringify(req.headers));
-    console.log("HTTP body of request to " + req.originalUrl + ": "  + JSON.stringify(req.body));
+    console.log('HTTP header of request to ' + req.originalUrl + ': ' + JSON.stringify(req.headers));
+    console.log('HTTP body of request to ' + req.originalUrl + ': '  + JSON.stringify(req.body));
    /************** END PRINT REQUEST TO CONSOLE **********************
     ******************************************************************
    */
@@ -59,9 +59,9 @@ router.post('/', function(req, res){
             if (error) {
                 res.status(500);
                 // PRINT OUT THE SPECIFIC ERROR
-                console.log("An error occured with the MySQL database: " + error.message);
+                console.log('An error occured with the MySQL database: ' + error.message);
                 res.send({
-                    message:"Internal error"
+                    message:'Internal error'
                 });
             }
             // If there is a result we update or insert in a new model
@@ -74,9 +74,9 @@ router.post('/', function(req, res){
                     if (error) {
                         res.status(500);
                         // PRINT OUT THE SPECIFIC ERROR
-                        console.log("An error occured with the MySQL database: " + error.message);
+                        console.log('An error occured with the MySQL database: ' + error.message);
                         res.send({
-                            message:"Internal error"
+                            message:'Internal error'
                         });
                     }
                     // If we get a result then we know that there already exist a model.
@@ -86,16 +86,16 @@ router.post('/', function(req, res){
                             if (error) {
                                 res.status(500);
                                 // PRINT OUT THE SPECIFIC ERROR
-                                console.log("An error occured with the MySQL database: " + error.message);
+                                console.log('An error occured with the MySQL database: ' + error.message);
                                 res.send({
-                                    message:"Internal error"
+                                    message:'Internal error'
                                 });
                             }
                             else {
                                 res.status(200);
-                                console.log("Model data successfully updated");
+                                console.log('Model data successfully updated');
                                 res.send({
-                                    message:"Model data successfully updated"
+                                    message:'Model data successfully updated'
                                 });
                             }
                         });
@@ -103,20 +103,20 @@ router.post('/', function(req, res){
                     // If no model exist we insert a new row in the Model table
                     else {
                         // IMPORTANT! We use the userID as foreign key to ensure scalability (if we later want the user to be able to change username)
-                        connection.query('INSERT INTO Model (uploaded, dateUploaded, name, userID) VALUES (?, ?, ?, ?);', [uploaded, uploadDate, modelName, userId], function (error, results, fields) {
+                        connection.query('INSERT INTO Model (uploaded, dateUploaded, name, userID) VALUES (?, ?, ?, ?)', [uploaded, uploadDate, modelName, userId], function (error, results, fields) {
                             if (error) {
                                 res.status(500);
                                 // PRINT OUT THE SPECIFIC ERROR
-                                console.log("An error occured with the MySQL database: " + error.message);
+                                console.log('An error occured with the MySQL database: ' + error.message);
                                 res.send({
-                                    message:"Internal error"
+                                    message:'Internal error'
                                 });
                             }
                             else {
                                 res.status(200);
-                                console.log("Model data successfully inserted into the database");
+                                console.log('Model data successfully inserted into the database');
                                 res.send({
-                                    message:"Model data successfully inserted into the database"
+                                    message:'Model data successfully inserted into the database'
                                 });
                             }
                         });
@@ -126,9 +126,9 @@ router.post('/', function(req, res){
             else {
                 res.status(404);
                 // PRINT OUT THE SPECIFIC ERROR
-                console.log("User does not exist");
+                console.log('User does not exist');
                 res.send({
-                    message:"User does not exist"
+                    message:'User does not exist'
                 });
             }
         });
@@ -139,9 +139,9 @@ router.post('/', function(req, res){
             if (error) {
                 res.status(500);
                 // PRINT OUT THE SPECIFIC ERROR
-                console.log("An error occured with the MySQL database: " + error.message);
+                console.log('An error occured with the MySQL database: ' + error.message);
                 res.send({
-                    message:"Internal error"
+                    message:'Internal error'
                 });
             }
             else if (results.length > 0) {
@@ -152,24 +152,24 @@ router.post('/', function(req, res){
                     if (error) {
                         res.status(500);
                         // PRINT OUT THE SPECIFIC ERROR
-                        console.log("An error occured with the MySQL database: " + error.message);
+                        console.log('An error occured with the MySQL database: ' + error.message);
                         res.send({
-                            message:"Internal error"
+                            message:'Internal error'
                         });
                     }
                     else if (results.affectedRows === 0) {
                         res.status(404);
                         // PRINT OUT THE SPECIFIC ERROR
-                        console.log("Model does not exist");
+                        console.log('Model does not exist');
                         res.send({
-                            message:"Model does not exist"
+                            message:'Model does not exist'
                         });
                     }
                     else {
                         res.status(200);
-                        console.log("Model's date successfully updated");
+                        console.log('Model's date successfully updated');
                         res.send({
-                            message:"Model's date successfully updated"
+                            message:'Model's date successfully updated'
                         });
                     }
                 });
@@ -177,9 +177,9 @@ router.post('/', function(req, res){
             else {
                 res.status(404);
                 // PRINT OUT THE SPECIFIC ERROR
-                console.log("User does not exist");
+                console.log('User does not exist');
                 res.send({
-                    message:"User does not exist"
+                    message:'User does not exist'
                 });
             }
         });
