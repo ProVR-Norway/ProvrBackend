@@ -59,7 +59,7 @@ router.post('/', function(req, res){
           }
           else if (results.length > 0) {
             serverId = results[0].serverID;
-            connection.query('INSERT INTO Model (sessionName, mapName, maxParticipants, serverID, hostUserID, participantCount) VALUES (?, ?, ?, ?, ?, ?)', [SessionDetails.sessionName, SessionDetails.mapName, SessionDetails.maxParticipants, serverId, hostId, 0], function (error, results, fields) {
+            connection.query('INSERT INTO Session (sessionName, mapName, maxParticipants, serverID, hostUserID, participantCount) VALUES (?, ?, ?, ?, ?, ?)', [SessionDetails.sessionName, SessionDetails.mapName, SessionDetails.maxParticipants, serverId, hostId, 0], function (error, results, fields) {
               if (error) {
                  res.status(500);
                  // PRINT OUT THE SPECIFIC ERROR
@@ -67,6 +67,17 @@ router.post('/', function(req, res){
                  res.send({
                     message:'Internal error'
                  });
+              } else {
+                connection.query('UPDATE Server SET isAllocated = ? WHERE serverID = ?', [1, serverId], function (error, results, fields) {
+                  if (error) {
+                    res.status(500);
+                    // PRINT OUT THE SPECIFIC ERROR
+                    console.log('An error occured with the MySQL database: ' + error.message);
+                    res.send({
+                       message:'Internal error'
+                    });
+                  }
+                });
               }
             });
           } else {
@@ -84,6 +95,46 @@ router.post('/', function(req, res){
     }
   });
 
+});
+
+router.delete('/:sessionId', function(req, res){
+
+  const sessionId = req.params.sessionId;
+
+  connection.query('SELECT serverID FROM Session WHERE sessionID = ?', sessionId, function (error, results, fields) {
+    if (error) {
+      res.status(500);
+      // PRINT OUT THE SPECIFIC ERROR
+      console.log('An error occured with the MySQL database: ' + error.message);
+      res.send({
+          message:'Internal error'
+      });
+    }
+    else if (results.length > 0) {
+      const serverId = results[0].serverID;
+      connection.query('DELETE FROM Session WHERE sessionID = ?', sessionId, function (error, results, fields) {
+        if (error) {
+          res.status(500);
+          // PRINT OUT THE SPECIFIC ERROR
+          console.log('An error occured with the MySQL database: ' + error.message);
+          res.send({
+              message:'Internal error'
+          });
+        } else {
+          connection.query('UPDATE Server SET isAllocated = ? WHERE serverID = ?', [0, serverId], function (error, results, fields) {
+            if (error) {
+              res.status(500);
+              // PRINT OUT THE SPECIFIC ERROR
+              console.log('An error occured with the MySQL database: ' + error.message);
+              res.send({
+                  message:'Internal error'
+              });
+            }
+          });
+        }
+      });
+    }
+  });
 });
 
 //export this router to use in our server.js
