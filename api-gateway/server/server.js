@@ -48,7 +48,7 @@ const authOptions = {
             message: 'The gateway is currently unable to communicated with the requested service.'
         });
     },
-    // IMPORTANT! 
+    // IMPORTANT!
     // The onProxyReq must be below the other events (onError and onProxyRes)
     // If not the proxyReq will be undefined and we cannot use the setHeader function
     // The ALTERNATIVE can be used instead
