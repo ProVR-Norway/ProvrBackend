@@ -30,11 +30,11 @@ jobs:
         #with:
         #  repository: ProvrBackend/auth-microservice
         run: |
-          docker build -t gcr.io/${{ secrets.GCP_PROJECT_ID }}/cad-microservice -f cad-microservice/Dockerfile .
+          docker build -t gcr.io/${{ secrets.GCP_PROJECT_ID }}/session-microservice -f session-microservice/Dockerfile .
 
       - name: Push
         run: |
-          docker push gcr.io/${{ secrets.GCP_PROJECT_ID }}/cad-microservice
+          docker push gcr.io/${{ secrets.GCP_PROJECT_ID }}/session-microservice
       
       #- name: Build
       #  run: |
@@ -42,12 +42,12 @@ jobs:
 
       - name: Deploy
         run: |
-          gcloud run deploy cad-microservice \
+          gcloud run deploy session-microservice \
           --region ${{ secrets.GCP_REGION }} \
-          --image gcr.io/${{ secrets.GCP_PROJECT_ID }}/cad-microservice \
+          --image gcr.io/${{ secrets.GCP_PROJECT_ID }}/session-microservice \
           --platform managed \
-          --no-allow-unauthenticated \
+          --allow-unauthenticated \
           --project ${{ secrets.GCP_PROJECT_ID }} \
           --vpc-connector ${{ secrets.GCP_VCP_CONNECTOR }} \
           --add-cloudsql-instances ${{ secrets.CLOUD_SQL_INSTANCE_NAME }} \
-          --set-env-vars USER_MODELS_BUCKET_NAME=${{ secrets.USER_MODELS_BUCKET_NAME }},MYSQL_HOST=${{ secrets.MYSQL_AUTH_MICROSERVICE_HOST }},MYSQL_PORT=${{ secrets.MYSQL_AUTH_MICROSERVICE_PORT }},MYSQL_USER=${{ secrets.MYSQL_AUTH_MICROSERVICE_USERNAME }},MYSQL_PASSWORD=${{ secrets.MYSQL_AUTH_MICROSERVICE_PASSWORD }},MYSQL_DATABASE=${{ secrets.MYSQL_AUTH_MICROSERVICE_DATABASE }}
+          --set-env-vars MYSQL_HOST=${{ secrets.MYSQL_AUTH_MICROSERVICE_HOST }},MYSQL_PORT=${{ secrets.MYSQL_AUTH_MICROSERVICE_PORT }},MYSQL_USER=${{ secrets.MYSQL_AUTH_MICROSERVICE_USERNAME }},MYSQL_PASSWORD=${{ secrets.MYSQL_AUTH_MICROSERVICE_PASSWORD }},MYSQL_DATABASE=${{ secrets.MYSQL_AUTH_MICROSERVICE_DATABASE }}
