@@ -20,21 +20,71 @@ const connection = mysql.createConnection({
 // Checks for any errors upon connecting to the server
 connection.connect(function(err){
 if(!err) {
-    console.log("Database is connected ...");
-} else {
-    console.log("Error when connecting to the MySQL database: " + err.message);
+  console.log("Database is connected ...");
+}
+else {
+  console.log("Error when connecting to the MySQL database: " + err.message);
 }
 });
 
-router.post('/', function(req, res){
+router.get('/', function(req, res){
   const JSONData={
-    'sessionName': req.body.sessionName,
-    'mapName': req.body.mapName,
-    'maxParticipants': req.body.maxParticipants,
-    'hostUsername': req.body.hostUsername
+    'username': req.body.username
   };
 
-  
+  connection.query('SELECT userID FROM User WHERE username = ?', username, function (error, results, fields) {
+    if (error) {
+      res.status(500);
+      console.log('An error occured with the MySQL database: ' + error.message);
+      res.send({
+        message:'Internal error'
+      });
+    } 
+    else if (results.length > 0) {
+      const userID = results[0].userID;
+      connection.query('SELECT sessionID FROM Invited_Participant WHERE userID = ?', userID, function (error, results, fields) {
+        if (error) {
+          res.status(500);
+          console.log('An error occured with the MySQL database: ' + error.message);
+          res.send({
+            message:'Internal error'
+          });
+        }
+        else if (results.length > 0) {
+          if (error) {
+            res.status(500);
+            console.log('An error occured with the MySQL database: ' + error.message);
+            res.send({
+              message:'Internal error'
+            });
+          }
+          else {
+            //list all sessions in console (placeholder)
+            for (i = 0; i < results.length; i++) {
+              console.log('Session ' + i + ': ' + results[i]);
+            }
+            
+            res.status(200);
+            res.send({
+                message:'Session successfully joined'
+            });
+          }
+        }
+        else {
+          res.status(444);
+          res.send({
+            message:'User not invited'
+          });
+        }
+      });
+    }
+    else {
+      res.status(404);
+      res.send({
+        message:'User does not exist'
+      });
+    }
+  });
 
 });
 
