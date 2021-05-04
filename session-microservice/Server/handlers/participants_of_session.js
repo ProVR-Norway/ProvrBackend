@@ -1,3 +1,5 @@
+'use strict';
+
 const express = require('express');
 const router = express.Router();
 
@@ -27,12 +29,55 @@ else {
 }
 });
 
-router.post('/', function(req, res){
+router.post('/:sessionId/participants', function(req, res){
 
-  const SessionDetails={
-    'sessionID': req.body.sessionID
+  const sessionId = req.params.sessionId;
+  const JSONDetails={
+    'username': req.body.username
   };
 
+  connection.query('SELECT userID FROM User WHERE username = ?', JSONDetails.username, function (error, results, fields) {
+    if (error) {
+      res.status(500);
+      console.log('An error occured with the MySQL database: ' + error.message);
+      res.send({
+          message:'Internal error'
+      });
+    } 
+    else if (results.length > 0) {
+      connection.query('UPDATE Session SET participantCount = participantCount + 1 WHERE sessionID = ?', sessionId, function (error, results, fields) {
+        if (error) {
+          res.status(500);
+          console.log('An error occured with the MySQL database: ' + error.message);
+          res.send({
+            message:'Internal error'
+          });
+        }
+        else if (results.affectedRows > 0) {
+          //leave the server in some way. I already have access to the user ID
+          res.status(200);
+          res.send({
+              message:'Participant is able to join'
+          });
+        }
+        else {
+          //leave the server in some way. I already have access to the user ID
+          res.status(404);
+          res.send({
+              message:'User or session does not exist'
+          });
+        }
+      });
+    }   
+    else {
+      res.status(404);
+      res.send({
+        message:'User or session does not exist'
+      });
+    }
+  });
+
+  /*
   connection.query('SELECT userID FROM User WHERE username = ?', username, function (error, results, fields) {
     if (error) {
       res.status(500);
@@ -135,6 +180,54 @@ router.post('/', function(req, res){
       res.status(404);
       res.send({
         message:'User does not exist'
+      });
+    }
+  });
+  */
+});
+
+router.delete('/:sessionId/participants/:username', function(req, res){
+
+  const sessionId = req.params.sessionId;
+  const username = req.params.username;
+
+  connection.query('SELECT userID FROM User WHERE username = ?', username, function (error, results, fields) {
+    if (error) {
+      res.status(500);
+      console.log('An error occured with the MySQL database: ' + error.message);
+      res.send({
+          message:'Internal error'
+      });
+    } 
+    else if (results.length > 0) {
+      connection.query('UPDATE Session SET participantCount = participantCount - 1 WHERE sessionID = ?', sessionId, function (error, results, fields) {
+        if (error) {
+          res.status(500);
+          console.log('An error occured with the MySQL database: ' + error.message);
+          res.send({
+            message:'Internal error'
+          });
+        }
+        else if (results.affectedRows > 0) {
+          //leave the server in some way. I already have access to the user ID
+          res.status(200);
+          res.send({
+              message:'Participant has been removed from the session'
+          });
+        }
+        else {
+          //leave the server in some way. I already have access to the user ID
+          res.status(404);
+          res.send({
+              message:'User or session does not exist'
+          });
+        }
+      });
+    }   
+    else {
+      res.status(404);
+      res.send({
+        message:'User or session does not exist'
       });
     }
   });

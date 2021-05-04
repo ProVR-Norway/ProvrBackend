@@ -1,4 +1,6 @@
-var express = require('express');
+'use strict';
+
+const express = require('express');
 
 // App
 const app = express();
@@ -10,17 +12,13 @@ app.use(express.json({ limit:'50mb' }));
 // application/x-www-form-urlencoded
 app.use(express.urlencoded({ extended: true }));
 
-const joinSession = require('./handlers/join_session.js');
-const createOrDestroySession = require('./handlers/create_or_delete_session.js');
-const inviteToSession = require('./handlers/invite_to_session.js');
-const leaveSession = require('./handlers/leave_session.js');
-const listAllSessions = require('./handlers/list_all_sessions.js');
+const participantsOfSession = require('./handlers/participants_of_session.js');
+const invitedOfSession = require('./handlers/invited_of_session.js');
+const sessions = require('./handlers/sessions.js');
 
-app.use('/sessions', joinSession);
-app.use('/sessions', createOrDestroySession);
-app.use('/sessions', inviteToSession);
-app.use('/sessions', leaveSession);
-app.use('/sessions', listAllSessions);
+app.use('/sessions/*/participants', participantsOfSession);
+app.use('/sessions/*/invited', invitedOfSession);
+app.use('/sessions', sessions);
 
 // THE PORT MUST BE 8080 WHEN UPLODADED TO CLOUD RUN
 app.listen(8080);

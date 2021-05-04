@@ -1,5 +1,4 @@
-//dateformat mysql: '0000-00-00'
-// example: 2021-04-16
+'use strict';
 
 const express = require('express');
 const router = express.Router();
