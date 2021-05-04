@@ -1,7 +1,7 @@
 {
     "name": "session-microservice",
     "version": "1.0.0",
-    "description": "API/Master server that manaages the dedicated servers.",
+    "description": "API/Master-server that manages the dedicated servers.",
     "author": "ProVR",
     "license": "MIT",
     "main": "server.js",
