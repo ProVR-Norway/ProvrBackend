@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const crypto = require('crypto');
+const rateLimit = require("express-rate-limit");
 
 // CREDENTIALS STORED AS GITHUB SECRETS
 
@@ -41,6 +42,13 @@ if(!err) {
 }
 });
 
+// Request limit
+const loginRequestLimit = rateLimit({
+   max: 10, // number of requests
+   windowMS: 15*60*1000, // 15 minutes
+   message: "Too many login requests recieved. Please wait and try again later." // message to send
+});
+
 router.get('/', function(req, res){
    res.status(405);
    res.send({
@@ -48,7 +56,7 @@ router.get('/', function(req, res){
    })
 });
 
-router.post('/', function(req, res){
+router.post('/', loginRequestLimit, function(req, res){ // The ratelimit will help prevent brute force attacks
    // Object with all JSON key values from the request
    const users={
       "username":req.body.username,
