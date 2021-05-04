@@ -1,3 +1,5 @@
+'use strict';
+
 var express = require('express');
 var router = express.Router();
 
@@ -19,64 +21,61 @@ client.on('error', err => console.error('Error when connecting to redis:', err))
 router.get('/', function(req, res){
    res.status(405);
    res.send({
-      "failed":"Only POST method is accepted"
+      message:"Only POST method is accepted"
    })
 });
 
-// Handler behaviour for POST method. This is the values the handler get from the body of the Postman JSON request
 router.post('/', function(req, res){
-   // Object with all JSON key values from the request
+
    const users={
-      "username":req.body.username,
-      "token"   :req.body.token
+      "token":req.body.token,
+      //"username":req.body.username
    }
 
-   /******************************************************************
-    **************** PRINT REQUEST TO CONSOLE ************************
-   */
-    console.log("HTTP header of request to " + req.originalUrl + ": " + JSON.stringify(req.headers));
-    console.log("HTTP header of request to " + req.originalUrl + ": "  + JSON.stringify(req.body));
-   /************** END PRINT REQUEST TO CONSOLE **********************
-    ******************************************************************
-   */
-
    // Get generated_token from user in redis database
-   client.get(users.username, (err, reply) => {
-      if (err){
+   client.get(users.token, (err, reply) => {
+      // If an error occures with the redis query
+      if (err) {
          res.status(500);
          // PRINT OUT THE SPECIFIC ERROR
-         console.log("An error occured with redis: " + err.message);
+         console.log("An error occured with the MySQL database: " + err.message);
          res.send({
-            "failed":"Internal error"
+            message:"Internal error"
          });
       }
-      // If we successfully get the generated token 
+      // If we get a response then it is certain that the user is authroised
+      // since it means that the supplied token exist in redis.
       else if (reply !== null) {
+         res.status(200);
+         res.send({
+            message:"The access check was successful. The token is authorized for the path"
+         });
+         /*
          // If the token supplied in the request is the same as the one in redis
-         // under the same username.
          if(users.token === reply){
             res.status(200);
             res.send({
-               "success":"Token-path access-check was successful; the token is authorized for the path"
+               success:"The access check was successful. The token is authorized for the path"
             });
          }
          // If the token is incorrect
          else {
-            res.status(402);
+            res.status(401);
             res.send({
-               "failed":"Unauthorized with invalid token. Please re-login"
+               success:"Unauthorized. Please re-login"
             });
          }
+         */
       }
-      // If the user does not exist, or the user has no generated token
+      // If there is a reply equal to null then the token does not exist
+      // and the request is unauthorised.
       else {
          res.status(401);
          res.send({
-            "failed":"Unauthorized. Please re-login"
+            message:"Unauthorized. Please re-login"
          });
       }
-   })
-
+   });
 });
 //export this router to use in our server.js
 module.exports = router;

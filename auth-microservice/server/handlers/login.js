@@ -1,6 +1,9 @@
+'use strict';
+
 const express = require('express');
 const router = express.Router();
 const crypto = require('crypto');
+const rateLimit = require("express-rate-limit");
 
 // CREDENTIALS STORED AS GITHUB SECRETS
 
@@ -41,14 +44,21 @@ if(!err) {
 }
 });
 
+// Request limit
+const loginRequestLimit = rateLimit({
+   max: 10, // number of requests
+   windowMS: 15*60*1000, // 15 minutes
+   message: "Too many login requests recieved. Please wait and try again later." // message to send
+});
+
 router.get('/', function(req, res){
    res.status(405);
    res.send({
-      "failed":"Only POST method is accepted"
+      message:"Only POST method is accepted"
    })
 });
 
-router.post('/', function(req, res){
+router.post('/', loginRequestLimit, function(req, res){ // The ratelimit will help prevent brute force attacks
    // Object with all JSON key values from the request
    const users={
       "username":req.body.username,
@@ -59,7 +69,7 @@ router.post('/', function(req, res){
     **************** PRINT REQUEST TO CONSOLE ************************
    */
     console.log("HTTP header of request to " + req.originalUrl + ": " + JSON.stringify(req.headers));
-    console.log("HTTP header of request to " + req.originalUrl + ": "  + JSON.stringify(req.body));
+    console.log("HTTP body of request to " + req.originalUrl + ": "  + JSON.stringify(req.body));
    /************** END PRINT REQUEST TO CONSOLE **********************
     ******************************************************************
    */
@@ -71,7 +81,7 @@ router.post('/', function(req, res){
          // PRINT OUT THE SPECIFIC ERROR
          console.log("An error occured with the MySQL database: " + error.message);
          res.send({
-            "failed":"Internal error"
+            message:"Internal error"
          });
       }
       // If there are a result we generate a token, stores it in redis and sends to the client
@@ -79,28 +89,28 @@ router.post('/', function(req, res){
          // If the password is correct we generate and store a token
          // Remember: we should use "===" and not "=="
          if(results[0].password === users.password) {
-            const generated_token = crypto.randomBytes(32).toString('hex');
-            client.set(users.username, generated_token, 'EX', '1800', (err, reply) => {
+            const generated_token = crypto.randomBytes(64).toString('hex');
+            client.set(generated_token, users.username, 'EX', '1800', (err, reply) => {
                if (err){
                   res.status(500);
                   // PRINT OUT THE SPECIFIC ERROR
                   console.log("An error occured with redis: " + err.message);
                   res.send({
-                     "failed":"Internal error"
+                     message:"Internal error"
                   });
                };
             })
             res.status(200);
             res.send({
-              "success":"Login successful",
-              "token":generated_token
+              message:"Login successful",
+              token:generated_token
             });
          }
          // If the password is incorrect
          else {
             res.status(400);
             res.send({
-               "failed":"Invalid username or password"
+               message:"Invalid username or password"
             });
          }
       }
@@ -108,7 +118,7 @@ router.post('/', function(req, res){
       else {
          res.status(400);
          res.send({
-            "failed":"Invalid username or password"
+            message:"Invalid username or password"
          });
       }
    });
