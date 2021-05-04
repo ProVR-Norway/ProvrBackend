@@ -26,15 +26,48 @@ if(!err) {
 }
 });
 
-router.post('/', function(req, res){
-  const JSONData={
-    'sessionName': req.body.sessionName,
-    'mapName': req.body.mapName,
-    'maxParticipants': req.body.maxParticipants,
-    'hostUsername': req.body.hostUsername
-  };
+router.post('/:sessionId/invited', function(req, res){
 
-  
+  const sessionId = req.params.session;
+  const InvitedDetails={
+    'invited': invited
+  };
+  const arrayOfInvited = InvitedDetails.invited;
+
+  arrayOfInvited.forEach(function(invitedParticipant) {
+    const usernameOrEmail = inviteParticipant.usernameOrEmail;
+    connection.query('SELECT userID FROM User WHERE username = ? OR userEmail = ?', usernameOrEmail, function (error, results, fields) {
+      if (error) {
+        res.status(500);
+        // PRINT OUT THE SPECIFIC ERROR
+        console.log('An error occured with the MySQL database: ' + error.message);
+        res.send({
+            message:'Internal error'
+        });
+      } else if (results.length > 0) {
+        const userId = results[0].userID;
+        connection.query('INSERT INTO Invited_Participant (userID, sessionID) VALUES (?, ?)', [userId, sessionId], function (error, results, fields) {
+          if (error) {
+            res.status(500);
+            // PRINT OUT THE SPECIFIC ERROR
+            console.log('An error occured with the MySQL database: ' + error.message);
+            res.send({
+                message:'Internal error'
+            });
+          }
+        });
+      } else {
+        res.status(404);
+        res.send({
+            message:'One or more users do not exist'
+        });
+      }
+    });
+  });
+  res.status(200);
+  res.send({
+      message:'User(s) invited to session successfully'
+  });
 
 });
 

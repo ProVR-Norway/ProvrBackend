@@ -95,7 +95,7 @@ app.use('/auth/**', getIdToken, createProxyMiddleware(authOptions));
 app.use('/cadmodels/**', getIdTokenForAuthCheck, verifyBasicToken, getIdToken, createProxyMiddleware(cadOptions));
 
 // THE FOLLOWING LINE MUST BE BELOW THE HTTP-PROXIES!
-app.use(express.json()); 
+app.use(express.json({ limit:'50mb' }));
 
 async function getIdToken (req, res, next) {
     try {

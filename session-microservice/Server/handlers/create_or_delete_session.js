@@ -76,6 +76,11 @@ router.post('/', function(req, res){
                     res.send({
                        message:'Internal error'
                     });
+                  } else {
+                    res.status(200);
+                    res.send({
+                        message:'Session created successfully'
+                    });
                   }
                 });
               }
@@ -129,9 +134,19 @@ router.delete('/:sessionId', function(req, res){
               res.send({
                   message:'Internal error'
               });
+            } else {
+              res.status(200);
+              res.send({
+                  message:'Session destroyed successfully'
+              });
             }
           });
         }
+      });
+    } else {
+      res.status(404);
+      res.send({
+          message:'Session does not exist'
       });
     }
   });
