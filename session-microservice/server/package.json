@@ -7,6 +7,7 @@
     "main": "server.js",
     "scripts": {
         "test": "mocha",
+        "test-run": "npm test",
         "start": "node ./server.js"
     },
     "dependencies": {
