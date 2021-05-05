@@ -6,7 +6,7 @@
     "license": "MIT",
     "main": "server.js",
     "scripts": {
-        "test": "mocha test/server.test.js --reporter spec",
+        "test": "node_modules/.bin/mocha test/server.test.js --reporter spec",
         "start": "node ./server.js"
     },
     "dependencies": {
