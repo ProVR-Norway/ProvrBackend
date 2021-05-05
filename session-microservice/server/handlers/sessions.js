@@ -153,6 +153,7 @@ router.post('/', function(req, res){
                  });
               } 
               else {
+                const sessionId = results.insertId;
                 connection.query('UPDATE Server SET isAllocated = ? WHERE serverID = ?', [1, serverId], function (error, results, fields) {
                   if (error) {
                     res.status(500);
@@ -165,7 +166,7 @@ router.post('/', function(req, res){
                   else {
                     res.status(200);
                     res.send({
-                        message:'Session created successfully'
+                        sessionId: sessionId
                     });
                   }
                 });
