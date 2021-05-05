@@ -7,7 +7,7 @@
     "main": "server.js",
     "scripts": {
         "test": "node_modules/.bin/mocha test/server.test.js --reporter spec",
-        "prestart": "node_modules/.bin/mocha test/server.test.js --reporter spec",
+        "prestart": "npm run test",
         "start": "node ./server.js"
     },
     "dependencies": {
