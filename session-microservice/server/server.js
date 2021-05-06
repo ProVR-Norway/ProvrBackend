@@ -21,4 +21,4 @@ app.use('/sessions/*/invited', invitedOfSession);
 app.use('/sessions', sessions);
 
 // THE PORT MUST BE 8080 WHEN UPLODADED TO CLOUD RUN
-app.listen(8080);
+module.exports = app.listen(8080); // Export it so that we can test it with mocha
