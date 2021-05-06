@@ -7,7 +7,7 @@
     "main": "server.js",
     "scripts": {
         "test": "node_modules/.bin/mocha test/server.test.js --reporter spec",
-        "start": "npm run test --verbose && node ./server.js"
+        "start": "npm run test -- --verbose=true && node ./server.js"
     },
     "dependencies": {
         "chai": "^4.3.4",
