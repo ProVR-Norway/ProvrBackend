@@ -28,6 +28,7 @@ const cors = require('cors');
 
 const authApiServiceURL = process.env.URL_AUTH_MICROSERVICE;
 const cadApiServiceURL = process.env.URL_CAD_MICROSERVICE;
+const sessionApiServiceURL = process.env.URL_SESSION_MICROSERVICE;
 const authCheckURL = authApiServiceURL + '/auth/auth_check';
 
 const app = express();
@@ -59,8 +60,32 @@ const authOptions = {
     }
 };
 
-var cadOptions = {
+const cadOptions = {
     target: cadApiServiceURL,
+    // THE FOLLOWING OPTION NEEDS TO BE HERE EVEN WHEN IT IS UPLOADED TO CLOUD RUN. 
+    // IF NOT THE PROXY WON'T WORK PROPERLY!
+    changeOrigin: true,
+    onError: function(err, req, res) {
+        res.writeHead(500, {
+            'Content-Type': 'application/json'
+        });
+        res.end({
+            message: 'The gateway is currently unable to communicated with the requested service.'
+        });
+    },
+    // IMPORTANT! 
+    // The onProxyReq must be below the other events (onError and onProxyRes)
+    // If not the proxyReq will be undefined and we cannot use the setHeader function
+    // The ALTERNATIVE can be used instead
+    onProxyReq: function (proxyReq, req, res) {
+        proxyReq.setHeader('Authorization', res.locals.authorizationHeader);
+        // ALTERNATIVE:
+        // proxyReq.headers['Authorization'] = 'Bearer ' + res.locals.token;
+    }
+};
+
+const sessionOptions = {
+    target: sessionApiServiceURL,
     // THE FOLLOWING OPTION NEEDS TO BE HERE EVEN WHEN IT IS UPLOADED TO CLOUD RUN. 
     // IF NOT THE PROXY WON'T WORK PROPERLY!
     changeOrigin: true,
@@ -87,12 +112,13 @@ const { createProxyMiddleware } = require('http-proxy-middleware');
 
 // LISTENS FOR REQUESTS WITH PATH STARTING WITH /auth
 // FOR EXAMPLE auth/login AND auth/register
-// ONLY /auth WILL NOT WORK DUE TO "**"
-app.use('/auth/**', getIdToken, createProxyMiddleware(authOptions));
+app.use('/auth*', getIdToken, createProxyMiddleware(authOptions));
 // LISTENS FOR REQUESTS WITH PATH STARTING WITH /cadmodels
 // FOR EXAMPLE cadmodels/listall/{username}
-// ONLY /cadmodels WILL NOT WORK DUE TO "**"
-app.use('/cadmodels/**', getIdTokenForAuthCheck, verifyBasicToken, getIdToken, createProxyMiddleware(cadOptions));
+app.use('/cadmodels*', getIdTokenForAuthCheck, verifyBasicToken, getIdToken, createProxyMiddleware(cadOptions));
+// LISTENS FOR REQUESTS WITH PATH STARTING WITH /sessions
+// FOR EXAMPLE sessions/{sessionId}
+app.use('/sessions*', getIdTokenForAuthCheck, verifyBasicToken, getIdToken, createProxyMiddleware(sessionOptions));
 
 // THE FOLLOWING LINE MUST BE BELOW THE HTTP-PROXIES!
 app.use(express.json({ limit:'50mb' }));
@@ -105,8 +131,10 @@ async function getIdToken (req, res, next) {
         // Set the audience based on the path of the request sent
         if (pathURL.startsWith('/auth')) {
             audience = authApiServiceURL + pathURL;
-        } else {
+        } else if (pathURL.startsWith('/cadmodels')){
             audience = cadApiServiceURL + pathURL;
+        } else {
+            audience = sessionApiServiceURL + pathURL;
         }
         // Create a Google Auth client with the requested service url as the target audience.
         const client = await auth.getIdTokenClient(audience);

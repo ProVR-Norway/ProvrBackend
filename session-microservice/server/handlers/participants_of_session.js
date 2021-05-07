@@ -1,7 +1,7 @@
 'use strict';
 
 const express = require('express');
-const router = express.Router();
+const router = express.Router({ mergeParams: true });
 
 // Credentials mysql8.0
 const MYSQL_HOST = process.env.MYSQL_HOST; // IP of MySQL instance on Google Cloud SQL
@@ -13,11 +13,11 @@ const MYSQL_DATABASE = process.env.MYSQL_DATABASE;
 // Open connection to the MySQL server
 const mysql = require('mysql8.0');
 const connection = mysql.createConnection({
-  host     : MYSQL_HOST, 
-  port     : MYSQL_PORT,
-  user     : MYSQL_USER,
-  password : MYSQL_PASSWORD,
-  database : MYSQL_DATABASE
+  host     : MYSQL_HOST || 'localhost', 
+  port     : MYSQL_PORT || 3306,
+  user     : MYSQL_USER || 'root',
+  password : MYSQL_PASSWORD || 'password',
+  database : MYSQL_DATABASE || 'users'
 });
 // Checks for any errors upon connecting to the server
 connection.connect(function(err){
@@ -29,7 +29,7 @@ else {
 }
 });
 
-router.post('/:sessionId/participants', function(req, res){
+router.post('/', function(req, res){
 
   const sessionId = req.params.sessionId;
   const JSONDetails={
@@ -186,7 +186,7 @@ router.post('/:sessionId/participants', function(req, res){
   */
 });
 
-router.delete('/:sessionId/participants/:username', function(req, res){
+router.delete('/:username', function(req, res){
 
   const sessionId = req.params.sessionId;
   const username = req.params.username;

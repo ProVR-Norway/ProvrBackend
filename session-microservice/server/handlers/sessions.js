@@ -13,11 +13,11 @@ const MYSQL_DATABASE = process.env.MYSQL_DATABASE;
 // Open connection to the MySQL server
 const mysql = require('mysql8.0');
 const connection = mysql.createConnection({
-  host     : MYSQL_HOST, 
-  port     : MYSQL_PORT,
-  user     : MYSQL_USER,
-  password : MYSQL_PASSWORD,
-  database : MYSQL_DATABASE
+  host     : MYSQL_HOST || 'localhost', 
+  port     : MYSQL_PORT || 3306,
+  user     : MYSQL_USER || 'root',
+  password : MYSQL_PASSWORD || 'password',
+  database : MYSQL_DATABASE || 'users'
 });
 // Checks for any errors upon connecting to the server
 connection.connect(function(err){
@@ -33,10 +33,14 @@ router.get('/', function(req, res){
   const username = req.query.username;
   let sessionList = [];
 
+  let errorPostionCount = 0;
+
+  let isInvitedToSessions = false;
+
   connection.query('SELECT userID FROM User WHERE username = ?', username, function (error, results, fields) {
     if (error) {
       res.status(500);
-      console.log('An error occured with the MySQL database: ' + error.message);
+      console.log('An error occured with the MySQL database: ' + error.message + '. At position ' + (++errorPostionCount));
       res.send({
         message:'Internal error'
       });
@@ -46,18 +50,19 @@ router.get('/', function(req, res){
       connection.query('SELECT * FROM Invited_Participant WHERE userID = ?', userID, function (error, results, fields) {
         if (error) {
           res.status(500);
-          console.log('An error occured with the MySQL database: ' + error.message);
+          console.log('An error occured with the MySQL database: ' + error.message + '. At position ' + (++errorPostionCount));
           res.send({
             message:'Internal error'
           });
         }
         else if (results.length > 0) {
+          isInvitedToSessions = true;
           results.forEach(session => {
             const sessionId = session.sessionID;
             connection.query('SELECT serverID FROM Session WHERE sessionID = ?', sessionId, function (error, results, fields) {
               if (error) {
                 res.status(500);
-                console.log('An error occured with the MySQL database: ' + error.message);
+                console.log('An error occured with the MySQL database: ' + error.message + '. At position ' + (++errorPostionCount));
                 res.send({
                   message:'Internal error'
                 });
@@ -65,37 +70,84 @@ router.get('/', function(req, res){
               else {
                 const serverID = results[0].serverID;
                 connection.query('SELECT hostIP, hostPort FROM Server WHERE serverID = ?', serverID, function (error, results, fields) {
-                  if (error) {
-                    res.status(500);
-                    console.log('An error occured with the MySQL database: ' + error.message);
-                    res.send({
-                      message:'Internal error'
-                    });
-                  } else {
-                    sessionList.push({
-                      sessionId: session.sessionID,
-                      sessionName: session.sessionName,
-                      mapName: session.mapName,
-                      maxParticipants: session.maxParticipants,
-                      participantCount: session.participantCount,
-                      hostUsername: session.hostUsername,
-                      hostIP: results[0].hostIP,
-                      hostPort: results[0].hostPort
-                    });
-                    res.status(200);
-                    res.send({
-                        sessions: sessionList
-                    });
-                  }
+                    if (error) {
+                        res.status(500);
+                        console.log('An error occured with the MySQL database: ' + error.message + '. At position ' + (++errorPostionCount));
+                        res.send({
+                        message:'Internal error'
+                        });
+                    } else {
+                        sessionList.push({
+                            sessionId: session.sessionID,
+                            sessionName: session.sessionName,
+                            mapName: session.mapName,
+                            maxParticipants: session.maxParticipants,
+                            participantCount: session.participantCount,
+                            hostUsername: session.hostUsername,
+                            hostIP: results[0].hostIP,
+                            hostPort: results[0].hostPort
+                        });
+                    }
                 });
               }
             });
           });
         } 
         else {
-          res.status(404);
-          res.send({
-            message:'User does not exist or no sessions found'
+          connection.query('SELECT * FROM Session WHERE hostUserID = ?', userID, function (error, results, fields) {
+            if (error) {
+                res.status(500);
+                console.log('An error occured with the MySQL database: ' + error.message + '. At position ' + (++errorPostionCount));
+                res.send({
+                    message:'Internal error'
+                });
+            } 
+            else if (results.length > 0) {
+              results.forEach(session => {
+                const serverID = session.serverID;
+                console.log(serverID);
+                connection.query('SELECT hostIP, hostPort FROM Server WHERE serverID = ?', serverID, function (error, results, fields) {
+                    if (error) {
+                        res.status(500);
+                        console.log('An error occured with the MySQL database: ' + error.message + '. At position ' + (++errorPostionCount));
+                        res.send({
+                            message:'Internal error'
+                        });
+                    } 
+                    else {
+                        console.log(results[0].hostIP);
+                        sessionList.push({
+                            sessionId: session.sessionID,
+                            sessionName: session.sessionName,
+                            mapName: session.mapName,
+                            maxParticipants: session.maxParticipants,
+                            participantCount: session.participantCount,
+                            hostUserId: session.hostUserID,
+                            hostIP: results[0].hostIP,
+                            hostPort: results[0].hostPort
+                        });
+                        console.log(sessionList);
+                    }
+                });
+              });
+              res.status(200);
+              res.send({
+                 sessions: sessionList
+              });
+            }
+            else {
+                if (isInvitedToSessions) {
+                    res.status(200);
+                    res.send({
+                        sessions: sessionList
+                    });   
+                } else {
+                    res.status(404);
+                    res.send({
+                        message:'User does not exist or no sessions are found'
+                    });
+                }
+            }
           });
         }
       });
@@ -118,55 +170,75 @@ router.post('/', function(req, res){
     'hostUsername': req.body.hostUsername
   };
 
+  let errorPostionCount = 0;
+
   let serverId;
   let hostId;
 
-  connection.query('SELECT userID FROM User WHERE username = ?', username, function (error, results, fields) {
+  connection.query('SELECT userID FROM User WHERE username = ?', SessionDetails.hostUsername, function (error, results, fields) {
     if (error) {
       res.status(500);
       // PRINT OUT THE SPECIFIC ERROR
-      console.log('An error occured with the MySQL database: ' + error.message);
+      console.log('An error occured with the MySQL database: ' + error.message + '. At position ' + (++errorPostionCount));
       res.send({
           message:'Internal error'
       });
     } 
     else if (results.length > 0) {
         hostId = results[0].userID;
-        connection.query('SELECT serverID FROM Server WHERE isAllocated = ?', 0, function (error, results, fields) {
+        connection.query('SELECT serverID FROM Server WHERE isAllocated = ?', false, function (error, results, fields) {
           if (error) {
             res.status(500);
             // PRINT OUT THE SPECIFIC ERROR
-            console.log('An error occured with the MySQL database: ' + error.message);
+            console.log('An error occured with the MySQL database: ' + error.message + '. At position ' + (++errorPostionCount));
             res.send({
                 message:'Internal error'
             });
           } 
           else if (results.length > 0) {
             serverId = results[0].serverID;
-            connection.query('INSERT INTO Session (sessionName, mapName, maxParticipants, serverID, hostUserID, participantCount) VALUES (?, ?, ?, ?, ?, ?)', [SessionDetails.sessionName, SessionDetails.mapName, SessionDetails.maxParticipants, serverId, hostId, 0], function (error, results, fields) {
+            connection.query('SELECT * FROM Session WHERE sessionName = ?', SessionDetails.sessionName, function (error, results, fields) {
               if (error) {
                  res.status(500);
                  // PRINT OUT THE SPECIFIC ERROR
-                 console.log('An error occured with the MySQL database: ' + error.message);
+                 console.log('An error occured with the MySQL database: ' + error.message + '. At position ' + (++errorPostionCount));
                  res.send({
                     message:'Internal error'
                  });
               } 
+              else if (results.length > 0) {
+                res.status(403);
+                res.send({
+                  message:'Session with the same name already exist for the user error'
+                });
+              } 
               else {
-                const sessionId = results.insertId;
-                connection.query('UPDATE Server SET isAllocated = ? WHERE serverID = ?', [1, serverId], function (error, results, fields) {
+                connection.query('INSERT INTO Session (sessionName, mapName, maxParticipants, serverID, hostUserID, participantCount) VALUES (?, ?, ?, ?, ?, ?)', [SessionDetails.sessionName, SessionDetails.mapName, SessionDetails.maxParticipants, serverId, hostId, 0], function (error, results, fields) {
                   if (error) {
                     res.status(500);
                     // PRINT OUT THE SPECIFIC ERROR
-                    console.log('An error occured with the MySQL database: ' + error.message);
+                    console.log('An error occured with the MySQL database: ' + error.message + '. At position ' + (++errorPostionCount));
                     res.send({
-                       message:'Internal error'
+                        message:'Internal error'
                     });
                   } 
                   else {
-                    res.status(200);
-                    res.send({
-                        sessionId: sessionId
+                    const sessionId = results.insertId;
+                    connection.query('UPDATE Server SET isAllocated = ? WHERE serverID = ?', [true, serverId], function (error, results, fields) {
+                      if (error) {
+                        res.status(500);
+                        // PRINT OUT THE SPECIFIC ERROR
+                        console.log('An error occured with the MySQL database: ' + error.message + '. At position ' + (++errorPostionCount));
+                        res.send({
+                          message:'Internal error'
+                        });
+                      } 
+                      else {
+                        res.status(200);
+                        res.send({
+                            sessionId: sessionId
+                        });
+                      }
                     });
                   }
                 });
@@ -194,6 +266,7 @@ router.post('/', function(req, res){
 router.delete('/:sessionId', function(req, res){
 
   const sessionId = req.params.sessionId;
+  console.log('session id: ' + sessionId);
 
   connection.query('SELECT serverID FROM Session WHERE sessionID = ?', sessionId, function (error, results, fields) {
     if (error) {
@@ -206,6 +279,7 @@ router.delete('/:sessionId', function(req, res){
     }
     else if (results.length > 0) {
       const serverId = results[0].serverID;
+      console.log('server id ' + serverId);
       connection.query('DELETE FROM Session WHERE sessionID = ?', sessionId, function (error, results, fields) {
         if (error) {
           res.status(500);
@@ -214,7 +288,8 @@ router.delete('/:sessionId', function(req, res){
           res.send({
               message:'Internal error'
           });
-        } else {
+        } 
+        else {
           connection.query('UPDATE Server SET isAllocated = ? WHERE serverID = ?', [0, serverId], function (error, results, fields) {
             if (error) {
               res.status(500);
