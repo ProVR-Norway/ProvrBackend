@@ -28,6 +28,36 @@ if(!err) {
 }
 });
 
+const example = async (sessions, arrayToFill) => {
+    for (const session of sessions) {
+        const serverId = session.serverID;
+        const server = await returnNum(serverId);
+        arrayToFill.push ({
+            sessionId: session.sessionID,
+            sessionName: session.sessionName,
+            mapName: session.mapName,
+            maxParticipants: session.maxParticipants,
+            participantCount: session.participantCount,
+            hostUserId: session.hostUserID,
+            hostIP: server.hostIP,
+            hostPort: server.hostPort
+        });
+    }
+    return arrayToFill;
+}
+  
+const returnNum = (serverId, arrayToFill) => {
+    return new Promise((resolve, reject) => {
+        connection.query('SELECT hostIP, hostPort FROM Server WHERE serverID = ?', serverId, function (error, results, fields) {
+            if (error) {
+                reject(error);
+            } else { 
+                resolve(results[0]);
+            }
+        });
+    });
+}
+
 router.get('/', function(req, res){
 
   const username = req.query.username;
@@ -55,8 +85,10 @@ router.get('/', function(req, res){
             message:'Internal error'
           });
         }
+        /*
         else if (results.length > 0) {
           isInvitedToSessions = true;
+          console.log('Here!');
           results.forEach(session => {
             const sessionId = session.sessionID;
             connection.query('SELECT serverID FROM Session WHERE sessionID = ?', sessionId, function (error, results, fields) {
@@ -68,22 +100,23 @@ router.get('/', function(req, res){
                 });
               } 
               else {
-                const serverID = results[0].serverID;
-                connection.query('SELECT hostIP, hostPort FROM Server WHERE serverID = ?', serverID, function (error, results, fields) {
+                const serverId = results[0].serverID;
+                connection.query('SELECT hostIP, hostPort FROM Server WHERE serverID = ?', serverId, function (error, results, fields) {
                     if (error) {
                         res.status(500);
-                        console.log('An error occured with the MySQL database: ' + error.message + '. At position ' + (++errorPostionCount));
+                        console.log('An error occured with the MySQL database: ' + error.message);
                         res.send({
                         message:'Internal error'
                         });
                     } else {
-                        sessionList.push({
+                        console.log('Heeere!')
+                        sessionList.push ({
                             sessionId: session.sessionID,
                             sessionName: session.sessionName,
                             mapName: session.mapName,
                             maxParticipants: session.maxParticipants,
                             participantCount: session.participantCount,
-                            hostUsername: session.hostUsername,
+                            hostUserId: session.hostUserId,
                             hostIP: results[0].hostIP,
                             hostPort: results[0].hostPort
                         });
@@ -93,6 +126,7 @@ router.get('/', function(req, res){
             });
           });
         } 
+        */
         else {
           connection.query('SELECT * FROM Session WHERE hostUserID = ?', userID, function (error, results, fields) {
             if (error) {
@@ -103,39 +137,23 @@ router.get('/', function(req, res){
                 });
             } 
             else if (results.length > 0) {
-              results.forEach(session => {
-                const serverID = session.serverID;
-                console.log(serverID);
-                connection.query('SELECT hostIP, hostPort FROM Server WHERE serverID = ?', serverID, function (error, results, fields) {
-                    if (error) {
-                        res.status(500);
-                        console.log('An error occured with the MySQL database: ' + error.message + '. At position ' + (++errorPostionCount));
-                        res.send({
-                            message:'Internal error'
-                        });
-                    } 
-                    else {
-                        console.log(results[0].hostIP);
-                        sessionList.push({
-                            sessionId: session.sessionID,
-                            sessionName: session.sessionName,
-                            mapName: session.mapName,
-                            maxParticipants: session.maxParticipants,
-                            participantCount: session.participantCount,
-                            hostUserId: session.hostUserID,
-                            hostIP: results[0].hostIP,
-                            hostPort: results[0].hostPort
-                        });
-                        console.log(sessionList);
-                    }
+                example(results, sessionList)
+                .then((sessionInfo) => {
+                    res.status(200);
+                    res.send({
+                        sessions: sessionInfo
+                    });   
+                })
+                .catch((error) => {
+                    res.status(500);
+                    console.log('An error occured with the MySQL database: ' + error.message + '. At position ' + (++errorPostionCount));
+                    res.send({
+                        message:'Internal error'
+                    });
                 });
-              });
-              res.status(200);
-              res.send({
-                 sessions: sessionList
-              });
             }
             else {
+                console.log('Here!!')
                 if (isInvitedToSessions) {
                     res.status(200);
                     res.send({

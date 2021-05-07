@@ -32,12 +32,12 @@ router.post('/', function(req, res){
 
   const sessionId = req.params.session;
   const InvitedDetails={
-    'invited': invited
+    'invited': req.body.invited
   };
   const arrayOfInvited = InvitedDetails.invited;
 
   arrayOfInvited.forEach(function(invitedParticipant) {
-    const usernameOrEmail = inviteParticipant.usernameOrEmail;
+    const usernameOrEmail = invitedParticipant.usernameOrEmail;
     connection.query('SELECT userID FROM User WHERE username = ? OR userEmail = ?', usernameOrEmail, function (error, results, fields) {
       if (error) {
         res.status(500);
@@ -46,15 +46,29 @@ router.post('/', function(req, res){
         res.send({
             message:'Internal error'
         });
-      } else if (results.length > 0) {
+      } 
+      else if (results.length > 0) {
         const userId = results[0].userID;
-        connection.query('INSERT INTO Invited_Participant (userID, sessionID) VALUES (?, ?)', [userId, sessionId], function (error, results, fields) {
+        connection.query('SELECT * FROM Invited_Participant WHERE userID = ? AND sessionID = ?', [userId, sessionId], function (error, results, fields) {
           if (error) {
             res.status(500);
             // PRINT OUT THE SPECIFIC ERROR
             console.log('An error occured with the MySQL database: ' + error.message);
             res.send({
                 message:'Internal error'
+            });
+          }
+          // If the user is not already invited we add them to the table
+          else if (!(results.length > 0)) {
+            connection.query('INSERT INTO Invited_Participant (userID, sessionID) VALUES (?, ?)', [userId, sessionId], function (error, results, fields) {
+              if (error) {
+                res.status(500);
+                // PRINT OUT THE SPECIFIC ERROR
+                console.log('An error occured with the MySQL database: ' + error.message);
+                res.send({
+                    message:'Internal error'
+                });
+              }
             });
           }
         });
@@ -70,7 +84,6 @@ router.post('/', function(req, res){
   res.send({
       message:'User(s) invited to session successfully'
   });
-
 });
 
 //export this router to use in our server.js
