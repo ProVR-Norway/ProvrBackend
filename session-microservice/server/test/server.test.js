@@ -8,6 +8,15 @@ const chaiHttp = require('chai-http');
 chai.should();
 chai.use(chaiHttp);
 
+/*
+
+    IMPORTANT! 
+    If the delete session test fails, make sure to manually delete the new session entry in the test database.
+
+*/
+
+let createSession;
+
 describe('Test the session API`s endpoints', () => {
 
     describe('Test POST route /sessions', () => {
@@ -16,7 +25,7 @@ describe('Test the session API`s endpoints', () => {
             chai.request(server)
                 .post('/sessions')
                 .send({
-                    sessionName: 'TestSessionName',
+                    sessionName: 'TestSessionName4',
                     mapName: 'TestMapName',
                     maxParticipants: 8,
                     hostUsername: username
@@ -25,6 +34,7 @@ describe('Test the session API`s endpoints', () => {
                     response.should.have.status(200);
                     response.body.should.be.a('object');
                     response.body.should.have.property('sessionId');
+                    createSession = response.body.sessionId;
                 done();
                 });
         });
@@ -36,7 +46,6 @@ describe('Test the session API`s endpoints', () => {
             chai.request(server)
                 .get('/sessions/?username=' + username)
                 .end((err, response) => {
-                    console.log(response.body);
                     response.should.have.status(200);
                     response.body.should.be.a('object');
                     response.body.should.have.property('sessions').that.have.length(1);
@@ -46,20 +55,20 @@ describe('Test the session API`s endpoints', () => {
     });
 
     describe('Test POST route /sessions/:sessionId/invited', () => {
-        it('should invited participants to the session', (done) =>{
-            const sessionId = 1;
+        it('should invite participants to the session', (done) =>{
+            const sessionId = createSession;
             chai.request(server)
                 .post('/sessions/' + sessionId + '/invited')
                 .send({
                     invited: [
                         {
-                            usernameOrEmail: 'testAccount1@gmail.com',
+                            usernameOrEmail: 'admin123',
                         },
                         {
-                            usernameOrEmail: 'testAccount2@gmail.com',
+                            usernameOrEmail: 'admin12345',
                         },
                         {
-                            usernameOrEmail: 'testAccount3@gmail.com',
+                            usernameOrEmail: 'dgijkJDWSdsnhtg@gmail.com',
                         }
                     ]
                 })
@@ -74,7 +83,7 @@ describe('Test the session API`s endpoints', () => {
 
     describe('Test POST route /sessions/:sessionId/participants', () => {
         it('should add a participant to the session', (done) =>{
-            const sessionId = 1;
+            const sessionId = createSession;
             const username = 'admin123';
             chai.request(server)
                 .post('/sessions/' + sessionId + '/participants')
@@ -92,7 +101,7 @@ describe('Test the session API`s endpoints', () => {
 
     describe('Test DELETE route /sessions/:sessionId/participants/:username', () => {
         it('should add a participant to the session', (done) =>{
-            const sessionId = 1;
+            const sessionId = createSession;
             const username = 'admin123';
             chai.request(server)
                 .delete('/sessions/' + sessionId + '/participants/' + username)
@@ -107,9 +116,9 @@ describe('Test the session API`s endpoints', () => {
 
     describe('Test DELETE route /sessions/:sessionId', () => {
         it('should delete session by sessionID', (done) =>{
-            const sessionId = 1;
+            const sessionId = createSession;
             chai.request(server)
-                .get('/sessions/' + sessionId)
+                .delete('/sessions/' + sessionId)
                 .end((err, response) => {
                     response.should.have.status(200);
                     response.body.should.be.a('object');
