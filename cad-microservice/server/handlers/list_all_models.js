@@ -31,10 +31,10 @@ if(!err) {
 
 // SINCE THE QUERIES ARE DEPENDANT AND ASYNCHRONUS WE NEED TO NEST THEM. AWAIT COULD ALSO HAVE BEEN USED
 // LINK: https://stackoverflow.com/questions/53649272/how-to-use-result-array-of-a-query-in-another-query-in-mysqlnode-js
-// Use route parameters (username in this case).
-router.get('/:username', function(req, res){
+// Use query parameter (username in this case).
+router.get('/', function(req, res){
 
-    const username = req.params.username;
+    const username = req.query.username;
 
     // Sending a query to the database to find the user id of the person with this username
     connection.query('SELECT userID FROM User WHERE username = ?', username, function (error, results, fields) {

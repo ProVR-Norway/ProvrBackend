@@ -31,4 +31,4 @@ app.use('/auth/auth_check', auth_check);
 //app.use('/auth/forgotten_password', forgotten_password);
 
 // THE PORT MUST BE 8080 WHEN UPLODADED TO CLOUD RUN
-app.listen(8080);
+module.exports = app.listen(8080); // Export it so that we can test it with mocha
