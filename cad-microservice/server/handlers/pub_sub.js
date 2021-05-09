@@ -52,8 +52,8 @@ router.post('/', function(req, res){
 
         const objectIdSplit = notificationData.objectId.split('/');
         // Very important that we URL decode here!
-        const username = objectIdSplit[0];
-        const modelName = objectIdSplit[2];
+        const username = decodeURI(objectIdSplit[0]);
+        const modelName = decodeURI(objectIdSplit[2]);
         const uploadDate = notificationData.eventTime.substring(0, 10);
         const uploaded = 1;
 
