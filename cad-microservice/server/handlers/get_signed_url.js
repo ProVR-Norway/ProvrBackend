@@ -18,8 +18,8 @@ const {Storage} = require('@google-cloud/storage');
 router.get('/', function(req, res){
   // todo test with slash, questionmark, space, etc
   
-  const username = req.query.username;
-  const modelFile = req.query.modelfile;
+  const username = decodeURI(req.query.username);
+  const modelFile = decodeURI(req.query.modelfile);
   const action = req.query.action;
   
   // Remove file extension
