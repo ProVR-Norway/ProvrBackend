@@ -52,7 +52,7 @@ router.post('/', function(req, res){
 
         const objectIdSplit = notificationData.objectId.split('/');
         const username = objectIdSplit[0];
-        const modelName = objectIdSplit[1];
+        const modelName = objectIdSplit[2];
         const uploadDate = notificationData.eventTime.substring(0, 10);
         const uploaded = 1;
 
