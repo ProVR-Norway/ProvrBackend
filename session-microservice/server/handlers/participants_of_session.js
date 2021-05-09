@@ -189,7 +189,7 @@ router.post('/', function(req, res){
 router.delete('/:username', function(req, res){
 
   const sessionId = req.params.sessionId;
-  const username = req.params.username;
+  const username = decodeURI(req.params.username);
 
   connection.query('SELECT userID FROM User WHERE username = ?', username, function (error, results, fields) {
     if (error) {

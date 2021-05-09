@@ -18,12 +18,15 @@ const {Storage} = require('@google-cloud/storage');
 router.get('/', function(req, res){
   // todo test with slash, questionmark, space, etc
   
-  const username = req.query.username;
-  const modelName = req.query.modelname;
+  const username = decodeURI(req.query.username);
+  const modelFile = decodeURI(req.query.modelfile);
   const action = req.query.action;
+  
+  // Remove file extension
+  const modelName = modelFile.replace(/\.[^/.]+$/, '');
 
   // The ID of the GCS file
-  const fileName = username + '/' + modelName + '/' + modelName + '.gltf';
+  const fileName = username + '/' + modelName + '/' + modelFile;
   
   // Creates a client
   const storage = new Storage();

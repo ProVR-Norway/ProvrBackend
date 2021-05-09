@@ -84,7 +84,7 @@ const getServerInfo = (serverIdentifier) => {
 
 router.get('/', async (req, res) => {
 
-  const username = req.query.username;
+  const username = decodeURI(req.query.username);
   // Initialise the database function
   const db = makeDbConnection(mysqlConfig);
 

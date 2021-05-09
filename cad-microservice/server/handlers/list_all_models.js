@@ -34,7 +34,8 @@ if(!err) {
 // Use query parameter (username in this case).
 router.get('/', function(req, res){
 
-    const username = req.query.username;
+    // URL decode the username
+    const username = decodeURI(req.query.username);
 
     // Sending a query to the database to find the user id of the person with this username
     connection.query('SELECT userID FROM User WHERE username = ?', username, function (error, results, fields) {
