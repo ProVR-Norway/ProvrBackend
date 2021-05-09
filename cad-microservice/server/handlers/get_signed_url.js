@@ -16,7 +16,9 @@ const {Storage} = require('@google-cloud/storage');
 
 // Use route parameters (username and modelname)
 router.get('/', function(req, res){
-  // todo test with slash, questionmark, space, etc
+  // TODO: test with slash, questionmark, space, etc
+  // RESULT: Slash cannot be used, but all the others works fine.
+  // The reason is that we split by slash in the pub/sub endpoint
   
   const username = decodeURI(req.query.username);
   const modelFile = decodeURI(req.query.modelfile);
