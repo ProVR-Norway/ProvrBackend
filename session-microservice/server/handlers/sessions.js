@@ -288,6 +288,9 @@ router.post('/', function(req, res){
     'hostUsername': req.body.hostUsername
   };
 
+  console.log(req.body.hostUsername);
+  console.log(SessionDetails.hostUsername);
+
   let errorPostionCount = 0;
 
   let serverId;
