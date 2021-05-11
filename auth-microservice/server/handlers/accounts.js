@@ -47,8 +47,10 @@ function makeDbConnection( config ) {
   };
 }
 
+/*
 router.delete('/:username', async (req, res) => {
   // TODO: Include deletion of all rows in other MySQL tables that has the userID of the user to delete as foreign keys (Session, Model, Invited_Participant)
+  // TODO: Include autorization before deletion.
   const username = decodeURI(req.params.username);
   // Initialise the database function
   const db = makeDbConnection(mysqlConfig);
@@ -89,6 +91,7 @@ router.delete('/:username', async (req, res) => {
   }
 
 });
+*/
 
 //export this router to use in our server.js
 module.exports = router;

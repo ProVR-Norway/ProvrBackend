@@ -34,7 +34,7 @@ function makeDbConnection( config ) {
     } else {
         console.log('Error when connecting to the MySQL database: ' + err.message);
     }
-    });
+  });
   return {
     query( sql, args ) {
       return util.promisify( connection.query )

@@ -29,7 +29,7 @@ const accounts = require('./handlers/accounts.js');
 app.use('/auth/login', login);
 app.use('/auth/register', register);
 app.use('/auth/auth_check', auth_check);
-app.use('/auth', accounts);
+//app.use('/auth', accounts);
 //app.use('/auth/forgotten_password', forgotten_password);
 
 // THE PORT MUST BE 8080 WHEN UPLODADED TO CLOUD RUN
