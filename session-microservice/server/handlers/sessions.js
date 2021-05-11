@@ -109,14 +109,16 @@ router.get('/', async (req, res) => {
             for (let i = 0; i < retrieveSessionIDForSessionsInvitedTo_QueryResults.length; i++) {
                 const retriveSessionInfo_QueryResults = await db.query('SELECT * FROM Session WHERE sessionID = ?', retrieveSessionIDForSessionsInvitedTo_QueryResults[i].sessionID);
                 const serverId = retriveSessionInfo_QueryResults[0].serverID;
+                const hostUserId = retriveSessionInfo_QueryResults[0].hostUserID;
                 const retrieveServerInfo_QueryResults = await db.query('SELECT hostIP, hostPort FROM Server WHERE serverID = ?', serverId);
+                const retirveHostUserName_QueryResults = await db.query('SELECT username FROM User WHERE userID = ?', hostUserId);
                 sessionsArray.push ({
                     sessionId: retriveSessionInfo_QueryResults[0].sessionID,
                     sessionName: retriveSessionInfo_QueryResults[0].sessionName,
                     mapName: retriveSessionInfo_QueryResults[0].mapName,
                     maxParticipants: retriveSessionInfo_QueryResults[0].maxParticipants,
                     participantCount: retriveSessionInfo_QueryResults[0].participantCount,
-                    hostUserId: retriveSessionInfo_QueryResults[0].hostUserID,
+                    hostUsername: retirveHostUserName_QueryResults[0].username,
                     hostIP: retrieveServerInfo_QueryResults[0].hostIP,
                     hostPort: retrieveServerInfo_QueryResults[0].hostPort
                 });
@@ -134,7 +136,7 @@ router.get('/', async (req, res) => {
                     mapName: retrieveSessionsWhereUserIsHost_QueryResults[i].mapName,
                     maxParticipants: retrieveSessionsWhereUserIsHost_QueryResults[i].maxParticipants,
                     participantCount: retrieveSessionsWhereUserIsHost_QueryResults[i].participantCount,
-                    hostUserId: retrieveSessionsWhereUserIsHost_QueryResults[i].hostUserID,
+                    hostUsername: username,
                     hostIP: retrieveServerInfo_QueryResults[0].hostIP,
                     hostPort: retrieveServerInfo_QueryResults[0].hostPort
                 });
