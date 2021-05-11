@@ -9,6 +9,9 @@ chai.should();
 chai.use(chaiHttp);
 
 let auth_token;
+const username = 'MochaTestUsername'; 
+const email = 'MochaTestEmail';
+const password = 'MochaTestPassword';
 
 describe('Test the authentication API`s endpoints', () => {
 
@@ -17,9 +20,9 @@ describe('Test the authentication API`s endpoints', () => {
             chai.request(server)
                 .post('/auth/register')
                 .send({
-                    username: 'MochaTestUsername3',
-                    emailAddress: 'MochaTestEmail3',
-                    password: 'MochaTestPassword'
+                    username: username,
+                    emailAddress: email,
+                    password: password
                 })
                 .end((err, response) => {
                     response.should.have.status(200);
@@ -35,8 +38,8 @@ describe('Test the authentication API`s endpoints', () => {
             chai.request(server)
                 .post('/auth/login')
                 .send({
-                    username: 'MochaTestUsername3',
-                    password: 'MochaTestPassword'
+                    username: username,
+                    password: password
                 })
                 .end((err, response) => {
                     response.should.have.status(200);
@@ -59,6 +62,19 @@ describe('Test the authentication API`s endpoints', () => {
                     response.should.have.status(200);
                     response.body.should.be.a('object');
                     response.body.should.have.property('message');
+                done();
+                });
+        });
+    });
+
+    describe('Test DELETE route /auth/{username}', () => {
+        it('should delete a user', (done) =>{
+            chai.request(server)
+                .delete('/auth/' + encodeURI(username))
+                .end((err, response) => {
+                    response.should.have.status(200);
+                    response.body.should.be.a('object');
+                    //response.body.should.have.property('message');
                 done();
                 });
         });
