@@ -9,8 +9,8 @@ chai.should();
 chai.use(chaiHttp);
 
 let auth_token;
-const username = 'MochaTestUsername'; 
-const email = 'MochaTestEmail';
+const username = 'MochaTestUsername'; // Must be changed for each test. Will be resolved with delete user endpoint
+const email = 'MochaTestEmail'; // Must be changed for each test. Will be resolved with delete user endpoint
 const password = 'MochaTestPassword';
 
 describe('Test the authentication API`s endpoints', () => {
@@ -67,6 +67,7 @@ describe('Test the authentication API`s endpoints', () => {
         });
     });
 
+    /*
     describe('Test DELETE route /auth/{username}', () => {
         it('should delete a user', (done) =>{
             chai.request(server)
@@ -79,5 +80,6 @@ describe('Test the authentication API`s endpoints', () => {
                 });
         });
     });
+    */
 
 });
