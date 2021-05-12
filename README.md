@@ -4,6 +4,18 @@
 [![GitHub issues](https://img.shields.io/github/issues/ProVR-Norway/ProvrBackend.svg)](https://GitHub.com/Naereen/StrapDown.js/issues/)
 [![GitHub stars](https://img.shields.io/github/stars/ProVR-Norway/ProvrBackend.svg?style=social&label=Star&maxAge=2592000)](https://GitHub.com/Naereen/StrapDown.js/stargazers/) 
 
+## Endpoints
+
+- `/auth/login`
+- `/auth/register`
+- `/auth/auth_check`
+- `/cadmodels`
+- `/cadmodels/signedurl`
+- `/cadmodels/pub-sub`
+- `/sessions`
+- `/sessions/{sessionId}/participants`
+- `/sessions/{sessionId}/invited`
+
 ## Setting up Cloud SQL (MySQL)
 
 ### Why Cloud SQL?
