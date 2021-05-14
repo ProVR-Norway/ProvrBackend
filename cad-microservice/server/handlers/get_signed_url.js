@@ -26,8 +26,8 @@ router.get('/', function(req, res){
   const action = req.query.action;
   
   // Split name and file extension
-  const modelName = modelFile.split(/\.[^/.]+$/)[0];
-  const modelExtention = modelFile.split(/\.[^/.]+$/)[1];
+  const modelName = modelFile.split('.')[0];
+  const modelExtention = modelFile.split('.')[1];
 
   // The ID of the GCS file
   const fileName = username + '/' + modelName + '/' + modelFile;
@@ -83,7 +83,7 @@ router.get('/', function(req, res){
     else {
       contentType = 'application/json';
     }
-    
+
     async function generatedV4WriteSignedUrl() {
 
       // Milliseconds 
