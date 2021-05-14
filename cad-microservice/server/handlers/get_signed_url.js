@@ -19,16 +19,21 @@ router.get('/', function(req, res){
   // TODO: test with slash, questionmark, space, etc
   // RESULT: Slash cannot be used, but all the others works fine.
   // The reason is that we split by slash in the pub/sub endpoint
+  // For the model file punctiation cannot be used either.
   
   const username = decodeURI(req.query.username);
   const modelFile = decodeURI(req.query.modelfile);
   const action = req.query.action;
   
-  // Remove file extension
-  const modelName = modelFile.replace(/\.[^/.]+$/, '');
+  // Split name and file extension
+  const modelName = modelFile.split(/\.[^/.]+$/)[0];
+  const modelExtention = modelFile.split(/\.[^/.]+$/)[1];
 
   // The ID of the GCS file
   const fileName = username + '/' + modelName + '/' + modelFile;
+
+  // Content type of the request to upload models to Cloud Storage
+  let contentType;
   
   // Creates a client
   const storage = new Storage();
@@ -68,6 +73,17 @@ router.get('/', function(req, res){
     });
   }
   else if (action === 'write') {
+
+    if (modelExtention === 'gltf') {
+      contentType = 'model/gltf+json';
+    } 
+    else if (modelExtention === 'glb') {
+      contentType = 'model/gltf-binary';
+    } 
+    else {
+      contentType = 'application/json';
+    }
+    
     async function generatedV4WriteSignedUrl() {
 
       // Milliseconds 
@@ -77,7 +93,7 @@ router.get('/', function(req, res){
         version: 'v4',
         action: action,
         expires: Date.now() + expirationTime, 
-        contentType: 'application/octet-stream',
+        contentType: contentType,
       };
     
       // Get a v4 signed URL for reading the file
