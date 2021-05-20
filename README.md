@@ -79,4 +79,3 @@ The bucket `user-cad-models` is configured to publish details about new CAD mode
 The following part of Google Cloud's documentation was used to create the topic and subscription mentioned above: [Create Subscription / Topic](https://cloud.google.com/pubsub/docs/admin)
 
 This link was used to configure Pub/Sub for Cloud Storage for the `user-cad-models` bucket: [Pub/Sub Cloud Storage Config](https://cloud.google.com/storage/docs/reporting-changes#gsutil)
-
