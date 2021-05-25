@@ -3,8 +3,8 @@ name: publish
 on:
   push:
     branches:
-      - development
       - master
+      - development
 
 jobs:
   build:
@@ -27,23 +27,27 @@ jobs:
           gcloud auth configure-docker
       
       - name: Build
+        #with:
+        #  repository: ProvrBackend/auth-microservice
         run: |
-          docker build -t gcr.io/${{ secrets.GCP_PROJECT_ID }}/api-gateway -f api-gateway/Dockerfile .
+          docker build -t gcr.io/${{ secrets.GCP_PROJECT_ID }}/session-microservice -f session-microservice/Dockerfile .
 
       - name: Push
         run: |
-          docker push gcr.io/${{ secrets.GCP_PROJECT_ID }}/api-gateway
+          docker push gcr.io/${{ secrets.GCP_PROJECT_ID }}/session-microservice
+      
       #- name: Build
       #  run: |
       #    gcloud builds submit --tag gcr.io/${{ secrets.GCP_PROJECT_ID }}/auth-microservice
 
       - name: Deploy
         run: |
-          gcloud run deploy api-gateway \
+          gcloud run deploy session-microservice \
           --region ${{ secrets.GCP_REGION }} \
-          --image gcr.io/${{ secrets.GCP_PROJECT_ID }}/api-gateway \
+          --image gcr.io/${{ secrets.GCP_PROJECT_ID }}/session-microservice \
           --platform managed \
           --allow-unauthenticated \
           --project ${{ secrets.GCP_PROJECT_ID }} \
-          --set-env-vars URL_AUTH_MICROSERVICE=${{ secrets.URL_AUTH_MICROSERVICE }},URL_CAD_MICROSERVICE=${{ secrets.URL_CAD_MICROSERVICE }},URL_SESSION_MICROSERVICE=${{ secrets.URL_SESSION_MICROSERVICE }}
-
+          --vpc-connector ${{ secrets.GCP_VCP_CONNECTOR }} \
+          --add-cloudsql-instances ${{ secrets.CLOUD_SQL_INSTANCE_NAME }} \
+          --set-env-vars MYSQL_HOST=${{ secrets.MYSQL_AUTH_MICROSERVICE_HOST }},MYSQL_PORT=${{ secrets.MYSQL_AUTH_MICROSERVICE_PORT }},MYSQL_USER=${{ secrets.MYSQL_AUTH_MICROSERVICE_USERNAME }},MYSQL_PASSWORD=${{ secrets.MYSQL_AUTH_MICROSERVICE_PASSWORD }},MYSQL_DATABASE=${{ secrets.MYSQL_AUTH_MICROSERVICE_DATABASE }}

@@ -3,27 +3,34 @@ version: '3.8'
 services:
   db:
     image: mysql:8.0
-    container_name: mysql-users-db
+    container_name: mysql-vcr-db
     #always restart when it is stopped by something (not manually stopped)
     restart: always
     environment:
+      # Exposed port
+      # MYSQL_PORT: 49160
+      # Host of the local machine
+      # MYSQL_HOST: localhost
+      # Name of the database
       MYSQL_DATABASE: 'users'
-      # So you don't have to use root, but you can if you like
+      # Database username
       MYSQL_USER: 'user'
-      # You can use whatever password you like
-      MYSQL_PASSWORD: 'password' # ${MYSQL_AUTH_MICROSERVICE_PASSWORD}
-      # Password for root access
-      MYSQL_ROOT_PASSWORD: 'password'
+      # Database password
+      MYSQL_PASSWORD: 'secret'
+      # Root password
+      MYSQL_ROOT_PASSWORD: 'secret'
     ports:
       # <Port exposed> : < MySQL Port running inside container>
       - '49160:3306'
     expose:
       # Opens port 3306 on the container
-      - '3306' # MUST BE 3306!!!
+      - '3306' # MUST BE 3306!
       # Where our data will be persisted
-    command: --init-file /data/application/userDB.sql
+    # Initialise database based on sql-file
+    command: --init-file /docker-entrypoint-initdb.d/vr-collaboration-room-db-dev.sql
     volumes:
-      - userDB.sql:/data/application/userDB.sql
+      - ./vr-collaboration-room-db-dev.sql:/docker-entrypoint-initdb.d/vr-collaboration-room-db-dev.sql
+      - mysql-db:/var/lib/mysql
           
   redis:
     image: "redis:alpine"
@@ -36,51 +43,33 @@ services:
       - '6379'
     volumes:
       - token-db:/var/lib/redis
-      
-      
-  auth-microservice:
-    build: ./auth-microservice
+           
+  session-microservice:
+    build: ./session-microservice
     command: node server.js
-    container_name: auth-microservice
+    container_name: session-microservice
+    environment:
+      # Exposed port
+      MYSQL_PORT: '3306'
+      # Host of the local machine
+      MYSQL_HOST: 'localhost'
+      # Name of the database
+      MYSQL_DATABASE: 'users'
+      # Database username
+      MYSQL_USER: 'root'
+      # Database password
+      MYSQL_PASSWORD: 'password'
     ports:
        - '49162:8080'
     expose:
       - '8080'
-    #depends_on:
-    #  db:
-    #    condition: service_healthy
-    #  redis:
-    #    condition: service_healthy
     volumes:
-      - ./auth-microservice:/app
-      
-      
-# Names our volume
+      - ./session-microservice:/app 
 volumes:
-  userDB.sql:
+  vr-collaboration-room-db-dev.sql:
+  mysql-db:
   token-db:
-  #./auth-microservice:
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
+  session-microservice:
   
       # Open docker exec cmd
         # "docker exec -it db99f7d01e4a sh"
@@ -95,9 +84,6 @@ volumes:
     # SET syntax: "SET name "key" EX 3600"
     # EX 3600 = token expires after 3600 seconds
     # NX = Only set the key if it don't exist
-    
-    
-    
     
     # SET token1 "user1" EX 3600
     # HMSET token1 userID "ID"

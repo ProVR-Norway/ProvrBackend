@@ -12,8 +12,8 @@ const REDIS_PORT = process.env.REDIS_PORT;
 // Open connection to the redis
 const redis = require('redis');
 const client = redis.createClient({
-   host: REDIS_HOST, 
-   port: REDIS_PORT
+   host: REDIS_HOST || 'localhost', 
+   port: REDIS_PORT || 6379
 });
 client.on('error', err => console.error('Error when connecting to redis:', err));
 

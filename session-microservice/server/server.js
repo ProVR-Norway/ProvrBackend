@@ -16,9 +16,9 @@ const participantsOfSession = require('./handlers/participants_of_session.js');
 const invitedOfSession = require('./handlers/invited_of_session.js');
 const sessions = require('./handlers/sessions.js');
 
-app.use('/sessions/*/participants', participantsOfSession);
-app.use('/sessions/*/invited', invitedOfSession);
+app.use('/sessions/:sessionId/participants', participantsOfSession);
+app.use('/sessions/:sessionId/invited', invitedOfSession);
 app.use('/sessions', sessions);
 
 // THE PORT MUST BE 8080 WHEN UPLODADED TO CLOUD RUN
-app.listen(8080);
+module.exports = app.listen(8080); // Export it so that we can test it with mocha

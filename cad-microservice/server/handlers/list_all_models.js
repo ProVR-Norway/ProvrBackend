@@ -14,11 +14,11 @@ const MYSQL_DATABASE = process.env.MYSQL_DATABASE;
 // Open connection to the MySQL server
 const mysql = require('mysql8.0');
 const connection = mysql.createConnection({
-  host     : MYSQL_HOST, 
-  port     : MYSQL_PORT,
-  user     : MYSQL_USER,
-  password : MYSQL_PASSWORD,
-  database : MYSQL_DATABASE
+    host     : MYSQL_HOST || 'localhost', 
+    port     : MYSQL_PORT || 3306,
+    user     : MYSQL_USER || 'root',
+    password : MYSQL_PASSWORD || 'password',
+    database : MYSQL_DATABASE || 'users'
 });
 // Checks for any errors upon connecting to the mysql server
 connection.connect(function(err){
@@ -31,10 +31,11 @@ if(!err) {
 
 // SINCE THE QUERIES ARE DEPENDANT AND ASYNCHRONUS WE NEED TO NEST THEM. AWAIT COULD ALSO HAVE BEEN USED
 // LINK: https://stackoverflow.com/questions/53649272/how-to-use-result-array-of-a-query-in-another-query-in-mysqlnode-js
-// Use route parameters (username in this case).
-router.get('/:username', function(req, res){
+// Use query parameter (username in this case).
+router.get('/', function(req, res){
 
-    const username = req.params.username;
+    // URL decode the username
+    const username = decodeURI(req.query.username);
 
     // Sending a query to the database to find the user id of the person with this username
     connection.query('SELECT userID FROM User WHERE username = ?', username, function (error, results, fields) {

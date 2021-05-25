@@ -6,12 +6,15 @@
   "license": "MIT",
   "main": "server.js",
   "scripts": {
+    "test": "node_modules/.bin/mocha test/server.test.js --reporter spec",
     "start": "node ./server.js"
   },
   "dependencies": {
-    "cors": "^2.8.5",
+    "chai": "^4.3.4",
+    "chai-http": "^4.3.0",
     "express": "^4.16.1",
     "express-rate-limit": "^5.2.6",
+    "mocha": "^8.3.2",
     "mysql8.0": "^1.1.2",
     "redis": "^3.1.0"
   }

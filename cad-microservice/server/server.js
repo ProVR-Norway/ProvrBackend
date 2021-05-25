@@ -17,8 +17,8 @@ const listAllModels = require('./handlers/list_all_models.js');
 const pubSub = require('./handlers/pub_sub.js');
 
 app.use('/cadmodels/signedurl', getSignedURL);
-app.use('/cadmodels/listall', listAllModels);
+app.use('/cadmodels', listAllModels);
 app.use('/cadmodels/pub-sub', pubSub);
 
 // THE PORT MUST BE 8080 WHEN UPLODADED TO CLOUD RUN
-app.listen(8080);
+module.exports = app.listen(8080); // Export it so that we can test it with mocha

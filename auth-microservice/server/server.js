@@ -23,12 +23,14 @@ app.use(express.urlencoded({ extended: true }));
 const login = require('./handlers/login.js');
 const register = require('./handlers/register.js');
 const auth_check = require('./handlers/auth_check.js');
+const accounts = require('./handlers/accounts.js');
 //const forgotten_password = require('./handlers/forgotten_password.js');
 
 app.use('/auth/login', login);
 app.use('/auth/register', register);
 app.use('/auth/auth_check', auth_check);
+//app.use('/auth', accounts);
 //app.use('/auth/forgotten_password', forgotten_password);
 
 // THE PORT MUST BE 8080 WHEN UPLODADED TO CLOUD RUN
-app.listen(8080);
+module.exports = app.listen(8080); // Export it so that we can test it with mocha

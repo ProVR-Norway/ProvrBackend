@@ -1,0 +1,561 @@
+openapi: 3.0.0
+info:
+  title: Microservice API's
+  description: The APIs of the ProVR virtual reality application
+  license:
+    name: Open Source (MIT Licence)
+  version: 1.2.0
+servers:
+- url: https://virtserver.swaggerhub.com/provr/ProVR-APIs/1.2.0
+  description: SwaggerHub API Auto Mocking
+- url: https://{deploymentHost}
+  description: Production server
+  variables:
+    deploymentHost:
+      description: Host to be used. This is the URL of the API gateway.
+      default: https://api-gateway-iu3tuzfidq-ez.a.run.app
+tags:
+- name: auth
+  description: Authentication Microservice API
+- name: cadmodels
+  description: CAD Model Microservice API
+- name: sessions
+  description: Session Microservice API
+paths:
+  /auth/login:
+    post:
+      tags:
+      - auth
+      summary: Log in with username and password
+      description: Checks if the provided username and password corresponds to a registered account
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/login_body'
+        required: true
+      responses:
+        "405":
+          description: Only POST method is accepted.
+        "400":
+          description: Invalid username or password
+        "500":
+          description: Internal error
+        "200":
+          description: Login successful
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/login_response_200'
+  /auth/register:
+    post:
+      tags:
+      - auth
+      summary: Create a new user account
+      description: Registers an account with the provided username, email and password by the client
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/registration_body'
+        required: true
+      responses:
+        "405":
+          description: Only POST method is accepted
+        "409":
+          description: A user already exist with this email address or username
+        "500":
+          description: Internal error
+        "200":
+          description: Registration successful
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/simple_success_response_200'
+  /auth/auth_check:
+    post:
+      tags:
+      - auth
+      summary: Authorization check
+      description: Checks if the provided basic token in the autorization header is valid or not. Only if this succeeds the API gateway will forward the client request to the target endpoint.
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/auth_check_body'
+      responses:
+        "401":
+          description: Unauthorized. Please re-login
+        "405":
+          description: Only POST method is accepted
+        "500":
+          description: Internal error
+        "200":
+          description: The access check was successful. The token is authorized for the path
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/simple_success_response_200'
+  /auth/{username}:
+    delete:
+      tags:
+      - auth
+      summary: Delete an account
+      description: Removes a specific account associated with ProVR. This endpoint is currently not supported in production (needs verification that the user performing the deletion is the owner).
+      parameters:
+      - name: username
+        in: path
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      responses:
+        "401":
+          description: Unauthorized. Please re-login
+        "404":
+          description: User does not exist
+        "500":
+          description: Internal error
+        "200":
+          description: The deletion was successful
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/simple_success_response_200'
+  /cadmodels/signedurl:
+    get:
+      tags:
+      - cadmodels
+      summary: Generates and returns a signed url
+      description: Creation of signed url used to download or upload a model. The action query parameter specifies of the signed url is for upload (write) or download (read)
+      parameters:
+      - name: username
+        in: query
+        description: Username of the user wanting to upload or download a model
+        required: true
+        style: form
+        explode: true
+        schema:
+          type: string
+      - name: modelfile
+        in: query
+        description: CAD model file (only .gltf and .glb are currently supported)
+        required: true
+        style: form
+        explode: true
+        schema:
+          type: string
+      - name: action
+        in: query
+        description: Upload or read access to Google Cloud Storage (write/read)
+        required: true
+        style: form
+        explode: true
+        schema:
+          type: string
+      responses:
+        "400":
+          description: Unknown action type
+        "401":
+          description: Unauthorized. Please re-login
+        "500":
+          description: Internal error
+        "200":
+          description: Signed URL is successfully generated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/get_signed_url_response_200'
+      security:
+      - BasicAuth: []
+  /cadmodels/pub-sub:
+    post:
+      tags:
+      - cadmodels
+      summary: Updates or inserts data about uploaded CAD models
+      description: Endpoint that inserts/updates details about cad models when they are uploaded to Google Cloud Storage. Cloud Storage is the publisher, and this endpoint the subscriber to the topic. Note that if the model already exist we only update the information, in order to avoid duplication in the database
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/pub_sub_body'
+      responses:
+        "404":
+          description: User does not exist
+        "500":
+          description: Internal error
+        "200":
+          description: Model data successfully inserted/updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/simple_success_response_200'
+  /cadmodels:
+    get:
+      tags:
+      - cadmodels
+      summary: Return all models of a user
+      description: Retrives the name and upload date of all models uploaded by the sepecified user
+      parameters:
+      - name: username
+        in: query
+        required: true
+        style: form
+        explode: true
+        schema:
+          type: string
+      responses:
+        "401":
+          description: Unauthorized. Please re-login
+        "404":
+          description: User does not exist
+        "500":
+          description: Internal error
+        "200":
+          description: All owning models are returned successfully
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/list_models_response_200'
+      security:
+      - BasicAuth: []
+  /sessions/{sessionId}/invited:
+    post:
+      tags:
+      - sessions
+      summary: Add invited users to a session
+      description: Inserts new participants that will be able to join a session. Either the username or email of the users to invite will need to be provided
+      parameters:
+      - name: sessionId
+        in: path
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: integer
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/invited_participants_body'
+        required: true
+      responses:
+        "401":
+          description: Unauthorized. Please re-login
+        "404":
+          description: One or more users do not exist
+        "500":
+          description: Internal error
+        "200":
+          description: User(s) invited to session successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/simple_success_response_200'
+      security:
+      - BasicAuth: []
+  /sessions/{sessionId}/participants:
+    post:
+      tags:
+      - sessions
+      summary: Add a user to a session
+      description: Increments the participantCount associated with a session
+      parameters:
+      - name: sessionId
+        in: path
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: integer
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/add_participant_body'
+        required: true
+      responses:
+        "401":
+          description: Unauthorized. Please re-login
+        "404":
+          description: User or session does not exist
+        "500":
+          description: Internal error
+        "200":
+          description: Participant is able to join
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/simple_success_response_200'
+      security:
+      - BasicAuth: []
+  /sessions/{sessionId}/participants/{username}:
+    delete:
+      tags:
+      - sessions
+      summary: Remove a user from a session
+      description: Decrements the participantCount associated with a session
+      parameters:
+      - name: sessionId
+        in: path
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: integer
+      - name: username
+        in: path
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      responses:
+        "401":
+          description: Unauthorized. Please re-login
+        "404":
+          description: User or session does not exist
+        "500":
+          description: Internal error
+        "200":
+          description: Participant has been removed from the session
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/simple_success_response_200'
+      security:
+      - BasicAuth: []
+  /sessions:
+    get:
+      tags:
+      - sessions
+      summary: Retrieve all session associated with a specific user
+      description: Returns all the sessions a user has either created or been invited to
+      parameters:
+      - name: username
+        in: query
+        description: A registered user
+        required: true
+        style: form
+        explode: true
+        schema:
+          type: string
+      responses:
+        "401":
+          description: Unauthorized. Please re-login
+        "404":
+          description: User does not exist
+        "500":
+          description: Internal error
+        "200":
+          description: All relevant sessions are returned
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/list_sessions_response_200'
+      security:
+      - BasicAuth: []
+    post:
+      tags:
+      - sessions
+      summary: Create a new session
+      description: Adds a new session with the provided details available to join or invite participants to
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/create_session_body'
+        required: true
+      responses:
+        "401":
+          description: Unauthorized. Please re-login
+        "403":
+          description: Session with the same name already exists for the user
+        "404":
+          description: User does not exist
+        "500":
+          description: Internal error
+        "503":
+          description: No servers are currently available
+        "200":
+          description: Session created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/create_session_response_200'
+      security:
+      - BasicAuth: []
+  /sessions/{sessionId}:
+    delete:
+      tags:
+      - sessions
+      summary: Remove a specific session
+      description: Deletes a specific session of a user. This endpoint is currently not supported in production (needs verification that the user performing the deletion is the host)
+      parameters:
+      - name: sessionId
+        in: path
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: integer
+      responses:
+        "401":
+          description: Unauthorized. Please re-login
+        "404":
+          description: Session does not exist
+        "500":
+          description: Internal error
+        "200":
+          description: Session destroyed successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/simple_success_response_200'
+      security:
+      - BasicAuth: []
+components:
+  schemas:
+    list_sessions_response_200_array_item:
+      type: object
+      properties:
+        sessionId:
+          type: integer
+        sessionName:
+          type: string
+        mapName:
+          type: string
+        maxParticipants:
+          type: integer
+        participantCount:
+          type: integer
+        hostUsername:
+          type: string
+        hostIP:
+          type: string
+        hostPort:
+          type: integer
+    create_session_response_200:
+      type: object
+      properties:
+        sessionId:
+          type: integer
+    login_body:
+      required:
+      - password
+      - username
+      type: object
+      properties:
+        username:
+          type: string
+        password:
+          type: string
+    pub_sub_body:
+      required:
+        - eventType
+        - objectId
+        - eventTime
+      type: object
+      properties:
+        eventType:
+          type: string
+        objectId:
+          type: integer
+        eventTime:
+          type: string
+    invited_participants_body:
+      type: object
+      properties:
+        invited:
+          type: array
+          items:
+            $ref: '#/components/schemas/invited_participants_array_item'
+    registration_body:
+      required:
+      - emailAddress
+      - password
+      - username
+      type: object
+      properties:
+        username:
+          type: string
+        emailAddress:
+          type: string
+        password:
+          type: string
+    auth_check_body:
+      required:
+      - token
+      type: object
+      properties:
+        token:
+          type: string
+          description: Basic token needed for authorization of resource access. Expires after 30 minutes
+    simple_success_response_200:
+      type: object
+      properties:
+        message:
+          type: string
+          description: Success message
+    login_response_200:
+      type: object
+      properties:
+        token:
+          type: string
+          description: Basic token needed for authorization of resource access. Expires after 30 minutes
+    get_signed_url_response_200:
+      type: object
+      properties:
+        signedURL:
+          type: string
+        expirationTime:
+          type: string
+    list_models_response_200:
+      type: object
+      properties:
+        modelName:
+          type: string
+        dateUploaded:
+          type: string
+    list_sessions_response_200:
+      type: object
+      properties:
+        sessions:
+          type: array
+          items:
+            $ref: '#/components/schemas/list_sessions_response_200_array_item'
+    invited_participants_array_item:
+      type: object
+      properties:
+        usernameOrEmail:
+          type: string
+    add_participant_body:
+      required:
+      - username
+      type: object
+      properties:
+        username:
+          type: string
+    create_session_body:
+      required:
+      - hostUsername
+      - mapName
+      - maxParticipants
+      - sessionName
+      type: object
+      properties:
+        sessionName:
+          type: string
+        mapName:
+          type: string
+        maxParticipants:
+          type: integer
+        hostUsername:
+          type: string
+  securitySchemes:
+    BasicAuth:
+      type: http
+      scheme: basic
