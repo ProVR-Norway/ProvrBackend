@@ -4,6 +4,11 @@
 [![GitHub issues](https://img.shields.io/github/issues/ProVR-Norway/ProvrBackend.svg)](https://GitHub.com/Naereen/StrapDown.js/issues/)
 [![GitHub stars](https://img.shields.io/github/stars/ProVR-Norway/ProvrBackend.svg?style=social&label=Star&maxAge=2592000)](https://GitHub.com/Naereen/StrapDown.js/stargazers/) 
 
+## Usage
+
+- **Running one of the APIs locally:** nodemon server.js
+- **Running the mocha test code of one API:** npm test 
+
 ## Endpoints
 
 - `/auth/login`
