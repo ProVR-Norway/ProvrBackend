@@ -13,6 +13,8 @@
 ### Running the mocha test code of one API
 `npm test`
 
+> **Note** Before testing you will need to have a local MySQL and redis server running. The MySQL server needs to run on port `3306` and have a `root` user with the password `password`. Also, the MySQL database will need to contain the tables found in `vr-collaboration-room-db-dev.sql`. The redis server needs to run on port `6379`.
+
 ## Endpoints
 
 - `/auth/login`
