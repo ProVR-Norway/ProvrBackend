@@ -6,8 +6,12 @@
 
 ## Usage
 
-- **Running one of the APIs locally:** nodemon server.js
-- **Running the mocha test code of one API:** npm test 
+> **Note**: You will need to be inside the folder `server` of the respective API when running the commands mentioned below.
+
+### Running one of the APIs locally
+`nodemon server.js`
+### Running the mocha test code of one API
+`npm test`
 
 ## Endpoints
 
