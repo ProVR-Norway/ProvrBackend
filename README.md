@@ -4,18 +4,18 @@
 [![GitHub issues](https://img.shields.io/github/issues/ProVR-Norway/ProvrBackend.svg)](https://GitHub.com/Naereen/StrapDown.js/issues/)
 [![GitHub stars](https://img.shields.io/github/stars/ProVR-Norway/ProvrBackend.svg?style=social&label=Star&maxAge=2592000)](https://GitHub.com/Naereen/StrapDown.js/stargazers/) 
 
-## Usage
+## 🧑‍💻 Usage
 
 > **Note**: You will need to be inside the folder `server` of the respective API when running the commands mentioned below.
 
-### Running one of the APIs locally
+### 🛫 Running one of the APIs locally
 `nodemon server.js`
-### Running the mocha test code of one API
+### 🤖 Running the mocha test code of one API
 `npm test`
 
 > **Note** Before testing you will need to have a local MySQL and redis server running. The MySQL server needs to run on port `3306` and have a `root` user with the password `password`. Also, the MySQL database will need to contain the tables found in `vr-collaboration-room-db-dev.sql`. The redis server needs to run on port `6379`.
 
-## Endpoints
+## 🔚 Endpoints
 
 - `/auth/login`
 - `/auth/register`
@@ -55,7 +55,7 @@ To make a connection to the Cloud SQL instance from Cloud Run you will need to m
 
 We use the Google Cloud service Memorystore to store the tokens that are used to authorise users that want to access specific resources. Unlike Cloud SQL that uses an SSD (or HDD) to store data, redis on Memorystore is placed in the cache. This ensures super-fast read and write operations, making it ideal for temporary data that is frequently accessed. Much like Cloud SQL, Memorystore increases security and ensures scalability.
 
-### Security
+### 🔒 Security
 
 All sensitive data for Redis is stored as GitHub secrets. To find the values of these you will need to check the info about the Memorystore (Redis) instance on Google Cloud.
 
