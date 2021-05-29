@@ -1,87 +1,87 @@
-"use strict";
+'use strict'
 
-const express = require("express");
-const router = express.Router({ mergeParams: true });
+const express = require('express')
+const router = express.Router({ mergeParams: true })
 
 // Credentials mysql8.0
-const MYSQL_HOST = process.env.MYSQL_HOST; // IP of MySQL instance on Google Cloud SQL
-const MYSQL_PORT = process.env.MYSQL_PORT;
-const MYSQL_USER = process.env.MYSQL_USER;
-const MYSQL_PASSWORD = process.env.MYSQL_PASSWORD;
-const MYSQL_DATABASE = process.env.MYSQL_DATABASE;
+const MYSQL_HOST = process.env.MYSQL_HOST // IP of MySQL instance on Google Cloud SQL
+const MYSQL_PORT = process.env.MYSQL_PORT
+const MYSQL_USER = process.env.MYSQL_USER
+const MYSQL_PASSWORD = process.env.MYSQL_PASSWORD
+const MYSQL_DATABASE = process.env.MYSQL_DATABASE
 
 // Open connection to the MySQL server
-const mysql = require("mysql8.0");
+const mysql = require('mysql8.0')
 const connection = mysql.createConnection({
-  host: MYSQL_HOST || "localhost",
+  host: MYSQL_HOST || 'localhost',
   port: MYSQL_PORT || 3306,
-  user: MYSQL_USER || "root",
-  password: MYSQL_PASSWORD || "password",
-  database: MYSQL_DATABASE || "users",
-});
+  user: MYSQL_USER || 'root',
+  password: MYSQL_PASSWORD || 'password',
+  database: MYSQL_DATABASE || 'users'
+})
 // Checks for any errors upon connecting to the server
 connection.connect(function (err) {
   if (!err) {
-    console.log("Database is connected ...");
+    console.log('Database is connected ...')
   } else {
-    console.log("Error when connecting to the MySQL database: " + err.message);
+    console.log('Error when connecting to the MySQL database: ' + err.message)
   }
-});
+})
 
-router.post("/", function (req, res) {
-  const sessionId = req.params.sessionId;
+router.post('/', function (req, res) {
+  const sessionId = req.params.sessionId
   const JSONDetails = {
-    username: req.body.username,
-  };
+    username: req.body.username
+  }
 
   connection.query(
-    "SELECT userID FROM User WHERE username = ?",
+    'SELECT userID FROM User WHERE username = ?',
     JSONDetails.username,
     function (error, results, fields) {
       if (error) {
-        res.status(500);
+        res.status(500)
         console.log(
-          "An error occured with the MySQL database: " + error.message
-        );
+          'An error occured with the MySQL database: ' + error.message
+        )
         res.send({
-          message: "Internal error",
-        });
+          message: 'Internal error'
+        })
       } else if (results.length > 0) {
         connection.query(
-          "UPDATE Session SET participantCount = participantCount + 1 WHERE sessionID = ?",
+          'UPDATE Session SET participantCount = participantCount + 1 WHERE sessionID = ?',
           sessionId,
           function (error, results, fields) {
             if (error) {
-              res.status(500);
+              res.status(500)
               console.log(
-                "An error occured with the MySQL database: " + error.message
-              );
+                'An error occured with the MySQL database: ' + error.message
+              )
               res.send({
-                message: "Internal error",
-              });
+                message: 'Internal error'
+              })
             } else if (results.affectedRows > 0) {
-              //leave the server in some way. I already have access to the user ID
-              res.status(200);
+              // leave the server in some way. I already have access to the user ID
+              res.status(200)
               res.send({
-                message: "Participant is able to join",
-              });
+                message: 'Participant is able to join'
+              })
             } else {
-              //leave the server in some way. I already have access to the user ID
-              res.status(404);
+              // leave the server in some way. I already have access to the user ID
+              res.status(404)
               res.send({
-                message: "User or session does not exist",
-              });
+                message: 'User or session does not exist'
+              })
             }
           }
-        );
+        )
       } else {
-        res.status(404);
+        res.status(404)
         res.send({
-          message: "User or session does not exist",
-        });
+          message: 'User or session does not exist'
+        })
       }
     }
-  );
+  )
 
   /*
   connection.query('SELECT userID FROM User WHERE username = ?', username, function (error, results, fields) {
@@ -91,7 +91,7 @@ router.post("/", function (req, res) {
       res.send({
           message:'Internal error'
       });
-    } 
+    }
     else if (results.length > 0) {
       const userID = results[0].userID;
       connection.query('SELECT userID FROM Invited_Participant WHERE userID = ?', userID, function (error, results, fields) {
@@ -143,7 +143,7 @@ router.post("/", function (req, res) {
               }
               else {
                 //connect to the server in some way. I already have access to the IP and port here, aswell as the user ID
-                
+
                 res.status(200);
                 res.send({
                     message:'Session successfully joined'
@@ -171,9 +171,9 @@ router.post("/", function (req, res) {
           res.send({
             message:'Server not allocated'
           });
-        } 
+        }
         });
-      } 
+      }
       else {
         res.status(444);
         res.send({
@@ -181,7 +181,7 @@ router.post("/", function (req, res) {
         });
       }
     });
-    } 
+    }
     else {
       res.status(404);
       res.send({
@@ -190,61 +190,61 @@ router.post("/", function (req, res) {
     }
   });
   */
-});
+})
 
-router.delete("/:username", function (req, res) {
-  const sessionId = req.params.sessionId;
-  const username = decodeURI(req.params.username);
+router.delete('/:username', function (req, res) {
+  const sessionId = req.params.sessionId
+  const username = decodeURI(req.params.username)
 
   connection.query(
-    "SELECT userID FROM User WHERE username = ?",
+    'SELECT userID FROM User WHERE username = ?',
     username,
     function (error, results, fields) {
       if (error) {
-        res.status(500);
+        res.status(500)
         console.log(
-          "An error occured with the MySQL database: " + error.message
-        );
+          'An error occured with the MySQL database: ' + error.message
+        )
         res.send({
-          message: "Internal error",
-        });
+          message: 'Internal error'
+        })
       } else if (results.length > 0) {
         connection.query(
-          "UPDATE Session SET participantCount = participantCount - 1 WHERE sessionID = ?",
+          'UPDATE Session SET participantCount = participantCount - 1 WHERE sessionID = ?',
           sessionId,
           function (error, results, fields) {
             if (error) {
-              res.status(500);
+              res.status(500)
               console.log(
-                "An error occured with the MySQL database: " + error.message
-              );
+                'An error occured with the MySQL database: ' + error.message
+              )
               res.send({
-                message: "Internal error",
-              });
+                message: 'Internal error'
+              })
             } else if (results.affectedRows > 0) {
-              //leave the server in some way. I already have access to the user ID
-              res.status(200);
+              // leave the server in some way. I already have access to the user ID
+              res.status(200)
               res.send({
-                message: "Participant has been removed from the session",
-              });
+                message: 'Participant has been removed from the session'
+              })
             } else {
-              //leave the server in some way. I already have access to the user ID
-              res.status(404);
+              // leave the server in some way. I already have access to the user ID
+              res.status(404)
               res.send({
-                message: "User or session does not exist",
-              });
+                message: 'User or session does not exist'
+              })
             }
           }
-        );
+        )
       } else {
-        res.status(404);
+        res.status(404)
         res.send({
-          message: "User or session does not exist",
-        });
+          message: 'User or session does not exist'
+        })
       }
     }
-  );
-});
+  )
+})
 
-//export this router to use in our server.js
-module.exports = router;
+// export this router to use in our server.js
+module.exports = router

@@ -1,4 +1,4 @@
-"use strict";
+'use strict'
 
 /*
 
@@ -20,21 +20,21 @@
 
 */
 
-const express = require("express");
-const fetch = require("node-fetch");
-const { GoogleAuth } = require("google-auth-library");
-const auth = new GoogleAuth();
-const cors = require("cors");
+const express = require('express')
+const fetch = require('node-fetch')
+const { GoogleAuth } = require('google-auth-library')
+const auth = new GoogleAuth()
+const cors = require('cors')
 
-const authApiServiceURL = process.env.URL_AUTH_MICROSERVICE;
-const cadApiServiceURL = process.env.URL_CAD_MICROSERVICE;
-const sessionApiServiceURL = process.env.URL_SESSION_MICROSERVICE;
-const authCheckURL = authApiServiceURL + "/auth/auth_check";
+const authApiServiceURL = process.env.URL_AUTH_MICROSERVICE
+const cadApiServiceURL = process.env.URL_CAD_MICROSERVICE
+const sessionApiServiceURL = process.env.URL_SESSION_MICROSERVICE
+const authCheckURL = authApiServiceURL + '/auth/auth_check'
 
-const app = express();
+const app = express()
 
 // This will enable browsers to be able to use the endpoints
-app.use(cors());
+app.use(cors())
 
 const authOptions = {
   target: authApiServiceURL,
@@ -43,23 +43,23 @@ const authOptions = {
   changeOrigin: true,
   onError: function (err, req, res) {
     res.writeHead(500, {
-      "Content-Type": "application/json",
-    });
+      'Content-Type': 'application/json'
+    })
     res.end({
       message:
-        "The gateway is currently unable to communicated with the requested service.",
-    });
+        'The gateway is currently unable to communicated with the requested service.'
+    })
   },
   // IMPORTANT!
   // The onProxyReq must be below the other events (onError and onProxyRes)
   // If not the proxyReq will be undefined and we cannot use the setHeader function
   // The ALTERNATIVE can be used instead
   onProxyReq: function (proxyReq, req, res) {
-    proxyReq.setHeader("Authorization", res.locals.authorizationHeader);
+    proxyReq.setHeader('Authorization', res.locals.authorizationHeader)
     // ALTERNATIVE:
     // proxyReq.headers['Authorization'] = 'Bearer ' + res.locals.token;
-  },
-};
+  }
+}
 
 const cadOptions = {
   target: cadApiServiceURL,
@@ -68,23 +68,23 @@ const cadOptions = {
   changeOrigin: true,
   onError: function (err, req, res) {
     res.writeHead(500, {
-      "Content-Type": "application/json",
-    });
+      'Content-Type': 'application/json'
+    })
     res.end({
       message:
-        "The gateway is currently unable to communicated with the requested service.",
-    });
+        'The gateway is currently unable to communicated with the requested service.'
+    })
   },
   // IMPORTANT!
   // The onProxyReq must be below the other events (onError and onProxyRes)
   // If not the proxyReq will be undefined and we cannot use the setHeader function
   // The ALTERNATIVE can be used instead
   onProxyReq: function (proxyReq, req, res) {
-    proxyReq.setHeader("Authorization", res.locals.authorizationHeader);
+    proxyReq.setHeader('Authorization', res.locals.authorizationHeader)
     // ALTERNATIVE:
     // proxyReq.headers['Authorization'] = 'Bearer ' + res.locals.token;
-  },
-};
+  }
+}
 
 const sessionOptions = {
   target: sessionApiServiceURL,
@@ -93,137 +93,137 @@ const sessionOptions = {
   changeOrigin: true,
   onError: function (err, req, res) {
     res.writeHead(500, {
-      "Content-Type": "application/json",
-    });
+      'Content-Type': 'application/json'
+    })
     res.end({
       message:
-        "The gateway is currently unable to communicated with the requested service.",
-    });
+        'The gateway is currently unable to communicated with the requested service.'
+    })
   },
   // IMPORTANT!
   // The onProxyReq must be below the other events (onError and onProxyRes)
   // If not the proxyReq will be undefined and we cannot use the setHeader function
   // The ALTERNATIVE can be used instead
   onProxyReq: function (proxyReq, req, res) {
-    proxyReq.setHeader("Authorization", res.locals.authorizationHeader);
+    proxyReq.setHeader('Authorization', res.locals.authorizationHeader)
     // ALTERNATIVE:
     // proxyReq.headers['Authorization'] = 'Bearer ' + res.locals.token;
-  },
-};
+  }
+}
 
-const { createProxyMiddleware } = require("http-proxy-middleware");
+const { createProxyMiddleware } = require('http-proxy-middleware')
 
 // LISTENS FOR REQUESTS WITH PATH STARTING WITH /auth
 // FOR EXAMPLE auth/login AND auth/register
-app.use("/auth*", getIdToken, createProxyMiddleware(authOptions));
+app.use('/auth*', getIdToken, createProxyMiddleware(authOptions))
 // LISTENS FOR REQUESTS WITH PATH STARTING WITH /cadmodels
 // FOR EXAMPLE cadmodels/listall/{username}
 app.use(
-  "/cadmodels*",
+  '/cadmodels*',
   getIdTokenForAuthCheck,
   verifyBasicToken,
   getIdToken,
   createProxyMiddleware(cadOptions)
-);
+)
 // LISTENS FOR REQUESTS WITH PATH STARTING WITH /sessions
 // FOR EXAMPLE sessions/{sessionId}
 app.use(
-  "/sessions*",
+  '/sessions*',
   getIdTokenForAuthCheck,
   verifyBasicToken,
   getIdToken,
   createProxyMiddleware(sessionOptions)
-);
+)
 
 // THE FOLLOWING LINE MUST BE BELOW THE HTTP-PROXIES!
-app.use(express.json({ limit: "50mb" }));
+app.use(express.json({ limit: '50mb' }))
 
-async function getIdToken(req, res, next) {
+async function getIdToken (req, res, next) {
   try {
     // Get destination url of the request
-    let audience;
-    const pathURL = req.originalUrl;
+    let audience
+    const pathURL = req.originalUrl
     // Set the audience based on the path of the request sent
-    if (pathURL.startsWith("/auth")) {
-      audience = authApiServiceURL + pathURL;
-    } else if (pathURL.startsWith("/cadmodels")) {
-      audience = cadApiServiceURL + pathURL;
+    if (pathURL.startsWith('/auth')) {
+      audience = authApiServiceURL + pathURL
+    } else if (pathURL.startsWith('/cadmodels')) {
+      audience = cadApiServiceURL + pathURL
     } else {
-      audience = sessionApiServiceURL + pathURL;
+      audience = sessionApiServiceURL + pathURL
     }
     // Create a Google Auth client with the requested service url as the target audience.
-    const client = await auth.getIdTokenClient(audience);
+    const client = await auth.getIdTokenClient(audience)
     // Fetch the client request headers and add them to the service request headers.
     // The client request headers include an ID token that authenticates the request.
-    const clientHeaders = await client.getRequestHeaders();
+    const clientHeaders = await client.getRequestHeaders()
     // Pass the header to the retrieved next middleware
-    res.locals.authorizationHeader = clientHeaders["Authorization"];
-    next();
+    res.locals.authorizationHeader = clientHeaders.Authorization
+    next()
   } catch (err) {
-    res.status(500);
+    res.status(500)
     res.send({
-      message: "Could not create an identity token:" + err.message,
-    });
+      message: 'Could not create an identity token:' + err.message
+    })
   }
 }
 
-async function getIdTokenForAuthCheck(req, res, next) {
+async function getIdTokenForAuthCheck (req, res, next) {
   try {
     // Create a Google Auth client with the requested service url as the target audience.
-    const client = await auth.getIdTokenClient(authCheckURL);
+    const client = await auth.getIdTokenClient(authCheckURL)
     // Fetch the client request headers and add them to the service request headers.
     // The client request headers include an ID token that authenticates the request.
-    const clientHeaders = await client.getRequestHeaders();
+    const clientHeaders = await client.getRequestHeaders()
     // Pass the retrieved header to the next middleware
-    res.locals.authorizationHeaderForAuthCheck = clientHeaders["Authorization"];
-    next();
+    res.locals.authorizationHeaderForAuthCheck = clientHeaders.Authorization
+    next()
   } catch (err) {
-    res.status(500);
+    res.status(500)
     res.send({
-      message: "Could not create an identity token:" + err.message,
-    });
+      message: 'Could not create an identity token:' + err.message
+    })
   }
 }
 
-async function verifyBasicToken(req, res, next) {
+async function verifyBasicToken (req, res, next) {
   try {
     // The "A" in "Authorization" cannot be captital! It must be lowercased
     // Extracts the token from 'Basic hdbshbvsjvuweihddsfefwfwfwf'.
-    const providedToken = req.headers["authorization"].split(" ")[1];
+    const providedToken = req.headers.authorization.split(' ')[1]
     const requestBody = JSON.stringify({
-      token: providedToken,
-    });
+      token: providedToken
+    })
     // Sends request to auth_check to check if the token is valid
     const response = await fetch(authCheckURL, {
-      method: "POST",
+      method: 'POST',
       body: requestBody,
       headers: {
-        "Content-Type": "application/json",
-        Authorization: res.locals.authorizationHeaderForAuthCheck,
-      },
-    });
+        'Content-Type': 'application/json',
+        Authorization: res.locals.authorizationHeaderForAuthCheck
+      }
+    })
     // If we get a successful response (token is valid)
     // we switch to the next middleware
     if (response.ok) {
       // res.status >= 200 && res.status < 300
-      next();
+      next()
       // If the response is unsuccessful we exit the middleware chain
     } else {
       // Get the json reponse from auth_check
       // Note: This throws an error if the response is
       // not a JSON object.
-      const data = await response.json();
+      const data = await response.json()
       // Pass the response from auth_check to the client
-      res.status(response.status);
-      res.send(data);
+      res.status(response.status)
+      res.send(data)
     }
   } catch (err) {
-    res.status(500);
+    res.status(500)
     res.send({
-      message: "Could not verify the basic token: " + err.message,
-    });
+      message: 'Could not verify the basic token: ' + err.message
+    })
   }
 }
 
 // THE PORT MUST BE 8080 WHEN UPLODADED TO CLOUD RUN
-app.listen(8080);
+app.listen(8080)
