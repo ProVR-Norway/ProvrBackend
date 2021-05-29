@@ -1,6 +1,6 @@
-'use strict';
+"use strict";
 
-const express = require('express');
+const express = require("express");
 
 /*
 
@@ -14,21 +14,21 @@ const express = require('express');
 const app = express();
 // MUST BE MAX 50MB OR ELSE EVERYTHING WILL CRASH!
 // WE NEED THIS SO THAT WE CAN PARSE HTTP REQUESTS OF CONTENT-TYPE:
-//application/json
-app.use(express.json({ limit:'50mb' }));
+// application/json
+app.use(express.json({ limit: "50mb" }));
 // WE NEED THIS SO THAT WE CAN PARSE HTTP REQUESTS OF CONTENT-TYPE:
 // application/x-www-form-urlencoded
 app.use(express.urlencoded({ extended: true }));
 
-const login = require('./handlers/login.js');
-const register = require('./handlers/register.js');
-const auth_check = require('./handlers/auth_check.js');
-const accounts = require('./handlers/accounts.js');
+const login = require("./handlers/login.js");
+const register = require("./handlers/register.js");
+const auth_check = require("./handlers/auth_check.js");
+const accounts = require("./handlers/accounts.js");
 //const forgotten_password = require('./handlers/forgotten_password.js');
 
-app.use('/auth/login', login);
-app.use('/auth/register', register);
-app.use('/auth/auth_check', auth_check);
+app.use("/auth/login", login);
+app.use("/auth/register", register);
+app.use("/auth/auth_check", auth_check);
 //app.use('/auth', accounts);
 //app.use('/auth/forgotten_password', forgotten_password);
 

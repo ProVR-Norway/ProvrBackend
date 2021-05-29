@@ -14,5 +14,8 @@
     "google-auth-library": "^7.0.4",
     "http-proxy-middleware": "^1.1.1",
     "node-fetch": "^2.6.1"
+  },
+  "devDependencies": {
+    "prettier": "2.3.0"
   }
 }

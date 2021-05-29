@@ -1,10 +1,10 @@
-'use strict';
+"use strict";
 
-const express = require('express');
+const express = require("express");
 const router = express.Router();
 
 // Used for await/async
-const util = require( 'util' );
+const util = require("util");
 
 // Credentials mysql8.0
 const MYSQL_HOST = process.env.MYSQL_HOST; // IP of MySQL instance on Google Cloud SQL
@@ -13,37 +13,37 @@ const MYSQL_USER = process.env.MYSQL_USER;
 const MYSQL_PASSWORD = process.env.MYSQL_PASSWORD;
 const MYSQL_DATABASE = process.env.MYSQL_DATABASE;
 
-
-const mysql = require('mysql8.0');
+const mysql = require("mysql8.0");
 
 // MySQL config settings
-const mysqlConfig = ({
-  host     : MYSQL_HOST || 'localhost', 
-  port     : MYSQL_PORT || 3306,
-  user     : MYSQL_USER || 'root',
-  password : MYSQL_PASSWORD || 'password',
-  database : MYSQL_DATABASE || 'users'
-});
+const mysqlConfig = {
+  host: MYSQL_HOST || "localhost",
+  port: MYSQL_PORT || 3306,
+  user: MYSQL_USER || "root",
+  password: MYSQL_PASSWORD || "password",
+  database: MYSQL_DATABASE || "users",
+};
 
 // Alternative database connection
-function makeDbConnection( config ) {
-  const connection = mysql.createConnection( config );
+function makeDbConnection(config) {
+  const connection = mysql.createConnection(config);
   // Checks for any errors upon connecting to the server
-  connection.connect(function(err){
-    if(!err) {
-        console.log('Database is connected ...');
+  connection.connect(function (err) {
+    if (!err) {
+      console.log("Database is connected ...");
     } else {
-        console.log('Error when connecting to the MySQL database: ' + err.message);
+      console.log(
+        "Error when connecting to the MySQL database: " + err.message
+      );
     }
-    });
+  });
   return {
-    query( sql, args ) {
-      return util.promisify( connection.query )
-        .call( connection, sql, args );
+    query(sql, args) {
+      return util.promisify(connection.query).call(connection, sql, args);
     },
     close() {
-      return util.promisify( connection.end ).call( connection );
-    }
+      return util.promisify(connection.end).call(connection);
+    },
   };
 }
 
